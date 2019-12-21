@@ -5,18 +5,18 @@
 [![coverage report](https://gitlab.com/kapsner/mlr3learners-lightgbm/badges/master/coverage.svg)](https://gitlab.com/kapsner/mlr3learners-lightgbm/commits/master)
 <!-- badges: end -->
  
-[mlr3learners.lightgbm](https://github.com/kapsner/mlr3learners.lightgbm) brings the [LightGBM gradient booster](https://lightgbm.readthedocs.io) to the [mlr3](https://github.com/mlr-org/mlr3) framework by using the [lightgbm.py](https://github.com/kapsner/lightgbm.py) R implementation. 
+[mlr3learners.lightgbm](https://github.com/kapsner/mlr3learners.lightgbm) brings the [LightGBM gradient booster](https://lightgbm.readthedocs.io) to the [mlr3](https://github.com/mlr-org/mlr3) framework by using the [official lightgbm R implementation](https://github.com/microsoft/LightGBM/tree/master/R-package). 
 
-# Installation
+# Installation 
 
-Install the [mlr3learners.lightgbm](https://github.com/kapsner/mlr3learners.lightgbm) R package:
+Before you can install the `mlr3learners.lightgbm` package, you need to install the lightgbm R package according to [its documentation](https://github.com/microsoft/LightGBM/blob/master/R-package/README.md) (this is necessary since lightgbm is neither on CRAN nor installable via `devtools::install_github`).  
+
+If the lightgbm R package is installed, you can continue and install the [mlr3learners.lightgbm](https://github.com/kapsner/mlr3learners.lightgbm) R package:
 
 ```r
 install.packages("devtools")
 devtools::install_github("kapsner/mlr3learners.lightgbm")
 ```
-
-Before you can use the `mlr3learners.lightgbm` package, you need to install the lightgbm R package according to [its documentation](https://github.com/microsoft/LightGBM/blob/master/R-package/README.md) (this is necessary since lightgbm is neither on CRAN nor installable via `devtools::install_github`).  
 
 # Example
 
