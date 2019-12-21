@@ -1,0 +1,124 @@
+variables:
+  _R_CHECK_CRAN_INCOMING_: "false"
+  _R_CHECK_FORCE_SUGGESTS_: "true"
+  CI_IMAGE_NAME: "rocker/verse"
+  CI_IMAGE_TAG: "3.6.1"
+  R_PKG_NAME: "mlr3learners.lightgbm"
+
+default:
+  image: ${CI_IMAGE_NAME}:${CI_IMAGE_TAG}
+  before_script:
+    - echo "options('repos' = 'https://ftp.fau.de/cran/')" >> /usr/local/lib/R/etc/Rprofile.site
+    - mkdir -p ci
+
+stages:
+  - build
+  - deploy
+
+check:
+  stage: build
+  allow_failure: true # necessary when having development-packages (in remotes-section of DESCRIPTION)
+  script:
+    - R -e "devtools::install_dev_deps(pkg = '.', upgrade = 'always')"
+    - R -e "devtools::check(pkg = '.', args = c('--no-tests', '--no-vignettes'), build_args = c('--no-build-vignettes'), check_dir = '${CI_PROJECT_DIR}/ci')"
+  artifacts:
+    paths:
+      - "${CI_PROJECT_DIR}/ci/*.Rcheck"
+    when: on_failure # upload check artifacts when job fails!
+    expire_in: 1 week
+  except:
+    refs:
+      - tags
+  only:
+    refs:
+      - master
+      - development
+
+create_manual:
+  stage: build
+  allow_failure: true
+  script:
+    - R -e "devtools::install_deps(pkg = '.', upgrade = 'always')"
+    - R -e "devtools::build_manual(pkg = '.', path = '${CI_PROJECT_DIR}/ci')"
+  artifacts:
+    paths:
+      - "${CI_PROJECT_DIR}/ci/*.pdf"
+    expire_in: 1 week
+  except:
+    refs:
+      - tags
+  only:
+    refs:
+      - master
+
+build_source_and_binary:
+  stage: build
+  script:
+    - R -e "devtools::install_deps(pkg = '.', upgrade = 'always')"
+    - R -e "devtools::build(pkg = '.', path = '${CI_PROJECT_DIR}/ci', binary = FALSE, vignettes = FALSE)"
+    - R -e "devtools::build(pkg = '.', path = '${CI_PROJECT_DIR}/ci', binary = TRUE, vignettes = FALSE)"
+  artifacts:
+    paths:
+      - "${CI_PROJECT_DIR}/ci/*.tar.gz"
+    expire_in: 1 week
+  except:
+    refs:
+      - tags
+  only:
+    refs:
+      - master
+
+testing:
+  stage: build
+  allow_failure: true
+  when: on_success
+  script:
+    - R -e "devtools::install_dev_deps(pkg = '.', upgrade = 'always')" # we only need dev_deps for the vignette and testing
+    - R -e "devtools::test(pkg = '.')"
+  except:
+    refs:
+      - tags
+  only:
+    refs:
+      - master
+      - development
+
+# To produce a code coverage report as a GitLab page see
+# https://about.gitlab.com/2016/11/03/publish-code-coverage-report-with-gitlab-pages/
+
+install:
+  stage: deploy
+  script:
+    - R -e "devtools::install_deps(pkg = '.', upgrade = 'always')" # we only need dev_deps for the vignette and testing
+    - R -e "devtools::install(pkg = '.', upgrade = 'alway')"
+  except:
+    refs:
+      - tags
+  only:
+    refs:
+      - master
+
+build_vignettes:
+  stage: deploy
+  script:
+    - R -e "devtools::install_dev_deps(pkg = '.', upgrade = 'always')" # we only need dev_deps for the vignette and testing
+    - R -e "reticulate::install_miniconda(path = reticulate::miniconda_path(), update = TRUE, force = FALSE)"
+    - R -e "devtools::build_vignettes(pkg = '.', clean = FALSE)"
+  #after_script:
+  #  - git config --global user.name "${GITHUB_USER}"
+  #  - git config --global user.email "${GITHUB_USER_EMAIL}"
+  #  - git clone https://${GITHUB_USER}:${K8S_SECRET_GITHUB_ACCESS_TOKEN}@github.com/${GITHUB_USER}/${GITHUB_USER}.github.io
+  #  - mv doc/*.md ${GITHUB_USER}.github.io/${R_PKG_NAME}/
+  #  - mv vignettes/png/*.png ${GITHUB_USER}.github.io/png/
+  #  - cd ${GITHUB_USER}.github.io/
+  #  - git add .
+  #  - git commit -m "Deploy to Github Pages from ${CI_PROJECT_DIR}"
+  #  - git push
+  except:
+    refs:
+      - tags
+  only:
+    refs:
+      - master
+    changes:
+      - "vignettes/*.Rmd"
