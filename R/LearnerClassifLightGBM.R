@@ -91,8 +91,6 @@ LearnerClassifLightGBM <- R6::R6Class(
     #'
     train_internal = function(task) {
 
-      lightgbm::lgb.unloader(envir = parent.frame())
-
       data <- task$data()
 
       n <- nlevels(factor(data[, get(task$target_names)]))
@@ -165,10 +163,14 @@ LearnerClassifLightGBM <- R6::R6Class(
       )
 
       # switch of lightgbm's parallelization and use the one of mlr3
-      self$param_set$values <- c(
-        self$param_set$values,
-        list("num_threads" = 1L)
-      )
+      if (is.null(self$param_set$values[["num_threads"]])) {
+        self$param_set$values <- c(
+          self$param_set$values,
+          list("num_threads" = 1L)
+        )
+      } else if (self$param_set$values[["num_threads"]] != 1L) {
+        self$param_set$values[["num_threads"]] <- 1L
+      }
 
       mlr3misc::invoke(
         .f = lightgbm::lgb.train,

@@ -39,4 +39,4 @@ Suggests:
     mlr3tuning
 Remotes: 
     mlr-org/mlr3viz
-RoxygenNote: 7.0.1
+RoxygenNote: 7.0.2
