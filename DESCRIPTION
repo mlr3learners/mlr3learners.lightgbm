@@ -13,7 +13,7 @@ LazyData: true
 URL: https://github.com/kapsner/mlr3learners.lightgbm
 BugReports: https://github.com/kapsner/mlr3learners.lightgbm/issues
 Encoding: UTF-8
-Date: 2019-12-21
+Date: 2019-12-22
 VignetteBuilder: knitr
 Depends: 
     R (>= 2.10)
@@ -33,10 +33,5 @@ Suggests:
     rmarkdown,
     qpdf,
     knitr,
-    mlbench,
-    mlr3viz (>= 0.1.0.9000),
     future,
     mlr3tuning
-Remotes: 
-    mlr-org/mlr3viz
-RoxygenNote: 7.0.2

@@ -81,12 +81,8 @@ usethis::use_package("checkmate", type = "Suggests")
 usethis::use_package("rmarkdown", type = "Suggests")
 usethis::use_package("qpdf", type = "Suggests")
 usethis::use_package("knitr", type = "Suggests")
-usethis::use_package("mlbench", type = "Suggests")
-usethis::use_dev_package("mlr3viz", type = "Suggests")
 usethis::use_package("future", type = "Suggests")
 usethis::use_package("mlr3tuning", type = "Suggests")
-desc::desc_set_remotes(c("mlr-org/mlr3viz"), file = usethis::proj_get())
-
 # buildignore
 usethis::use_build_ignore("LICENSE.md")
 usethis::use_build_ignore(".gitlab-ci.yml")

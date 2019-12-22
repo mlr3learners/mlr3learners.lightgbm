@@ -16,6 +16,8 @@ Regression LightGBM Learner
 \section{Public fields}{
 \if{html}{\out{<div class="r6-fields">}}
 \describe{
+\item{\code{lgb_learner}}{The lightgbm learner instance}
+
 \item{\code{nrounds}}{Number of training rounds.}
 
 \item{\code{early_stopping_rounds}}{A integer. Activates early stopping.
@@ -26,14 +28,6 @@ If early stopping occurs, the model will have 'best_iter' field.}
 
 \item{\code{categorical_feature}}{A list of str or int. Type int represents
 index, type str represents feature names.}
-
-\item{\code{train_data}}{A data.table object holding the training data.}
-
-\item{\code{train_label}}{A vector holding the training labels.}
-
-\item{\code{valid_data}}{A data.table object holding the validation data.}
-
-\item{\code{valid_label}}{A vector holding the validation labels.}
 }
 \if{html}{\out{</div>}}
 }
@@ -44,8 +38,6 @@ index, type str represents feature names.}
 \item \href{#method-train_internal}{\code{LearnerRegrLightGBM$train_internal()}}
 \item \href{#method-predict_internal}{\code{LearnerRegrLightGBM$predict_internal()}}
 \item \href{#method-importance}{\code{LearnerRegrLightGBM$importance()}}
-\item \href{#method-importance2}{\code{LearnerRegrLightGBM$importance2()}}
-\item \href{#method-valids}{\code{LearnerRegrLightGBM$valids()}}
 \item \href{#method-clone}{\code{LearnerRegrLightGBM$clone()}}
 }
 }
@@ -113,45 +105,6 @@ The importance function
 
 \subsection{Details}{
 A named vector with the learner's variable importances.
-}
-
-}
-\if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-importance2"></a>}}
-\subsection{Method \code{importance2()}}{
-The importance2 function
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{LearnerRegrLightGBM$importance2()}\if{html}{\out{</div>}}
-}
-
-\subsection{Details}{
-Returns a list with the learner's variable importance values
-  and an importance plot.
-}
-
-}
-\if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-valids"></a>}}
-\subsection{Method \code{valids()}}{
-The valids function
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{LearnerRegrLightGBM$valids(task, row_ids)}\if{html}{\out{</div>}}
-}
-
-\subsection{Arguments}{
-\if{html}{\out{<div class="arguments">}}
-\describe{
-\item{\code{task}}{The mlr3 task.}
-
-\item{\code{row_ids}}{An integer vector with the row IDs for the validation
-data.}
-}
-\if{html}{\out{</div>}}
-}
-\subsection{Details}{
-The function can be used to provide a subsample to the data
-  to the lightgbm's train function's `valids` argument. This is e.g.
-  needed, when the argument `early_stopping_rounds` is used.
 }
 
 }

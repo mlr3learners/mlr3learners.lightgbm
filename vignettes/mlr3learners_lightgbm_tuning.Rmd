@@ -15,7 +15,8 @@ editor_options:
 ```{r include = FALSE, eval=FALSE}
 knitr::opts_chunk$set(
   collapse = TRUE,
-  comment = "#>"
+  comment = "#>",
+  eval = FALSE
 )
 dir.create("./png")
 ```
@@ -23,40 +24,24 @@ dir.create("./png")
 ```{r setup}
 library(mlr3)
 library(mlr3learners.lightgbm)
-library(mlbench)
 library(paradox)
 ```
 
-# Load the dataset
-
-The data must be provided as a `data.table` object. To simplify the subsequent steps, the target column name and the ID column name are assigned to the variables `target_col` and `id_col`, respectively. 
+# Load the dataset 
 
 ```{r}
-data("PimaIndiansDiabetes2")
-dataset <- data.table::as.data.table(PimaIndiansDiabetes2)
-target_col <- "diabetes"
-id_col <- NULL
+task <- mlr3::tsk("pima")
 ```
 
 ```{r}
 set.seed(17)
 split <- list(
-  train_index = sample(seq_len(nrow(dataset)), size = 0.7 * nrow(dataset))
+  train_index = sample(seq_len(task$nrow), size = 0.7 * task$nrow)
 )
-temp_split <- setdiff(seq_len(nrow(dataset)), split$train_index)
+temp_split <- setdiff(seq_len(task$nrow), split$train_index)
 set.seed(17)
 split$valid_index <- sample(temp_split, size = 0.5 * length(temp_split))
 split$test_index <- setdiff(temp_split, split$valid_index)
-```
-
-# Define an mlr3 task 
-
-```{r}
-task <- TaskClassif$new(
-  id = "PimaIndiansDiabetes2",
-  target = target_col,
-  backend = dataset[split$train_index, ]
-)
 ```
 
 # Instantiate the lightgbm learner 
@@ -70,15 +55,18 @@ learner <- mlr3::lrn("classif.lightgbm")
 # Configure the learner 
 
 ```{r}
+learner$early_stopping_rounds <- 1000
 learner$nrounds <- 5000
 ```
 
 ```{r}
 learner$param_set$values <- list(
   "objective" = "binary",
-  "learning_rate" = 0.01,
+  "learning_rate" = 0.1,
   "seed" = 17L,
-  "bagging_freq" = 5L
+  "bagging_freq" = 5L,
+  "num_threads" = 1L,
+  "metric" = "auc"
 )
 
 tune_ps <- ParamSet$new(list(
@@ -97,7 +85,7 @@ measure <- mlr3::msr("classif.auc")
 # Train the learner 
 
 ```{r}
-terminate <- mlr3tuning::term("stagnation")
+terminate <- mlr3tuning::term("stagnation", iters = 100, threshold = 0)
 
 instance <- mlr3tuning::TuningInstance$new(
   task = task,
@@ -111,11 +99,11 @@ instance
 ```
 
 ```{r}
-#future::plan("multicore")
+future::plan("multiprocess")
 tuner <- mlr3tuning::tnr("grid_search", resolution = 5)
 set.seed(17)
 result <- tuner$tune(instance)
-#future::plan("sequential")
+future::plan("sequential")
 ```
 
 ```{r}
@@ -130,24 +118,15 @@ instance$archive(unnest = "params")[, c("bagging_fraction", "min_data_in_leaf", 
 ```{r}
 instance$result$params
 learner$param_set$values <- instance$result$params
-learner$train(task)
+learner$train(task, row_ids = split$train_index)
 ```
 
 ```{r}
-learner$model$best_iter
-learner$model$best_score
+learner$model$current_iter()
 ```
 
 ```{r}
-predict_task <- TaskClassif$new(
-  id = "PimaIndiansDiabetes2",
-  target = target_col,
-  backend = dataset[split$test_index, ]
-)
-```
-
-```{r}
-predictions <- learner$predict(predict_task)
+predictions <- learner$predict(task, row_ids = split$test_index)
 head(predictions$response)
 ```
 
@@ -164,23 +143,3 @@ predictions$score(mlr3::msr("classif.auc"))
 importance <- learner$importance()
 importance
 ```
-```{r}
-importance2 <- learner$importance2()
-importance2$raw_values
-```
-```{r results='hide', message=FALSE, warning=FALSE, error=FALSE}
-filename <- "./png/mlr3learners.lgb_imp_tuning.png"
-grDevices::png(
-    filename = filename,
-    res = 150,
-    height = 1000,
-    width = 1500
-  )
-print(importance2$plot)
-grDevices::dev.off()
-```
-```{r out.width='80%'}
-knitr::include_graphics(filename)
-```
-
-
