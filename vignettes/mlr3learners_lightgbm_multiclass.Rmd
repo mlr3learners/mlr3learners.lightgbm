@@ -17,7 +17,6 @@ knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>"
 )
-dir.create("./png")
 ```
 
 ```{r setup}
@@ -120,7 +119,7 @@ The variable importance plot can be calculated by using the learner's `importanc
 importance <- learner$importance()
 importance
 ```
-```{r}
+```{r eval=FALSE}
 importance2 <- learner$importance2()
 importance2$importance
 ```

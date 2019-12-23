@@ -17,7 +17,6 @@ knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>"
 )
-dir.create("./png")
 ```
 
 ```{r setup}

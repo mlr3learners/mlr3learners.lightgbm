@@ -12,13 +12,12 @@ editor_options:
   chunk_output_type: console
 ---
 
-```{r include = FALSE, eval=FALSE}
+```{r include = FALSE}
 knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>",
   eval = FALSE
 )
-dir.create("./png")
 ```
 
 ```{r setup}
@@ -55,8 +54,8 @@ learner <- mlr3::lrn("classif.lightgbm")
 # Configure the learner 
 
 ```{r}
-learner$early_stopping_rounds <- 1000
-learner$nrounds <- 5000
+learner$early_stopping_rounds <- 100
+learner$nrounds <- 1000
 ```
 
 ```{r}
@@ -85,7 +84,7 @@ measure <- mlr3::msr("classif.auc")
 # Train the learner 
 
 ```{r}
-terminate <- mlr3tuning::term("stagnation", iters = 100, threshold = 0)
+terminate <- mlr3tuning::term("stagnation", iters = 10, threshold = 0)
 
 instance <- mlr3tuning::TuningInstance$new(
   task = task,

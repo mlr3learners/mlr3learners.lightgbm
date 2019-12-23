@@ -1,6 +1,6 @@
 Package: mlr3learners.lightgbm
 Title: mlr3: LightGBM learner
-Version: 0.0.1.9000
+Version: 0.0.1.9001
 Authors@R: 
     person(given = "Lorenz A.",
            family = "Kapsner",
@@ -13,7 +13,7 @@ LazyData: true
 URL: https://github.com/kapsner/mlr3learners.lightgbm
 BugReports: https://github.com/kapsner/mlr3learners.lightgbm/issues
 Encoding: UTF-8
-Date: 2019-12-22
+Date: 2019-12-23
 VignetteBuilder: knitr
 Depends: 
     R (>= 2.10)
@@ -35,3 +35,4 @@ Suggests:
     knitr,
     future,
     mlr3tuning
+RoxygenNote: 7.0.2
