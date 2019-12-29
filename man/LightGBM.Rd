@@ -53,6 +53,7 @@ the `lgb.cv` before the training step}
 \itemize{
 \item \href{#method-new}{\code{LightGBM$new()}}
 \item \href{#method-data_preprocessing}{\code{LightGBM$data_preprocessing()}}
+\item \href{#method-train_cv}{\code{LightGBM$train_cv()}}
 \item \href{#method-train}{\code{LightGBM$train()}}
 \item \href{#method-predict}{\code{LightGBM$predict()}}
 \item \href{#method-importance}{\code{LightGBM$importance()}}
@@ -85,6 +86,15 @@ The data_preprocessing function
 }
 \if{html}{\out{</div>}}
 }
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-train_cv"></a>}}
+\subsection{Method \code{train_cv()}}{
+The train_cv function
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{LightGBM$train_cv()}\if{html}{\out{</div>}}
+}
+
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-train"></a>}}

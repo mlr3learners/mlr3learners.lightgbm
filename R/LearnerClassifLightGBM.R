@@ -13,8 +13,44 @@ LearnerClassifLightGBM <- R6::R6Class(
   inherit = LearnerClassif,
 
   private = list(
+    # do a separate cv
+    separate_cv_state = FALSE,
+
     # save importance values
-    imp = NULL
+    imp = NULL,
+
+    # some pre training checks for this learner
+    pre_train_checks = function() {
+      n <- nlevels(factor(task$data()[, get(task$target_names)]))
+
+      if (is.null(self$param_set$values[["objective"]])) {
+        # if not provided, set default objective depending on the
+        # number of levels
+        message("No objective provided...")
+        if (n > 2) {
+          self$param_set$values <- mlr3misc::insert_named(
+            self$param_set$values,
+            list("objective" = "multiclass")
+          )
+          message("Setting objective to 'multiclass'")
+        } else if (n == 2) {
+          self$param_set$values <- mlr3misc::insert_named(
+            self$param_set$values,
+            list("objective" = "binary")
+          )
+          message("Setting objective to 'binary'")
+        } else {
+          stop(paste0("Please provide a target with a least ",
+                      "2 levels for classification tasks"))
+        }
+
+      } else {
+        stopifnot(
+          self$param_set$values[["objective"]] %in%
+            c("binary", "multiclass", "multiclassova", "lambdarank")
+        )
+      }
+    }
   ),
 
   public = list(
@@ -35,6 +71,9 @@ LearnerClassifLightGBM <- R6::R6Class(
     #' @field categorical_feature A list of str or int. Type int represents
     #'   index, type str represents feature names.
     categorical_feature = NULL,
+
+    #' @field cv_model The cross validation model.
+    cv_model = NULL,
 
     # define methods
     #' @description The initialize function.
@@ -73,42 +112,18 @@ LearnerClassifLightGBM <- R6::R6Class(
     #'
     train_internal = function(task) {
 
-      n <- nlevels(factor(task$data()[, get(task$target_names)]))
+      private$pre_train_checks()
 
-      if (is.null(self$param_set$values[["objective"]])) {
-        # if not provided, set default objective depending on the
-        # number of levels
-        message("No objective provided...")
-        if (n > 2) {
-          self$param_set$values <- c(
-            self$param_set$values,
-            list("objective" = "multiclass")
-          )
-          message("Setting objective to 'multiclass'")
-        } else if (n == 2) {
-          self$param_set$values <- c(
-            self$param_set$values,
-            list("objective" = "binary")
-          )
-          message("Setting objective to 'binary'")
-        } else {
-          stop(paste0("Please provide a target with a least ",
-                      "2 levels for classification tasks"))
-        }
+      if (isFALSE(private$separate_cv_state)) {
 
-      } else {
-        stopifnot(
-          self$param_set$values[["objective"]] %in%
-            c("binary", "multiclass", "multiclassova", "lambdarank")
-        )
+        self$lgb_learner$nrounds <- self$nrounds
+        self$lgb_learner$early_stopping_rounds <- self$early_stopping_rounds
+        self$lgb_learner$categorical_feature <- self$categorical_feature
+        self$lgb_learner$param_set <- self$param_set
+
+        self$lgb_learner$data_preprocessing(task)
+
       }
-
-      self$lgb_learner$nrounds <- self$nrounds
-      self$lgb_learner$early_stopping_rounds <- self$early_stopping_rounds
-      self$lgb_learner$categorical_feature <- self$categorical_feature
-      self$lgb_learner$param_set <- self$param_set
-
-      self$lgb_learner$data_preprocessing(task)
 
       # # switch of lightgbm's parallelization and use the one of mlr3
       #% if (is.null(self$param_set$values[["num_threads"]])) {
@@ -123,6 +138,51 @@ LearnerClassifLightGBM <- R6::R6Class(
       mlr3misc::invoke(
         .f = self$lgb_learner$train
       ) # use the mlr3misc::invoke function (it's similar to do.call())
+    },
+
+    #' @description The train_cv function
+    #'
+    #' @param task An mlr3 task
+    #' @param row_ids An integer vector with the row IDs for the validation
+    #'   data.
+    #'
+    train_cv = function(task, row_ids) {
+
+      if (is.null(self$model)) {
+
+        task <- mlr3::assert_task(as_task(task))
+        mlr3::assert_learnable(task, self)
+
+        row_ids <- mlr3::assert_row_ids(row_ids)
+
+        mlr3::assert_task(task)
+
+        # subset to test set w/o cloning
+        row_ids <- assert_row_ids(row_ids)
+        prev_use <- task$row_roles$use
+        on.exit({
+          task$row_roles$use <- prev_use
+        }, add = TRUE)
+        task$row_roles$use <- row_ids
+
+        private$separate_cv_state <- TRUE
+        self$lgb_learner$nrounds_by_cv <- FALSE
+
+        private$pre_train_checks()
+
+        self$lgb_learner$nrounds <- self$nrounds
+        self$lgb_learner$early_stopping_rounds <- self$early_stopping_rounds
+        self$lgb_learner$categorical_feature <- self$categorical_feature
+        self$lgb_learner$param_set <- self$param_set
+
+        self$lgb_learner$data_preprocessing(task)
+
+        self$cv_model <- self$lgb_learner$train_cv()
+
+      } else {
+
+        stop("A final model has already been trained!")
+      }
     },
 
     #' @description The predict_internal function

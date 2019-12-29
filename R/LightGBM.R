@@ -144,10 +144,10 @@ LightGBM <- R6::R6Class(
       )
     },
 
-    #' @description The train function
+    #' @description The train_cv function
     #'
-    train = function() {
-      if (self$nrounds_by_cv) {
+    train_cv = function() {
+      if (is.null(self$cv_model)) {
         message(
           sprintf(
             paste0("Optimizing nrounds with %s fold CV."),
@@ -175,21 +175,35 @@ LightGBM <- R6::R6Class(
         # if we already have figured out the best nrounds, which are provided
         # to the train function, we don't need early stopping anymore
         self$early_stopping_rounds <- NULL
+      } else {
+        stop("A CV model has already been trained!")
       }
+    },
 
-      self$model <- lightgbm::lgb.train(
-        params = self$param_set$values,
-        data = self$train_data,
-        nrounds = self$nrounds,
-        valids = private$valid_list,
-        categorical_feature = self$categorical_feature,
-        eval_freq = 50L,
-        early_stopping_rounds = self$early_stopping_rounds
-      )
-      message(
-        sprintf("Final model: current iter: %s", self$model$current_iter())
-      )
-      return(self$model)
+    #' @description The train function
+    #'
+    train = function() {
+      if (is.null(self$model)) {
+        if (self$nrounds_by_cv) {
+          self$train_cv()
+        }
+
+        self$model <- lightgbm::lgb.train(
+          params = self$param_set$values,
+          data = self$train_data,
+          nrounds = self$nrounds,
+          valids = private$valid_list,
+          categorical_feature = self$categorical_feature,
+          eval_freq = 50L,
+          early_stopping_rounds = self$early_stopping_rounds
+        )
+        message(
+          sprintf("Final model: current iter: %s", self$model$current_iter())
+        )
+        return(self$model)
+      } else {
+        stop("A model has already been trained!")
+      }
     },
 
     #' @description The predict function

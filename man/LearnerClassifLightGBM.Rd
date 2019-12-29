@@ -28,6 +28,8 @@ If early stopping occurs, the model will have 'best_iter' field.}
 
 \item{\code{categorical_feature}}{A list of str or int. Type int represents
 index, type str represents feature names.}
+
+\item{\code{cv_model}}{The cross validation model.}
 }
 \if{html}{\out{</div>}}
 }
@@ -36,6 +38,7 @@ index, type str represents feature names.}
 \itemize{
 \item \href{#method-new}{\code{LearnerClassifLightGBM$new()}}
 \item \href{#method-train_internal}{\code{LearnerClassifLightGBM$train_internal()}}
+\item \href{#method-train_cv}{\code{LearnerClassifLightGBM$train_cv()}}
 \item \href{#method-predict_internal}{\code{LearnerClassifLightGBM$predict_internal()}}
 \item \href{#method-importance}{\code{LearnerClassifLightGBM$importance()}}
 \item \href{#method-clone}{\code{LearnerClassifLightGBM$clone()}}
@@ -75,6 +78,25 @@ The train_internal function
 \if{html}{\out{<div class="arguments">}}
 \describe{
 \item{\code{task}}{An mlr3 task}
+}
+\if{html}{\out{</div>}}
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-train_cv"></a>}}
+\subsection{Method \code{train_cv()}}{
+The train_cv function
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{LearnerClassifLightGBM$train_cv(task, row_ids)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{task}}{An mlr3 task}
+
+\item{\code{row_ids}}{An integer vector with the row IDs for the validation
+data.}
 }
 \if{html}{\out{</div>}}
 }
