@@ -85,18 +85,32 @@ The initialize function.
 \subsection{Method \code{train_cv()}}{
 The train_cv function
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{LightGBM$train_cv()}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{LightGBM$train_cv(task)}\if{html}{\out{</div>}}
 }
 
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{task}}{An mlr3 task}
+}
+\if{html}{\out{</div>}}
+}
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-train"></a>}}
 \subsection{Method \code{train()}}{
 The train function
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{LightGBM$train()}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{LightGBM$train(task)}\if{html}{\out{</div>}}
 }
 
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{task}}{An mlr3 task}
+}
+\if{html}{\out{</div>}}
+}
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-predict"></a>}}

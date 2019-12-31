@@ -105,7 +105,8 @@ LearnerRegrLightGBM <- R6::R6Class(
       private$pre_train_checks()
 
       mlr3misc::invoke(
-        .f = self$lgb_learner$train
+        .f = self$lgb_learner$train,
+        task = task
       ) # use the mlr3misc::invoke function (it's similar to do.call())
     },
 
@@ -141,7 +142,7 @@ LearnerRegrLightGBM <- R6::R6Class(
         # parameters to the learner.
         private$separate_cv_state <- TRUE
 
-        self$cv_model <- self$lgb_learner$train_cv()
+        self$cv_model <- self$lgb_learner$train_cv(task)
 
       } else {
 

@@ -146,7 +146,9 @@ LightGBM <- R6::R6Class(
 
     #' @description The train_cv function
     #'
-    train_cv = function() {
+    #' @param task An mlr3 task
+    #'
+    train_cv = function(task) {
       if (is.null(self$cv_model)) {
         message(
           sprintf(
@@ -188,12 +190,14 @@ LightGBM <- R6::R6Class(
 
     #' @description The train function
     #'
-    train = function() {
+    #' @param task An mlr3 task
+    #'
+    train = function(task) {
       if (is.null(self$model)) {
         if (is.null(self$cv_model) && self$nrounds_by_cv) {
-          self$train_cv()
+          self$train_cv(task)
         } else if (is.null(self$cv_model) && isFALSE(self$nrounds_by_cv)) {
-          private$data_preprocessing()
+          private$data_preprocessing(task)
         }
 
         self$model <- lightgbm::lgb.train(
