@@ -18,7 +18,7 @@ LearnerRegrLightGBM <- R6::R6Class(
     imp = NULL,
 
     # some pre training checks for this learner
-    pre_train_checks = function() {
+    pre_train_checks = function(task) {
       if (is.null(is.null(self$param_set$values[["objective"]]))) {
         # if not provided, set default objective to "regression"
         # this is needed for the learner's init_data function
@@ -102,7 +102,7 @@ LearnerRegrLightGBM <- R6::R6Class(
     #'
     train_internal = function(task) {
 
-      private$pre_train_checks()
+      private$pre_train_checks(task)
 
       mlr3misc::invoke(
         .f = self$lgb_learner$train,
@@ -135,7 +135,7 @@ LearnerRegrLightGBM <- R6::R6Class(
         }, add = TRUE)
         task$row_roles$use <- row_ids
 
-        private$pre_train_checks()
+        private$pre_train_checks(task)
 
         # set separate_cv_state = TRUE here so that the if-statement
         # in pre_train_checks before can be entered in order to pass the

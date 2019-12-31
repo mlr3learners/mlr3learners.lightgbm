@@ -20,7 +20,7 @@ LearnerClassifLightGBM <- R6::R6Class(
     imp = NULL,
 
     # some pre training checks for this learner
-    pre_train_checks = function() {
+    pre_train_checks = function(task) {
       n <- nlevels(factor(task$data()[, get(task$target_names)]))
 
       if (is.null(self$param_set$values[["objective"]])) {
@@ -120,7 +120,7 @@ LearnerClassifLightGBM <- R6::R6Class(
     #'
     train_internal = function(task) {
 
-      private$pre_train_checks()
+      private$pre_train_checks(task)
 
       # # switch of lightgbm's parallelization and use the one of mlr3
       #% if (is.null(self$param_set$values[["num_threads"]])) {
@@ -163,7 +163,7 @@ LearnerClassifLightGBM <- R6::R6Class(
         }, add = TRUE)
         task$row_roles$use <- row_ids
 
-        private$pre_train_checks()
+        private$pre_train_checks(task)
 
         # set separate_cv_state = TRUE here so that the if-statement
         # in pre_train_checks before can be entered in order to pass the
