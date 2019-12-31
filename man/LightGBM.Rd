@@ -52,7 +52,6 @@ the `lgb.cv` before the training step}
 \subsection{Public methods}{
 \itemize{
 \item \href{#method-new}{\code{LightGBM$new()}}
-\item \href{#method-data_preprocessing}{\code{LightGBM$data_preprocessing()}}
 \item \href{#method-train_cv}{\code{LightGBM$train_cv()}}
 \item \href{#method-train}{\code{LightGBM$train()}}
 \item \href{#method-predict}{\code{LightGBM$predict()}}
@@ -65,18 +64,12 @@ the `lgb.cv` before the training step}
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-new"></a>}}
 \subsection{Method \code{new()}}{
+The data_preprocessing function
+
+
 The initialize function.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{LightGBM$new()}\if{html}{\out{</div>}}
-}
-
-}
-\if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-data_preprocessing"></a>}}
-\subsection{Method \code{data_preprocessing()}}{
-The data_preprocessing function
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{LightGBM$data_preprocessing(task)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{

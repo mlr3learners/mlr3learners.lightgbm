@@ -15,7 +15,68 @@ LightGBM <- R6::R6Class(
     valid_list = NULL,
 
     # save importance values
-    imp = NULL
+    imp = NULL,
+
+    #' @description The data_preprocessing function
+    #'
+    #' @param task An mlr3 task
+    #'
+    data_preprocessing = function(task) {
+
+      stopifnot(
+        !is.null(self$param_set$values[["objective"]])
+      )
+
+      # extract data
+      data <- task$data()
+
+      # create training label
+      self$train_label <- self$trans_tar$transform_target(
+        vector = data[, get(task$target_names)],
+        mapping = "dtrain"
+      )
+
+      # some further special treatments, when we have a classification task
+      if (self$param_set$values[["objective"]] %in%
+          c("binary", "multiclass", "multiclassova", "lambdarank")) {
+        # store the class label names
+        self$label_names <- sort(unique(self$train_label))
+
+        # if a validation set is provided, check if value mappings are
+        # identical
+        if (!is.null(private$valid_input)) {
+          stopifnot(
+            identical(
+              self$trans_tar$value_mapping_dtrain,
+              self$trans_tar$value_mapping_dvalid
+            )
+          )
+        }
+
+        # extract classification classes and set num_class
+        if (length(self$label_names) > 2) {
+          stopifnot(
+            self$param_set$values[["objective"]] %in%
+              c("multiclass", "multiclassova", "lambdarank")
+          )
+          self$param_set$values[["num_class"]] <- length(self$label_names)
+        }
+      }
+
+      # create lgb.Datasets
+      private$train_input <- lightgbm::lgb.prepare_rules(
+        data[, task$feature_names, with = F],
+        rules = private$input_rules
+      )
+      if (is.null(private$input_rules)) {
+        private$input_rules <- private$train_input$rules
+      }
+      self$train_data <- lightgbm::lgb.Dataset(
+        data = as.matrix(private$train_input$data),
+        label = self$train_label,
+        free_raw_data = FALSE
+      )
+    }
   ),
 
   public = list(
@@ -83,67 +144,6 @@ LightGBM <- R6::R6Class(
       )
     },
 
-    #' @description The data_preprocessing function
-    #'
-    #' @param task An mlr3 task
-    #'
-    data_preprocessing = function(task) {
-
-      stopifnot(
-        !is.null(self$param_set$values[["objective"]])
-      )
-
-      # extract data
-      data <- task$data()
-
-      # create training label
-      self$train_label <- self$trans_tar$transform_target(
-        vector = data[, get(task$target_names)],
-        mapping = "dtrain"
-      )
-
-      # some further special treatments, when we have a classification task
-      if (self$param_set$values[["objective"]] %in%
-          c("binary", "multiclass", "multiclassova", "lambdarank")) {
-        # store the class label names
-        self$label_names <- sort(unique(self$train_label))
-
-        # if a validation set is provided, check if value mappings are
-        # identical
-        if (!is.null(private$valid_input)) {
-          stopifnot(
-            identical(
-              self$trans_tar$value_mapping_dtrain,
-              self$trans_tar$value_mapping_dvalid
-            )
-          )
-        }
-
-        # extract classification classes and set num_class
-        if (length(self$label_names) > 2) {
-          stopifnot(
-            self$param_set$values[["objective"]] %in%
-              c("multiclass", "multiclassova", "lambdarank")
-          )
-          self$param_set$values[["num_class"]] <- length(self$label_names)
-        }
-      }
-
-      # create lgb.Datasets
-      private$train_input <- lightgbm::lgb.prepare_rules(
-        data[, task$feature_names, with = F],
-        rules = private$input_rules
-      )
-      if (is.null(private$input_rules)) {
-        private$input_rules <- private$train_input$rules
-      }
-      self$train_data <- lightgbm::lgb.Dataset(
-        data = as.matrix(private$train_input$data),
-        label = self$train_label,
-        free_raw_data = FALSE
-      )
-    },
-
     #' @description The train_cv function
     #'
     train_cv = function() {
@@ -154,6 +154,9 @@ LightGBM <- R6::R6Class(
             self$cv_folds
           )
         )
+
+        private$data_preprocessing(task)
+
         self$cv_model <- lightgbm::lgb.cv(
           params = self$param_set$values,
           data = self$train_data,
@@ -175,6 +178,9 @@ LightGBM <- R6::R6Class(
         # if we already have figured out the best nrounds, which are provided
         # to the train function, we don't need early stopping anymore
         self$early_stopping_rounds <- NULL
+
+        self$nrounds_by_cv <- FALSE
+
       } else {
         stop("A CV model has already been trained!")
       }
@@ -184,8 +190,10 @@ LightGBM <- R6::R6Class(
     #'
     train = function() {
       if (is.null(self$model)) {
-        if (self$nrounds_by_cv) {
+        if (is.null(self$cv_model) && self$nrounds_by_cv) {
           self$train_cv()
+        } else if (is.null(self$cv_model) && isFALSE(self$nrounds_by_cv)) {
+          private$data_preprocessing()
         }
 
         self$model <- lightgbm::lgb.train(

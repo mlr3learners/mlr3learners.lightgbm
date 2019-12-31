@@ -34,6 +34,14 @@ LearnerRegrLightGBM <- R6::R6Class(
                 "multiclassova", "lambdarank"))
         )
       }
+
+      if (isFALSE(private$separate_cv_state)) {
+        # pass all parameters to the learner
+        self$lgb_learner$nrounds <- self$nrounds
+        self$lgb_learner$early_stopping_rounds <- self$early_stopping_rounds
+        self$lgb_learner$categorical_feature <- self$categorical_feature
+        self$lgb_learner$param_set <- self$param_set
+      }
     }
   ),
 
@@ -96,17 +104,6 @@ LearnerRegrLightGBM <- R6::R6Class(
 
       private$pre_train_checks()
 
-      if (isFALSE(private$separate_cv_state)) {
-
-        self$lgb_learner$nrounds <- self$nrounds
-        self$lgb_learner$early_stopping_rounds <- self$early_stopping_rounds
-        self$lgb_learner$categorical_feature <- self$categorical_feature
-        self$lgb_learner$param_set <- self$param_set
-
-        self$lgb_learner$data_preprocessing(task)
-
-      }
-
       mlr3misc::invoke(
         .f = self$lgb_learner$train
       ) # use the mlr3misc::invoke function (it's similar to do.call())
@@ -137,17 +134,12 @@ LearnerRegrLightGBM <- R6::R6Class(
         }, add = TRUE)
         task$row_roles$use <- row_ids
 
-        private$separate_cv_state <- TRUE
-        self$lgb_learner$nrounds_by_cv <- FALSE
-
         private$pre_train_checks()
 
-        self$lgb_learner$nrounds <- self$nrounds
-        self$lgb_learner$early_stopping_rounds <- self$early_stopping_rounds
-        self$lgb_learner$categorical_feature <- self$categorical_feature
-        self$lgb_learner$param_set <- self$param_set
-
-        self$lgb_learner$data_preprocessing(task)
+        # set separate_cv_state = TRUE here so that the if-statement
+        # in pre_train_checks before can be entered in order to pass the
+        # parameters to the learner.
+        private$separate_cv_state <- TRUE
 
         self$cv_model <- self$lgb_learner$train_cv()
 
