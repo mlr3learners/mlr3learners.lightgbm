@@ -51,6 +51,12 @@ LearnerClassifLightGBM <- R6::R6Class(
         )
       }
 
+      # set verbosity to 0L
+      #% self$param_set$values <- mlr3misc::insert_named(
+      #%   self$param_set$values,
+      #%   list("verbosity" = -1)
+      #% )
+
       if (isFALSE(private$separate_cv_state)) {
         # pass all parameters to the learner
         self$lgb_learner$nrounds <- self$nrounds

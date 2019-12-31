@@ -165,7 +165,7 @@ LightGBM <- R6::R6Class(
           nrounds = self$nrounds,
           nfold = self$cv_folds,
           categorical_feature = self$categorical_feature,
-          eval_freq = 50L,
+          eval_freq = 20L,
           early_stopping_rounds = self$early_stopping_rounds,
           stratified = TRUE
         )
@@ -206,7 +206,7 @@ LightGBM <- R6::R6Class(
           nrounds = self$nrounds,
           valids = private$valid_list,
           categorical_feature = self$categorical_feature,
-          eval_freq = 50L,
+          eval_freq = 20L,
           early_stopping_rounds = self$early_stopping_rounds
         )
         message(

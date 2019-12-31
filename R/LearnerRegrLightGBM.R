@@ -19,7 +19,7 @@ LearnerRegrLightGBM <- R6::R6Class(
 
     # some pre training checks for this learner
     pre_train_checks = function(task) {
-      if (is.null(is.null(self$param_set$values[["objective"]]))) {
+      if (is.null(self$param_set$values[["objective"]])) {
         # if not provided, set default objective to "regression"
         # this is needed for the learner's init_data function
         self$param_set$values <- mlr3misc::insert_named(

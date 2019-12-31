@@ -41,13 +41,9 @@ set.seed(17)
 split <- list(
   train_index = sample(seq_len(task$nrow), size = 0.7 * task$nrow)
 )
-temp_split <- setdiff(seq_len(task$nrow), split$train_index)
-set.seed(17)
-split$valid_index <- sample(temp_split, size = 0.5 * length(temp_split))
-split$test_index <- setdiff(temp_split, split$valid_index)
+split$test_index <- setdiff(seq_len(task$nrow), split$train_index)
                             
 table(task$data()[split$train_index, task$target_names, with = F])
-table(task$data()[split$valid_index, task$target_names, with = F])
 table(task$data()[split$test_index, task$target_names, with = F])
 ```
 
