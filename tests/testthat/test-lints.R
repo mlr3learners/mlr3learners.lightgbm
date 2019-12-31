@@ -21,6 +21,7 @@ test_that(
         "LearnerClassifLightGBM.R" = "snake_case",
         "LearnerRegrLightGBM.R" = "snake_case",
         "lgbparams.R" = NULL,
+        "LightGBM.R" = NULL,
         "TransformTarget.R" = "snake_case",
         "zzz.R" = "snake_case"
       ),

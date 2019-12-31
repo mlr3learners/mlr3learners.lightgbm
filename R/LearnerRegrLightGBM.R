@@ -132,7 +132,9 @@ LearnerRegrLightGBM <- R6::R6Class(
 
         private$pre_train_checks(task)
 
-        self$cv_model <- self$lgb_learner$train_cv(task)
+        self$lgb_learner$train_cv(task)
+
+        self$cv_model <- self$lgb_learner$cv_model
 
       } else {
 
