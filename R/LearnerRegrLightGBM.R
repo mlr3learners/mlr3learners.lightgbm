@@ -11,8 +11,6 @@ LearnerRegrLightGBM <- R6::R6Class(
   inherit = LearnerRegr,
 
   private = list(
-    # do a separate cv
-    separate_cv_state = FALSE,
 
     # save importance values
     imp = NULL,
@@ -35,13 +33,10 @@ LearnerRegrLightGBM <- R6::R6Class(
         )
       }
 
-      if (isFALSE(private$separate_cv_state)) {
-        # pass all parameters to the learner
-        self$lgb_learner$nrounds <- self$nrounds
-        self$lgb_learner$early_stopping_rounds <- self$early_stopping_rounds
-        self$lgb_learner$categorical_feature <- self$categorical_feature
-        self$lgb_learner$param_set <- self$param_set
-      }
+      self$lgb_learner$nrounds <- self$nrounds
+      self$lgb_learner$early_stopping_rounds <- self$early_stopping_rounds
+      self$lgb_learner$categorical_feature <- self$categorical_feature
+      self$lgb_learner$param_set <- self$param_set
     }
   ),
 
@@ -136,11 +131,6 @@ LearnerRegrLightGBM <- R6::R6Class(
         task$row_roles$use <- row_ids
 
         private$pre_train_checks(task)
-
-        # set separate_cv_state = TRUE here so that the if-statement
-        # in pre_train_checks before can be entered in order to pass the
-        # parameters to the learner.
-        private$separate_cv_state <- TRUE
 
         self$cv_model <- self$lgb_learner$train_cv(task)
 

@@ -98,7 +98,7 @@ instance
 ```
 
 ```{r}
-future::plan("multiprocess")
+future::plan("multisession")
 tuner <- mlr3tuning::tnr("grid_search", resolution = 5)
 set.seed(17)
 result <- tuner$tune(instance)

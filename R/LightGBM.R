@@ -116,7 +116,7 @@ LightGBM <- R6::R6Class(
 
     #' @field nrounds_by_cv A logical. Calculate the best nrounds by using
     #'   the `lgb.cv` before the training step
-    nrounds_by_cv = TRUE,
+    nrounds_by_cv = NULL,
 
     #' @field cv_folds The number of cross validation folds, when setting
     #'   `nrounds_by_cv` = TRUE (default: 5).
@@ -135,7 +135,9 @@ LightGBM <- R6::R6Class(
 
       self$nrounds <- 10L
 
-      self$cv_folds <- 5
+      self$cv_folds <- 5L
+
+      self$nrounds_by_cv <- TRUE
 
       self$param_set <- lgbparams()
 
@@ -149,7 +151,6 @@ LightGBM <- R6::R6Class(
     #' @param task An mlr3 task
     #'
     train_cv = function(task) {
-      if (is.null(self$cv_model)) {
         message(
           sprintf(
             paste0("Optimizing nrounds with %s fold CV."),
@@ -180,12 +181,6 @@ LightGBM <- R6::R6Class(
         # if we already have figured out the best nrounds, which are provided
         # to the train function, we don't need early stopping anymore
         self$early_stopping_rounds <- NULL
-
-        self$nrounds_by_cv <- FALSE
-
-      } else {
-        stop("A CV model has already been trained!")
-      }
     },
 
     #' @description The train function
@@ -193,10 +188,9 @@ LightGBM <- R6::R6Class(
     #' @param task An mlr3 task
     #'
     train = function(task) {
-      if (is.null(self$model)) {
-        if (is.null(self$cv_model) && self$nrounds_by_cv) {
+        if (self$nrounds_by_cv) {
           self$train_cv(task)
-        } else if (is.null(self$cv_model) && isFALSE(self$nrounds_by_cv)) {
+        } else if (isFALSE(self$nrounds_by_cv)) {
           private$data_preprocessing(task)
         }
 
@@ -213,9 +207,6 @@ LightGBM <- R6::R6Class(
           sprintf("Final model: current iter: %s", self$model$current_iter())
         )
         return(self$model)
-      } else {
-        stop("A model has already been trained!")
-      }
     },
 
     #' @description The predict function
