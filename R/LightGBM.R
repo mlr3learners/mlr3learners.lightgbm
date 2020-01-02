@@ -92,6 +92,7 @@ LightGBM <- R6::R6Class(
       self$train_data <- lightgbm::lgb.Dataset(
         data = as.matrix(private$train_input$data),
         label = self$train_label,
+        colnames = task$feature_names,
         free_raw_data = FALSE
       )
     }
@@ -333,6 +334,7 @@ LightGBM <- R6::R6Class(
       self$valid_data <- lightgbm::lgb.Dataset(
         data = as.matrix(private$valid_input$data),
         label = self$valid_label,
+        colnames = task$feature_names,
         free_raw_data = FALSE
       )
 
