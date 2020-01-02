@@ -17,6 +17,24 @@ LightGBM <- R6::R6Class(
     # save importance values
     imp = NULL,
 
+    # convert object types
+    # this is necessary, since mlr3 tuning does pass wrong types
+    convert_types = function() {
+      self$nrounds <- as.integer(self$nrounds)
+      self$early_stopping_rounds <- as.integer(self$early_stopping_rounds)
+      self$cv_folds <- as.integer(self$cv_folds)
+
+      # set correct types for parameters
+      for (param in names(self$param_set$values)) {
+        value <- self$param_set$values[[param]]
+        if (self$param_set$class[[param]] == "ParamInt") {
+          self$param_set$values[[param]] <- as.integer(round(value))
+        } else if (self$param_set$class[[param]] == "ParamDbl") {
+          self$param_set$values[[param]] <- as.numeric(value)
+        }
+      }
+    },
+
     #' @description The data_preprocessing function
     #'
     #' @param task An mlr3 task
@@ -160,6 +178,8 @@ LightGBM <- R6::R6Class(
 
         private$data_preprocessing(task)
 
+        private$convert_types()
+
         self$cv_model <- lightgbm::lgb.cv(
           params = self$param_set$values,
           data = self$train_data,
@@ -192,6 +212,7 @@ LightGBM <- R6::R6Class(
           self$train_cv(task)
         } else if (isFALSE(self$nrounds_by_cv)) {
           private$data_preprocessing(task)
+          private$convert_types()
         }
 
         self$model <- lightgbm::lgb.train(

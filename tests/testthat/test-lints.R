@@ -21,7 +21,10 @@ test_that(
         "LearnerClassifLightGBM.R" = "snake_case",
         "LearnerRegrLightGBM.R" = "snake_case",
         "lgbparams.R" = NULL,
-        "LightGBM.R" = NULL,
+        "LightGBM.R" = list(
+          list(message = "cyclomatic complexity", line_number = 3),
+          list(message = "snake_case", line_number = 3)
+        ),
         "TransformTarget.R" = "snake_case",
         "zzz.R" = "snake_case"
       ),
