@@ -30,6 +30,8 @@ If early stopping occurs, the model will have 'best_iter' field.}
 index, type str represents feature names.}
 
 \item{\code{cv_model}}{The cross validation model.}
+
+\item{\code{autodetect_categorical}}{Automatically detect categorical features.}
 }
 \if{html}{\out{</div>}}
 }

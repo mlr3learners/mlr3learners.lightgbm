@@ -97,7 +97,7 @@ head(predictions$response)
 Further metrics can be calculated by using mlr3 measures:
 
 ```{r}
-predictions$score(mlr3::msr("regr.rmse"))
+predictions$score(mlr3::msr("regr.rmsle"))
 ```
 
 The variable importance plot can be calculated by using the learner's `importance` function:

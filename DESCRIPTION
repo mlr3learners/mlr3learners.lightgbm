@@ -1,6 +1,6 @@
 Package: mlr3learners.lightgbm
 Title: mlr3: LightGBM learner
-Version: 0.0.1.9002
+Version: 0.0.1.9003
 Authors@R: 
     person(given = "Lorenz A.",
            family = "Kapsner",
@@ -8,12 +8,12 @@ Authors@R:
            email = "lorenz.kapsner@gmail.com",
            comment = c(ORCID = "0000-0003-1866-860X"))
 Description: Brining the LightGBM functionality to the mlr3 framework.
-License: LGPL (>= 2.1)
+License: LGPL-3
 LazyData: true
 URL: https://github.com/kapsner/mlr3learners.lightgbm
 BugReports: https://github.com/kapsner/mlr3learners.lightgbm/issues
 Encoding: UTF-8
-Date: 2019-12-31
+Date: 2020-01-03
 VignetteBuilder: knitr
 Depends: 
     R (>= 2.10)

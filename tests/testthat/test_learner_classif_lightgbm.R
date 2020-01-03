@@ -6,13 +6,9 @@ test_that(
 
     learner <- LearnerClassifLightGBM$new()
     expect_learner(learner)
-    learner$param_set$values <- list(
-      "learning_rate" = 0.01,
-      "seed" = 17L,
-      "metric" = "auc"
-    )
+    learner$early_stopping_rounds <- 5
+    learner$nrounds <- 10
     result <- run_autotest(learner)
-    skip("Type error in score()")
     expect_true(result, info = result$error)
   }
 )

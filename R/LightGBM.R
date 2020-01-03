@@ -5,6 +5,8 @@ LightGBM <- R6::R6Class(
 
   private = list(
 
+    valid_state = NULL,
+
     # data: train, valid, test
     train_input = NULL,
     valid_input = NULL,
@@ -20,8 +22,11 @@ LightGBM <- R6::R6Class(
     # convert object types
     # this is necessary, since mlr3 tuning does pass wrong types
     convert_types = function() {
+
       self$nrounds <- as.integer(self$nrounds)
-      self$early_stopping_rounds <- as.integer(self$early_stopping_rounds)
+      if (!is.null(self$early_stopping_rounds)) {
+        self$early_stopping_rounds <- as.integer(self$early_stopping_rounds)
+      }
       self$cv_folds <- as.integer(self$cv_folds)
 
       # set correct types for parameters
@@ -48,6 +53,9 @@ LightGBM <- R6::R6Class(
       # extract data
       data <- task$data()
 
+      # give param_set to transform target function
+      self$trans_tar$param_set <- self$param_set
+
       # create training label
       self$train_label <- self$trans_tar$transform_target(
         vector = data[, get(task$target_names)],
@@ -72,29 +80,67 @@ LightGBM <- R6::R6Class(
         }
 
         # extract classification classes and set num_class
-        if (length(self$label_names) > 2) {
+        n <- nlevels(factor(data[, get(task$target_names)]))
+        if (n > 2) {
           stopifnot(
             self$param_set$values[["objective"]] %in%
               c("multiclass", "multiclassova", "lambdarank")
           )
-          self$param_set$values[["num_class"]] <- length(self$label_names)
+        }
+        # set num_class only in multiclass-objective
+        if (self$param_set$values[["objective"]] == "multiclass") {
+          self$param_set$values[["num_class"]] <- n
+        } else {
+          self$param_set$values <-
+            self$param_set$values[names(self$param_set$values) != "num_class"]
         }
       }
 
-      # create lgb.Datasets
-      private$train_input <- lightgbm::lgb.prepare_rules(
-        data[, task$feature_names, with = F],
-        rules = private$input_rules
-      )
-      if (is.null(private$input_rules)) {
-        private$input_rules <- private$train_input$rules
+      if (isFALSE(private$valid_state)) {
+        private$input_rules <- NULL
       }
+
+      # create lgb.Datasets
+      private$train_input <- lightgbm::lgb.prepare(
+        data[, task$feature_names, with = F]
+      )
       self$train_data <- lightgbm::lgb.Dataset(
-        data = as.matrix(private$train_input$data),
+        data = as.matrix(private$train_input),
         label = self$train_label,
-        colnames = task$feature_names,
+        reference = private$input_rules,
         free_raw_data = FALSE
       )
+
+      # if user has not specified categorical_feature, look in data for
+      # categorical features
+      if (is.null(self$categorical_feature) && self$autodetect_categorical) {
+        if (any(task$feature_types$type %in%
+                c("factor", "ordered", "character"))) {
+          cat_feat <- task$feature_types[
+            get("type") %in% c("factor", "ordered", "character"), get("id")
+            ]
+          self$categorical_feature <- cat_feat
+        }
+      }
+
+      if (!is.null(self$categorical_feature)) {
+        self$train_data$set_colnames(task$feature_names)
+      }
+
+      if (is.null(private$input_rules)) {
+        private$input_rules <- self$train_data
+      }
+
+      # add to training data to validation set:
+      if (!is.null(self$valid_data)) {
+        if (!is.null(self$categorical_feature)) {
+          self$valid_data$set_colnames(task$feature_names)
+        }
+        private$valid_list <- c(
+          list(dvalid = self$valid_data),
+          list(dtrain = self$train_data)
+        )
+      }
     }
   ),
 
@@ -110,7 +156,7 @@ LightGBM <- R6::R6Class(
     #'   If early stopping occurs, the model will have 'best_iter' field.
     early_stopping_rounds = NULL,
 
-    #' @field categorical_feature A list of str or int. Type int represents
+    #' @field categorical_feature A vector of str or int. Type int represents
     #'   index, type str represents feature names.
     categorical_feature = NULL,
 
@@ -144,6 +190,9 @@ LightGBM <- R6::R6Class(
     #' @field cv_model The cross validation model.
     cv_model = NULL,
 
+    #' @field autodetect_categorical Automatically detect categorical features.
+    autodetect_categorical = NULL,
+
     #' @field model The trained lightgbm model.
     model = NULL,
 
@@ -160,9 +209,14 @@ LightGBM <- R6::R6Class(
 
       self$param_set <- lgbparams()
 
+      self$autodetect_categorical <- TRUE
+
       self$trans_tar <- TransformTarget$new(
         param_set = self$param_set
       )
+
+      private$valid_state <- FALSE
+
     },
 
     #' @description The train_cv function
@@ -170,38 +224,38 @@ LightGBM <- R6::R6Class(
     #' @param task An mlr3 task
     #'
     train_cv = function(task) {
-        message(
-          sprintf(
-            paste0("Optimizing nrounds with %s fold CV."),
-            self$cv_folds
-          )
+      message(
+        sprintf(
+          paste0("Optimizing nrounds with %s fold CV."),
+          self$cv_folds
         )
+      )
 
-        private$data_preprocessing(task)
+      private$data_preprocessing(task)
 
-        private$convert_types()
+      private$convert_types()
 
-        self$cv_model <- lightgbm::lgb.cv(
-          params = self$param_set$values,
-          data = self$train_data,
-          nrounds = self$nrounds,
-          nfold = self$cv_folds,
-          categorical_feature = self$categorical_feature,
-          eval_freq = 20L,
-          early_stopping_rounds = self$early_stopping_rounds,
-          stratified = TRUE
+      self$cv_model <- lightgbm::lgb.cv(
+        params = self$param_set$values,
+        data = self$train_data,
+        nrounds = self$nrounds,
+        nfold = self$cv_folds,
+        categorical_feature = self$categorical_feature,
+        eval_freq = 20L,
+        early_stopping_rounds = self$early_stopping_rounds,
+        stratified = TRUE
+      )
+      message(
+        sprintf(
+          paste0("CV results: best iter %s; best score: %s"),
+          self$cv_model$best_iter, self$cv_model$best_score
         )
-        message(
-          sprintf(
-            paste0("CV results: best iter %s; best score: %s"),
-            self$cv_model$best_iter, self$cv_model$best_score
-          )
-        )
-        # set nrounds to best iteration from cv-model
-        self$nrounds <- self$cv_model$best_iter
-        # if we already have figured out the best nrounds, which are provided
-        # to the train function, we don't need early stopping anymore
-        self$early_stopping_rounds <- NULL
+      )
+      # set nrounds to best iteration from cv-model
+      self$nrounds <- self$cv_model$best_iter
+      # if we already have figured out the best nrounds, which are provided
+      # to the train function, we don't need early stopping anymore
+      self$early_stopping_rounds <- NULL
     },
 
     #' @description The train function
@@ -209,26 +263,26 @@ LightGBM <- R6::R6Class(
     #' @param task An mlr3 task
     #'
     train = function(task) {
-        if (self$nrounds_by_cv) {
-          self$train_cv(task)
-        } else if (isFALSE(self$nrounds_by_cv)) {
-          private$data_preprocessing(task)
-          private$convert_types()
-        }
+      if (self$nrounds_by_cv) {
+        self$train_cv(task)
+      } else if (isFALSE(self$nrounds_by_cv)) {
+        private$data_preprocessing(task)
+        private$convert_types()
+      }
 
-        self$model <- lightgbm::lgb.train(
-          params = self$param_set$values,
-          data = self$train_data,
-          nrounds = self$nrounds,
-          valids = private$valid_list,
-          categorical_feature = self$categorical_feature,
-          eval_freq = 20L,
-          early_stopping_rounds = self$early_stopping_rounds
-        )
-        message(
-          sprintf("Final model: current iter: %s", self$model$current_iter())
-        )
-        return(self$model)
+      self$model <- lightgbm::lgb.train(
+        params = self$param_set$values,
+        data = self$train_data,
+        nrounds = self$nrounds,
+        valids = private$valid_list,
+        categorical_feature = self$categorical_feature,
+        eval_freq = 20L,
+        early_stopping_rounds = self$early_stopping_rounds
+      )
+      message(
+        sprintf("Final model: current iter: %s", self$model$current_iter())
+      )
+      return(self$model)
     },
 
     #' @description The predict function
@@ -238,13 +292,17 @@ LightGBM <- R6::R6Class(
     predict = function(task) {
       newdata <- task$data(cols = task$feature_names) # get newdata
 
-      # create lgb.Datasets
-      private$test_input <- lightgbm::lgb.prepare_rules(
+      data.table::setcolorder(
         newdata,
-        rules = private$input_rules
+        self$train_data$get_colnames()
       )
 
-      test_data <- as.matrix(private$test_input$data)
+      # create lgb.Datasets
+      private$test_input <- lightgbm::lgb.prepare(
+        newdata
+      )
+
+      test_data <- as.matrix(private$test_input)
 
       p <- self$model$predict(
         data = test_data,
@@ -266,7 +324,7 @@ LightGBM <- R6::R6Class(
       }
 
       if (is.null(private$imp)) {
-        private$imp <- lightgbm::lgb.importance(learner$model)
+        private$imp <- lightgbm::lgb.importance(self$model)
       }
       return(private$imp)
     },
@@ -281,7 +339,7 @@ LightGBM <- R6::R6Class(
       }
 
       if (is.null(private$imp)) {
-        private$imp <- lightgbm::lgb.importance(learner$model)
+        private$imp <- lightgbm::lgb.importance(self$model)
       }
 
       plot <- lightgbm::lgb.plot.importance(private$imp)
@@ -302,6 +360,9 @@ LightGBM <- R6::R6Class(
     #'   data.
     #'
     valids = function(task, row_ids) {
+
+      private$valid_state <- TRUE
+
       task <- mlr3::assert_task(as_task(task))
       mlr3::assert_learnable(task, self)
 
@@ -319,6 +380,9 @@ LightGBM <- R6::R6Class(
 
       vdata <- task$data()
 
+      # give param_set to transform target function
+      self$trans_tar$param_set <- self$param_set
+
       # create label
       self$valid_label <- self$trans_tar$transform_target(
         vector = vdata[, get(task$target_names)],
@@ -326,19 +390,17 @@ LightGBM <- R6::R6Class(
       )
 
       # create lgb.Datasets
-      private$valid_input <- lightgbm::lgb.prepare_rules(
+      private$valid_input <- lightgbm::lgb.prepare(
         vdata[, task$feature_names, with = F]
       )
-      private$input_rules <- private$valid_input$rules
 
       self$valid_data <- lightgbm::lgb.Dataset(
-        data = as.matrix(private$valid_input$data),
+        data = as.matrix(private$valid_input),
         label = self$valid_label,
-        colnames = task$feature_names,
         free_raw_data = FALSE
       )
 
-      private$valid_list <- list(validation = self$valid_data)
+      private$input_rules <- self$valid_data
     }
   )
 )

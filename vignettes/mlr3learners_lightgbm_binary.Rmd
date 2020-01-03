@@ -79,6 +79,8 @@ learner$param_set$values <- list(
 The learner is now ready to be trained by using its `train` function. 
 
 ```{r results='hide', message=FALSE, warning=FALSE, error=FALSE}
+#learner$categorical_feature <- c("pregnant", "age")
+#learner$categorical_feature <- c(1, 7)
 learner$train(task, row_ids = split$train_index)
 ```
 

@@ -19,7 +19,7 @@ more than one, will check all of them except the training data.
 Returns the model with (best_iter + early_stopping_rounds).
 If early stopping occurs, the model will have 'best_iter' field.}
 
-\item{\code{categorical_feature}}{A list of str or int. Type int represents
+\item{\code{categorical_feature}}{A vector of str or int. Type int represents
 index, type str represents feature names.}
 
 \item{\code{train_data}}{A data.table object holding the training data.}
@@ -43,6 +43,8 @@ the `lgb.cv` before the training step}
 `nrounds_by_cv` = TRUE (default: 5).}
 
 \item{\code{cv_model}}{The cross validation model.}
+
+\item{\code{autodetect_categorical}}{Automatically detect categorical features.}
 
 \item{\code{model}}{The trained lightgbm model.}
 }

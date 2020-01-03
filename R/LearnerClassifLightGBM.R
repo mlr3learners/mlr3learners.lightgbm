@@ -60,6 +60,7 @@ LearnerClassifLightGBM <- R6::R6Class(
       self$lgb_learner$early_stopping_rounds <- self$early_stopping_rounds
       self$lgb_learner$categorical_feature <- self$categorical_feature
       self$lgb_learner$param_set <- self$param_set
+      self$lgb_learner$autodetect_categorical <- self$autodetect_categorical
     }
   ),
 
@@ -85,6 +86,9 @@ LearnerClassifLightGBM <- R6::R6Class(
     #' @field cv_model The cross validation model.
     cv_model = NULL,
 
+    #' @field autodetect_categorical Automatically detect categorical features.
+    autodetect_categorical = NULL,
+
     # define methods
     #' @description The initialize function.
     #'
@@ -98,13 +102,15 @@ LearnerClassifLightGBM <- R6::R6Class(
       self$early_stopping_rounds <- self$lgb_learner$early_stopping_rounds
       self$categorical_feature <- self$lgb_learner$categorical_feature
 
+      self$autodetect_categorical <- self$lgb_learner$autodetect_categorical
+
       super$initialize(
         # see the mlr3book for a description:
         # https://mlr3book.mlr-org.com/extending-mlr3.html
         id = "classif.lightgbm",
         packages = "lightgbm",
         feature_types = c(
-          "numeric", "factor", "ordered",
+          "numeric", "factor",
           "character", "integer"
         ),
         predict_types = "prob",
@@ -237,9 +243,17 @@ LearnerClassifLightGBM <- R6::R6Class(
       if (is.null(private$imp)) {
         private$imp <- self$lgb_learner$importance()
       }
-      ret <- sapply(private$imp$Feature, function(x) {
-        return(private$imp[which(private$imp$Feature == x), ]$Gain)
-      }, USE.NAMES = TRUE, simplify = TRUE)
+      if (nrow(private$imp) != 0) {
+        ret <- sapply(private$imp$Feature, function(x) {
+          return(private$imp[which(private$imp$Feature == x), ]$Gain)
+        }, USE.NAMES = TRUE, simplify = TRUE)
+      } else {
+        ret <- sapply(
+          self$lgb_learner$train_data$get_colnames(),
+          function(x) {
+            return(0)
+          }, USE.NAMES = TRUE, simplify = FALSE)
+      }
 
       return(unlist(ret))
     }
