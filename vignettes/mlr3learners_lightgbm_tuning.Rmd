@@ -37,10 +37,7 @@ set.seed(17)
 split <- list(
   train_index = sample(seq_len(task$nrow), size = 0.7 * task$nrow)
 )
-temp_split <- setdiff(seq_len(task$nrow), split$train_index)
-set.seed(17)
-split$valid_index <- sample(temp_split, size = 0.5 * length(temp_split))
-split$test_index <- setdiff(temp_split, split$valid_index)
+split$test_index <- setdiff(seq_len(task$nrow), split$train_index)
 ```
 
 # Instantiate the lightgbm learner 
@@ -58,6 +55,8 @@ learner$early_stopping_rounds <- 100
 learner$nrounds <- 1000
 ```
 
+We will here switch off the parallelization of the lightgbm learner by setting the parameter `num_threads = 1L`. Instead, we will later parallelize the resampling using the `future` package, as recommended by the [mlr3 team](https://mlr3book.mlr-org.com/parallelization.html#parallelization).  
+
 ```{r}
 learner$param_set$values <- list(
   "objective" = "binary",
@@ -72,60 +71,108 @@ tune_ps <- ParamSet$new(list(
   ParamDbl$new("bagging_fraction", lower = 0.4, upper = 1),
   ParamInt$new("min_data_in_leaf", lower = 5, upper = 30)
 ))
+
+# design_points
+design <- paradox::generate_design_grid(
+  tune_ps,
+  param_resolutions = c(
+    bagging_fraction = 2,
+    min_data_in_leaf = 5
+  ))
+
+# shuffle order of design
+set.seed(17)
+shuffle <- sample(seq_len(nrow(design$data)), size = nrow(design$data))
+design$data <- design$data[shuffle, ]
 ```
 
-# Resampling strategy
+# Create the resampling strategy and the measure 
 
 ```{r}
-resamp <- mlr3::rsmp("cv", folds = 5)
+resampling <- mlr3::rsmp("cv", folds = 5)
 measure <- mlr3::msr("classif.auc")
 ```
 
-# Train the learner 
+
+# Create the tuner 
 
 ```{r}
-terminate <- mlr3tuning::term("stagnation", iters = 10, threshold = 0)
+# grid_resolution <- 2
+# tuner <- mlr3tuning::tnr("grid_search", resolution = grid_resolution, batch_size = 1)
 
-instance <- mlr3tuning::TuningInstance$new(
-  task = task,
-  learner = learner,
-  resampling = resamp,
-  measures = measure,
-  param_set = tune_ps,
-  terminator = terminate
-)
-instance
+tuner <- mlr3tuning::tnr("design_points", design = design$data, batch_size = 1)
 ```
+
+# Create the terminator 
+
+```{r}
+# using a specific number of iterations
+# n_iterations <- (grid_resolution ^ tune_ps$length)
+
+n_iterations <- nrow(design$data)
+
+n_iterations
+terminator <- mlr3tuning::term("evals", n_evals = n_iterations)
+```
+
+# Instantiate the AutoTuner instance 
+
+```{r}
+at <- mlr3tuning::AutoTuner$new(
+  learner = learner,
+  resampling = resampling,
+  measures = measure,
+  tune_ps = tune_ps,
+  terminator = terminator,
+  tuner = tuner
+)
+at
+```
+
+# Train the tuner 
 
 ```{r}
 future::plan("multisession")
-tuner <- mlr3tuning::tnr("grid_search", resolution = 5)
 set.seed(17)
-result <- tuner$tune(instance)
+at$train(task, row_ids = split$train_index)
 future::plan("sequential")
 ```
 
+# Evaluate the best model 
+
 ```{r}
-best <- instance$best()
+at$tuning_result
+best <- at$tuning_instance$best()
 best$score(mlr3::msr("classif.auc"))
 ```
 
 ```{r}
-instance$archive(unnest = "params")[, c("bagging_fraction", "min_data_in_leaf", "classif.auc")]
+mlr3viz::autoplot(at$tuning_instance$best(), type = "roc")
 ```
 
 ```{r}
-instance$result$params
-learner$param_set$values <- instance$result$params
-learner$train(task, row_ids = split$train_index)
+at$tuning_instance$archive(unnest = "params")[, c("bagging_fraction", "min_data_in_leaf", "classif.auc")]
 ```
 
-```{r}
-learner$model$current_iter()
-```
+# Best parameters 
 
 ```{r}
-predictions <- learner$predict(task, row_ids = split$test_index)
+at$tuning_instance$result$params
+nrounds <- best$learners[[1]]$lgb_learner$nrounds
+nrounds
+```
+
+# Importance 
+
+```{r}
+at$learner$importance()
+at$learner$lgb_learner$importance2()
+```
+
+# Predict test data with best model
+
+```{r}
+predictions <- at$predict(task, row_ids = split$test_index)
 head(predictions$response)
 ```
 
@@ -139,6 +186,11 @@ predictions$score(mlr3::msr("classif.auc"))
 ```
 
 ```{r}
-importance <- learner$importance()
-importance
+mlr3viz::autoplot(predictions)
+```
+
+### ROC 
+
+```{r}
+mlr3viz::autoplot(predictions, type = "roc")
 ```
