@@ -40,6 +40,36 @@ predictions <- learner$predict(task, row_ids = 121:150)
 
 For further information and examples, please view the `mlr3learners.lightgbm` package vignettes and the [mlr3book](https://mlr3book.mlr-org.com/index.html).  
 
+# GPU acceleration
+
+The `mlr3learners.lightgbm` can also be used with lightgbm's GPU compiled version.
+
+To install lightgbm R package with GPU support, execute the following commands ([lightgbm manual](https://github.com/microsoft/LightGBM/blob/master/R-package/README.md)):
+
+```bash
+git clone --recursive --branch stable --depth 1 https://github.com/microsoft/LightGBM
+cd LightGBM && \
+sed -i -e 's/use_gpu <- FALSE/use_gpu <- TRUE/g' R-package/src/install.libs.R && \
+Rscript build_r.R
+```
+
+In order to use the GPU acceleration, the parameter `device_type = "gpu"` (default: "cpu") needs to be set. According to the [LightGBM parameter manual](https://lightgbm.readthedocs.io/en/latest/Parameters.html), 'it is recommended to use the smaller `max_bin` (e.g. 63) to get the better speed up'. 
+
+```r
+learner$early_stopping_rounds <- 100
+learner$nrounds <- 5000
+
+learner$param_set$values <- list(
+  "objective" = "multiclass",
+  "learning_rate" = 0.01,
+  "seed" = 17L,
+  "device_type" = "gpu",
+  "max_bin" = 63L
+)
+```
+
+All other steps are similar to the workflow without GPU support. 
+
 # More Infos:
 
 - Microsoft's LightGBM: https://lightgbm.readthedocs.io/en/latest/
