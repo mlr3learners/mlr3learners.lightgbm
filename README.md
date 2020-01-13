@@ -9,7 +9,7 @@
 
 # Features 
 
-* integrated CV before the actual model training to find the optimal `num_boost_round` for the given training data and parameter set  
+* integrated native CV before the actual model training to find the optimal `nrounds` for the given training data and parameter set  
 * GPU support  
 
 # Installation 
@@ -67,9 +67,6 @@ Rscript build_r.R
 In order to use the GPU acceleration, the parameter `device_type = "gpu"` (default: "cpu") needs to be set. According to the [LightGBM parameter manual](https://lightgbm.readthedocs.io/en/latest/Parameters.html), 'it is recommended to use the smaller `max_bin` (e.g. 63) to get the better speed up'. 
 
 ```r
-learner$early_stopping_rounds <- 100
-learner$nrounds <- 5000
-
 learner$param_set$values <- list(
   "objective" = "multiclass",
   "learning_rate" = 0.01,
