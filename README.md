@@ -11,6 +11,12 @@
 
 Before you can install the `mlr3learners.lightgbm` package, you need to install the lightgbm R package according to [its documentation](https://github.com/microsoft/LightGBM/blob/master/R-package/README.md) (this is necessary since lightgbm is neither on CRAN nor installable via `devtools::install_github`).  
 
+```bash
+git clone --recursive --branch stable --depth 1 https://github.com/microsoft/LightGBM
+cd LightGBM && \
+Rscript build_r.R
+```
+
 If the lightgbm R package is installed, you can continue and install the [mlr3learners.lightgbm](https://github.com/kapsner/mlr3learners.lightgbm) R package:
 
 ```r
@@ -44,7 +50,7 @@ For further information and examples, please view the `mlr3learners.lightgbm` pa
 
 The `mlr3learners.lightgbm` can also be used with lightgbm's GPU compiled version.
 
-To install lightgbm R package with GPU support, execute the following commands ([lightgbm manual](https://github.com/microsoft/LightGBM/blob/master/R-package/README.md)):
+To install the lightgbm R package with GPU support, execute the following commands ([lightgbm manual](https://github.com/microsoft/LightGBM/blob/master/R-package/README.md)):
 
 ```bash
 git clone --recursive --branch stable --depth 1 https://github.com/microsoft/LightGBM
@@ -69,6 +75,8 @@ learner$param_set$values <- list(
 ```
 
 All other steps are similar to the workflow without GPU support. 
+
+The GPU support has been tested in a [Docker container](https://github.com/kapsner/docker_images/blob/master/Rdatascience/rdsc_gpu/Dockerfile) running on a Linux 19.10 host, Intel i7, 16 GB RAM, an NVIDIA(R) RTX 2080, CUDA(R) 10.2 and [nvidia-docker](https://github.com/NVIDIA/nvidia-docker). 
 
 # More Infos:
 
