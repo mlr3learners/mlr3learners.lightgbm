@@ -19,7 +19,7 @@ my_desc$set_authors(c(
 my_desc$del("Maintainer")
 
 # Set the version
-my_desc$set_version("0.0.1.9003")
+my_desc$set_version("0.0.2")
 
 # The title of your package
 my_desc$set(Title = "mlr3: LightGBM learner")
@@ -70,7 +70,6 @@ usethis::use_package("paradox", type = "Imports")
 usethis::use_package("mlr3misc", type = "Imports")
 usethis::use_package("ggplot2", type = "Imports")
 usethis::use_package("mlr3", type = "Imports")
-usethis::use_package("lightgbm", type = "Imports")
 usethis::use_package("plyr", type = "Imports")
 
 # Suggests
