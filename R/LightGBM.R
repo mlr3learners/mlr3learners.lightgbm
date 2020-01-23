@@ -29,6 +29,12 @@ LightGBM <- R6::R6Class(
       }
       self$cv_folds <- as.integer(self$cv_folds)
 
+      # check for user-changed num_iterations here
+      if (!is.null(self$param_set$values[["num_iterations"]])) {
+        # if yes, pass value to nrounds
+        self$nrounds <- self$param_set$values[["num_iterations"]]
+      }
+
       # set correct types for parameters
       for (param in names(self$param_set$values)) {
         value <- self$param_set$values[[param]]

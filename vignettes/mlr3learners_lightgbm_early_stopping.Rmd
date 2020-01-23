@@ -1,0 +1,117 @@
+---
+title: "mlr3learners.lgbpy: Early Stopping Example"
+date: "`r Sys.Date()`"
+output:
+  rmarkdown::html_vignette:
+    keep_md: true
+vignette: >
+  %\VignetteIndexEntry{mlr3learners_lightgbm_early_stopping}
+  %\VignetteEncoding{UTF-8}
+  %\VignetteEngine{knitr::rmarkdown}
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  eval = FALSE
+)
+```
+
+```{r setup}
+library(mlr3)
+library(mlr3learners.lightgbm)
+library(paradox)
+```
+
+# Load the dataset 
+
+```{r}
+task <- mlr3::tsk("pima")
+```
+
+```{r}
+set.seed(17)
+split <- list(
+  train_index = sample(seq_len(task$nrow), size = 0.7 * task$nrow)
+)
+split$test_index <- setdiff(seq_len(task$nrow), split$train_index)
+```
+
+# Early stopping using the internal lightgbm implementation 
+
+```{r message=F, error=F, warning=F}
+learner <- mlr3::lrn("classif.lightgbm")
+learner$early_stopping_rounds <- 10
+learner$nrounds <- 200
+
+# define parameters
+learner$param_set$values <- list(
+  "objective" = "binary",
+  "learning_rate" = 0.1,
+  "seed" = 17L,
+  "bagging_freq" = 5L,
+  "metric" = "auc"
+)
+
+system.time(
+  learner$train(task, row_ids = split$train_index)
+)
+```
+
+# Early stopping using the mlr3tuning implementation 
+
+```{r message=F, error=F, warning=F}
+learner <- mlr3::lrn("classif.lightgbm")
+
+# switch off lightgbm's internal CV
+learner$lgb_learner$nrounds_by_cv <- FALSE
+
+# define parameters
+learner$param_set$values <- list(
+  "objective" = "binary",
+  "learning_rate" = 0.1,
+  "seed" = 17L,
+  "bagging_freq" = 5L,
+  "num_threads" = 1L,
+  "metric" = "auc"
+)
+
+# define num_iterations as tuning parameter
+tune_ps <- ParamSet$new(list(
+  ParamDbl$new("num_iterations", lower = 1L, upper = 200L)
+))
+
+# Create the resampling strategy and the measure
+resampling <- mlr3::rsmp("cv", folds = 5)
+measure <- mlr3::msr("classif.auc")
+
+# Create the tuner 
+grid_resolution <- 200
+tuner <- mlr3tuning::tnr("grid_search", resolution = grid_resolution, batch_size = 1)
+
+# Create the terminator 
+terminator <- mlr3tuning::term("stagnation", iters = 20)
+
+# Instantiate the AutoTuner instance 
+at <- mlr3tuning::AutoTuner$new(
+  learner = learner,
+  resampling = resampling,
+  measures = measure,
+  tune_ps = tune_ps,
+  terminator = terminator,
+  tuner = tuner
+)
+at
+
+# Train the tuner 
+future::plan("multisession")
+set.seed(17)
+
+system.time(
+  at$train(task, row_ids = split$train_index)
+)
+future::plan("sequential")
+```
