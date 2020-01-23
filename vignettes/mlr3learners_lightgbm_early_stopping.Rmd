@@ -59,6 +59,8 @@ learner$param_set$values <- list(
 system.time(
   learner$train(task, row_ids = split$train_index)
 )
+
+learner$model$current_iter()
 ```
 
 # Early stopping using the mlr3tuning implementation 
@@ -84,16 +86,22 @@ tune_ps <- ParamSet$new(list(
   ParamDbl$new("num_iterations", lower = 1L, upper = 200L)
 ))
 
+# design_points
+design <- paradox::generate_design_grid(
+  tune_ps,
+  param_resolutions = c(
+    num_iterations = 200
+))
+
 # Create the resampling strategy and the measure
 resampling <- mlr3::rsmp("cv", folds = 5)
 measure <- mlr3::msr("classif.auc")
 
 # Create the tuner 
-grid_resolution <- 200
-tuner <- mlr3tuning::tnr("grid_search", resolution = grid_resolution, batch_size = 1)
+tuner <- mlr3tuning::tnr("design_points", design = design$data, batch_size = 1)
 
 # Create the terminator 
-terminator <- mlr3tuning::term("stagnation", iters = 20)
+terminator <- mlr3tuning::term("stagnation", iters = 10)
 
 # Instantiate the AutoTuner instance 
 at <- mlr3tuning::AutoTuner$new(
@@ -114,4 +122,6 @@ system.time(
   at$train(task, row_ids = split$train_index)
 )
 future::plan("sequential")
+
+at$learner$model$current_iter()
 ```
