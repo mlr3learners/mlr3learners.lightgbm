@@ -102,7 +102,6 @@ build_vignettes:
   stage: deploy
   script:
     - R -e "devtools::install_dev_deps(pkg = '.', upgrade = 'always')" # we only need dev_deps for the vignette and testing
-    - R -e "reticulate::install_miniconda(path = reticulate::miniconda_path(), update = TRUE, force = FALSE)"
     - R -e "devtools::build_vignettes(pkg = '.', clean = FALSE)"
   #after_script:
   #  - git config --global user.name "${GITHUB_USER}"
