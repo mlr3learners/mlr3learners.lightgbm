@@ -115,7 +115,8 @@ LearnerClassifLightGBM <- R6::R6Class(
         ),
         predict_types = "prob",
         param_set = self$lgb_learner$param_set,
-        properties = c("twoclass",
+        properties = c("weights",
+                       "twoclass",
                        "multiclass",
                        "missings",
                        "importance")

@@ -117,6 +117,10 @@ LightGBM <- R6::R6Class(
         free_raw_data = FALSE
       )
 
+      if ("weights" %in% task$properties) {
+        lightgbm::setinfo(self$train_data, "weight", task$weights$weight)
+      }
+
       # if user has not specified categorical_feature, look in data for
       # categorical features
       if (is.null(self$categorical_feature) && self$autodetect_categorical) {
@@ -405,6 +409,11 @@ LightGBM <- R6::R6Class(
         label = self$valid_label,
         free_raw_data = FALSE
       )
+
+
+      if ("weights" %in% task$properties) {
+        lightgbm::setinfo(self$valid_data, "weight", task$weights$weight)
+      }
 
       private$input_rules <- self$valid_data
     }

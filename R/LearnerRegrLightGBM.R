@@ -92,7 +92,8 @@ LearnerRegrLightGBM <- R6::R6Class(
         ),
         predict_types = "response",
         param_set = self$lgb_learner$param_set,
-        properties = c("missings",
+        properties = c("weights",
+                       "missings",
                        "importance")
       )
     },
