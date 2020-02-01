@@ -2,7 +2,7 @@ variables:
   _R_CHECK_CRAN_INCOMING_: "false"
   _R_CHECK_FORCE_SUGGESTS_: "true"
   CI_IMAGE_NAME: "rocker/verse"
-  CI_IMAGE_TAG: "3.6.1"
+  CI_IMAGE_TAG: "3.6.2"
   R_PKG_NAME: "mlr3learners.lightgbm"
 
 default:
