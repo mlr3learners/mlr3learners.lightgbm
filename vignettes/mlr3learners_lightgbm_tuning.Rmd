@@ -1,5 +1,5 @@
 ---
-title: "mlr3learners.lgbpy: Hyperparameter Tuning Example"
+title: "mlr3learners.lightgbm: Hyperparameter Tuning Example"
 date: "`r Sys.Date()`"
 output:
   rmarkdown::html_vignette:

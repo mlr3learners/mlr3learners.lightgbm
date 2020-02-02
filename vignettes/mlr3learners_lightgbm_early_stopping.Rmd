@@ -1,5 +1,5 @@
 ---
-title: "mlr3learners.lgbpy: Early Stopping Example"
+title: "mlr3learners.lightgbm: Early Stopping Example"
 date: "`r Sys.Date()`"
 output:
   rmarkdown::html_vignette:
