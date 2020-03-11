@@ -27,20 +27,19 @@ TransformTarget <- R6::R6Class(
         old_levels <- factor(levels(factor(vector)))
 
         # if target is not numeric
-        if (!is.numeric(vector)) {
+        if (!is.integer(vector)) {
 
-          vector <- (as.numeric(vector) - 1L)
+          vector <- (as.integer(factor(vector)) - 1L)
 
-          new_levels <- (as.numeric(old_levels) - 1L)
+          new_levels <- (as.integer(old_levels) - 1L)
 
           old_levels <- as.character(old_levels)
           names(old_levels) <- new_levels
           self[[paste0("value_mapping_", mapping)]] <- old_levels
 
           # if target is numeric and integer
-        } else if (is.integer(vector) || is.numeric(vector)) {
+        } else if (is.integer(vector)) {
 
-          vector <- as.integer(vector)
           new_levels <- as.integer(old_levels)
 
           # check, if minimum != 0 --> if == 0, we have nothing to do
@@ -81,7 +80,7 @@ TransformTarget <- R6::R6Class(
           # try to transform to numeric
           transform_error <- tryCatch(
             expr = {
-              vector <- as.numeric(
+              vector <- as.integer(
                 as.character(vector)
               )
               ret <- FALSE
