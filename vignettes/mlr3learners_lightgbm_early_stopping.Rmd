@@ -45,7 +45,7 @@ split$test_index <- setdiff(seq_len(task$nrow), split$train_index)
 ```{r message=F, error=F, warning=F}
 learner <- mlr3::lrn("classif.lightgbm")
 learner$early_stopping_rounds <- 10
-learner$nrounds <- 200
+learner$nrounds <- 100
 
 # define parameters
 learner$param_set$values <- list(
@@ -83,14 +83,14 @@ learner$param_set$values <- list(
 
 # define num_iterations as tuning parameter
 tune_ps <- ParamSet$new(list(
-  ParamDbl$new("num_iterations", lower = 1L, upper = 200L)
+  ParamDbl$new("num_iterations", lower = 1L, upper = 100L)
 ))
 
 # design_points
 design <- paradox::generate_design_grid(
   tune_ps,
   param_resolutions = c(
-    num_iterations = 200
+    num_iterations = 100
 ))
 
 # Create the resampling strategy and the measure

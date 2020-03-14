@@ -6,7 +6,7 @@
 \alias{mlr3learners.lightgbm-package}
 \title{mlr3learners.lightgbm: mlr3: LightGBM learner}
 \description{
-Brining the LightGBM functionality to the mlr3 framework.
+Brings the LightGBM functionality to the mlr3 framework.
 }
 \seealso{
 Useful links:

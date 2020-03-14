@@ -81,12 +81,12 @@ learner$param_set
 In order to use the GPU acceleration, the parameter `device_type = "gpu"` (default: "cpu") needs to be set. According to the [LightGBM parameter manual](https://lightgbm.readthedocs.io/en/latest/Parameters.html), 'it is recommended to use the smaller `max_bin` (e.g. 63) to get the better speed up'. 
 
 ```{r}
-learner$early_stopping_rounds <- 100
-learner$nrounds <- 5000
+learner$early_stopping_rounds <- 10
+learner$nrounds <- 100
 
 learner$param_set$values <- list(
   "objective" = "multiclass",
-  "learning_rate" = 0.01,
+  "learning_rate" = 0.1,
   "seed" = 17L,
   "device_type" = "gpu",
   "max_bin" = 63L

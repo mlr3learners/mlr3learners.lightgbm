@@ -13,7 +13,7 @@
 !/vignettes/
 !/README.md
 /.Rhistory
-/*.Rproj
+!/*.Rproj
 /.Rproj*
 /.RData
 .Rproj.user

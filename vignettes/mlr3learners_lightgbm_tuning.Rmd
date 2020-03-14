@@ -51,8 +51,8 @@ learner <- mlr3::lrn("classif.lightgbm")
 # Configure the learner 
 
 ```{r}
-learner$early_stopping_rounds <- 100
-learner$nrounds <- 1000
+learner$early_stopping_rounds <- 10
+learner$nrounds <- 100
 ```
 
 We will here switch off the parallelization of the lightgbm learner by setting the parameter `num_threads = 1L`. Instead, we will later parallelize the resampling using the `future` package, as recommended by the [mlr3 team](https://mlr3book.mlr-org.com/parallelization.html#parallelization).  

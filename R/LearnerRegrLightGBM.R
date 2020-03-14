@@ -160,7 +160,7 @@ LearnerRegrLightGBM <- R6::R6Class(
         task = task
       )
 
-      PredictionRegr$new(
+      mlr3::PredictionRegr$new(
         task = task,
         response = p
       )

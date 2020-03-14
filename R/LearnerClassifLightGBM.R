@@ -197,10 +197,10 @@ LearnerClassifLightGBM <- R6::R6Class(
 
       if (self$param_set$values[["objective"]] %in%
           c("multiclass", "multiclassova", "lambdarank")) {
-        colnames(p) <- as.character(unique(self$lgb_learner$label_names))
 
         # process target variable
-        c_names <- colnames(p)
+        c_names <- as.character(unique(self$lgb_learner$label_names))
+
         c_names <- plyr::revalue(
           x = c_names,
           replace = self$lgb_learner$trans_tar$value_mapping_dtrain
@@ -223,7 +223,7 @@ LearnerClassifLightGBM <- R6::R6Class(
         colnames(p) <- c_names
       }
 
-      PredictionClassif$new(
+      mlr3::PredictionClassif$new(
         task = task,
         prob = p
       )

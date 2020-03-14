@@ -65,6 +65,8 @@ LightGBM <- R6::R6Class(
       # create training label
       self$train_label <- self$trans_tar$transform_target(
         vector = data[, get(task$target_names)],
+        positive = task$positive,
+        negative = task$negative,
         mapping = "dtrain"
       )
 
@@ -86,7 +88,7 @@ LightGBM <- R6::R6Class(
         }
 
         # extract classification classes and set num_class
-        n <- nlevels(factor(data[, get(task$target_names)]))
+        n <- data[, nlevels(factor(get(task$target_names)))]
         if (n > 2) {
           stopifnot(
             self$param_set$values[["objective"]] %in%
@@ -396,6 +398,8 @@ LightGBM <- R6::R6Class(
       # create label
       self$valid_label <- self$trans_tar$transform_target(
         vector = vdata[, get(task$target_names)],
+        positive = task$positive,
+        negative = task$negative,
         mapping = "dvalid"
       )
 

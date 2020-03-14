@@ -61,8 +61,8 @@ learner$param_set
 ```
 
 ```{r}
-learner$early_stopping_rounds <- 100
-learner$nrounds <- 5000
+learner$early_stopping_rounds <- 10
+learner$nrounds <- 100
 
 learner$param_set$values <- list(
   "learning_rate" = 0.1,
