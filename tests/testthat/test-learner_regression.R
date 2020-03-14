@@ -29,7 +29,7 @@ test_that(
 
     predictions <- learner$predict(task, row_ids = split$test_index)
 
-    expect_known_hash(predictions, "36eb34d1aa")
+    expect_known_hash(predictions$response, "27b55df5ab")
     importance <- learner$importance()
 
     expect_equal(importance[["cmedv"]], 0.99991534830393857813)

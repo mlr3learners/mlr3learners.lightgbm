@@ -29,7 +29,7 @@ test_that(
 
     predictions <- learner$predict(task, row_ids = split$test_index)
 
-    expect_known_hash(predictions, "b9f1509e2e")
+    expect_known_hash(predictions$response, "b8b6d3c1bd")
     importance <- learner$importance()
 
     expect_equal(importance[["glucose"]], 0.45657835120582451749)
