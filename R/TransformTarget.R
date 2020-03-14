@@ -31,9 +31,11 @@ TransformTarget <- R6::R6Class(
             is.character(positive),
             is.character(negative)
           )
+          message(paste0("positive class: ", positive))
+          message(paste0("negative class: ", negative))
 
           repl <- c(0, 1)
-          names(repl) <- c(eval(negative), eval(positive))
+          names(repl) <- c(negative, positive)
 
           vector <- as.integer(plyr::revalue(
             x = as.character(vector),
@@ -85,6 +87,8 @@ TransformTarget <- R6::R6Class(
             old_levels <- as.character(old_levels)
             names(old_levels) <- new_levels
             self[[paste0("value_mapping_", mapping)]] <- old_levels
+          } else {
+            error <- TRUE
           }
 
           if (error) {
