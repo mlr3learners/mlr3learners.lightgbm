@@ -70,7 +70,6 @@ build_source_and_binary:
 
 testing:
   stage: build
-  when: on_success
   script:
     - R -e "devtools::install_dev_deps(pkg = '.', upgrade = 'always')" # we only need dev_deps for the vignette and testing
     - apt-get update && apt-get -y --no-install-recommends install cmake
