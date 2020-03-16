@@ -4,9 +4,7 @@
 \alias{LearnerRegrLightGBM}
 \alias{mlr_learners_regr.lightgbm}
 \title{Regression LightGBM Learner}
-\format{
-[R6::R6Class] inheriting from [mlr3::LearnerRegr].
-}
+\format{[R6::R6Class] inheriting from [mlr3::LearnerRegr].}
 \description{
 Regression LightGBM Learner
 
@@ -63,7 +61,6 @@ index, type str represents feature names.}
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-new"></a>}}
-\if{latex}{\out{\hypertarget{method-new}{}}}
 \subsection{Method \code{new()}}{
 The initialize function.
 \subsection{Usage}{
@@ -73,7 +70,6 @@ The initialize function.
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-train_internal"></a>}}
-\if{latex}{\out{\hypertarget{method-train_internal}{}}}
 \subsection{Method \code{train_internal()}}{
 The train_internal function
 \subsection{Usage}{
@@ -90,7 +86,6 @@ The train_internal function
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-train_cv"></a>}}
-\if{latex}{\out{\hypertarget{method-train_cv}{}}}
 \subsection{Method \code{train_cv()}}{
 The train_cv function
 \subsection{Usage}{
@@ -110,7 +105,6 @@ data.}
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-predict_internal"></a>}}
-\if{latex}{\out{\hypertarget{method-predict_internal}{}}}
 \subsection{Method \code{predict_internal()}}{
 The predict_internal function
 \subsection{Usage}{
@@ -127,7 +121,6 @@ The predict_internal function
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-importance"></a>}}
-\if{latex}{\out{\hypertarget{method-importance}{}}}
 \subsection{Method \code{importance()}}{
 The importance function
 \subsection{Usage}{
@@ -141,7 +134,6 @@ A named vector with the learner's variable importances.
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-clone"></a>}}
-\if{latex}{\out{\hypertarget{method-clone}{}}}
 \subsection{Method \code{clone()}}{
 The objects of this class are cloneable with this method.
 \subsection{Usage}{

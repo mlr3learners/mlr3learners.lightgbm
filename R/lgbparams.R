@@ -73,6 +73,16 @@ lgbparams <- function() {
 
       #######################################
       # Learning Control Parameters
+
+      ParamLgl$new(id = "force_col_wise",
+                   default = FALSE,
+                   tags = "train"),
+
+      ParamLgl$new(id = "force_row_wise",
+                   default = FALSE,
+                   tags = "train"),
+
+
       #% <= 0 means no limit
       ParamInt$new(id = "max_depth",
                    default = -1L,
