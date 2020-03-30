@@ -18,23 +18,23 @@ test_that(
 
     lintlist <- list(
       "R" = list(
-        "LearnerClassifLightGBM.R" = "snake_case",
-        "LearnerRegrLightGBM.R" = "snake_case",
-        "lgbparams.R" = NULL,
-        "LightGBM.R" = list(
-          list(message = "cyclomatic complexity", line_number = 3),
-          list(message = "snake_case", line_number = 3)
-        ),
-        "TransformTarget.R" = "snake_case",
-        "zzz.R" = "snake_case"
+        "LearnerClassifLightGBM.R" = "snake_case"
+        , "LearnerRegrLightGBM.R" = "snake_case"
+        , "lgbparams.R" = NULL
+        , "LightGBM.R" = list(
+          list(message = "cyclomatic complexity", line_number = 3)
+          , list(message = "snake_case", line_number = 3)
+        )
+        , "TransformTarget.R" = "snake_case"
+        #, "zzz.R" = "snake_case"
       ),
       "tests/testthat" = list(
-        "helper.R" = NULL,
-        "test-lints.R" = NULL,
-        "test-learner_classification.R" = NULL,
-        "test-learner_regression.R" = NULL,
-        "test_learner_classif_lightgbm.R" = NULL,
-        "test_learner_regr_lightgbm.R" = NULL
+        "helper.R" = NULL
+        , "test-lints.R" = NULL
+        , "test-learner_classification.R" = NULL
+        , "test-learner_regression.R" = NULL
+        , "test_learner_classif_lightgbm.R" = NULL
+        , "test_learner_regr_lightgbm.R" = NULL
       )
     )
     for (directory in names(lintlist)) {

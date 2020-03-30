@@ -4,7 +4,9 @@
 \alias{LearnerRegrLightGBM}
 \alias{mlr_learners_regr.lightgbm}
 \title{Regression LightGBM Learner}
-\format{[R6::R6Class] inheriting from [mlr3::LearnerRegr].}
+\format{
+[R6::R6Class] inheriting from [mlr3::LearnerRegr].
+}
 \description{
 Regression LightGBM Learner
 
@@ -39,9 +41,6 @@ index, type str represents feature names.}
 \subsection{Public methods}{
 \itemize{
 \item \href{#method-new}{\code{LearnerRegrLightGBM$new()}}
-\item \href{#method-train_internal}{\code{LearnerRegrLightGBM$train_internal()}}
-\item \href{#method-train_cv}{\code{LearnerRegrLightGBM$train_cv()}}
-\item \href{#method-predict_internal}{\code{LearnerRegrLightGBM$predict_internal()}}
 \item \href{#method-importance}{\code{LearnerRegrLightGBM$importance()}}
 \item \href{#method-clone}{\code{LearnerRegrLightGBM$clone()}}
 }
@@ -61,7 +60,17 @@ index, type str represents feature names.}
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-new"></a>}}
+\if{latex}{\out{\hypertarget{method-new}{}}}
 \subsection{Method \code{new()}}{
+The internal .train function
+
+
+The train_cv function
+
+
+The internal .predict function
+
+
 The initialize function.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{LearnerRegrLightGBM$new()}\if{html}{\out{</div>}}
@@ -69,58 +78,8 @@ The initialize function.
 
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-train_internal"></a>}}
-\subsection{Method \code{train_internal()}}{
-The train_internal function
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{LearnerRegrLightGBM$train_internal(task)}\if{html}{\out{</div>}}
-}
-
-\subsection{Arguments}{
-\if{html}{\out{<div class="arguments">}}
-\describe{
-\item{\code{task}}{An mlr3 task}
-}
-\if{html}{\out{</div>}}
-}
-}
-\if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-train_cv"></a>}}
-\subsection{Method \code{train_cv()}}{
-The train_cv function
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{LearnerRegrLightGBM$train_cv(task, row_ids)}\if{html}{\out{</div>}}
-}
-
-\subsection{Arguments}{
-\if{html}{\out{<div class="arguments">}}
-\describe{
-\item{\code{task}}{An mlr3 task}
-
-\item{\code{row_ids}}{An integer vector with the row IDs for the validation
-data.}
-}
-\if{html}{\out{</div>}}
-}
-}
-\if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-predict_internal"></a>}}
-\subsection{Method \code{predict_internal()}}{
-The predict_internal function
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{LearnerRegrLightGBM$predict_internal(task)}\if{html}{\out{</div>}}
-}
-
-\subsection{Arguments}{
-\if{html}{\out{<div class="arguments">}}
-\describe{
-\item{\code{task}}{An mlr3 task}
-}
-\if{html}{\out{</div>}}
-}
-}
-\if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-importance"></a>}}
+\if{latex}{\out{\hypertarget{method-importance}{}}}
 \subsection{Method \code{importance()}}{
 The importance function
 \subsection{Usage}{
@@ -134,6 +93,7 @@ A named vector with the learner's variable importances.
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-clone"></a>}}
+\if{latex}{\out{\hypertarget{method-clone}{}}}
 \subsection{Method \code{clone()}}{
 The objects of this class are cloneable with this method.
 \subsection{Usage}{

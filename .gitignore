@@ -18,3 +18,5 @@
 /.RData
 .Rproj.user
 !/.gitlab-ci.yml
+doc
+Meta

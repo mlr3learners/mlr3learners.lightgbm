@@ -65,6 +65,7 @@ the `lgb.cv` before the training step}
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-new"></a>}}
+\if{latex}{\out{\hypertarget{method-new}{}}}
 \subsection{Method \code{new()}}{
 The data_preprocessing function
 
@@ -84,6 +85,7 @@ The initialize function.
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-train_cv"></a>}}
+\if{latex}{\out{\hypertarget{method-train_cv}{}}}
 \subsection{Method \code{train_cv()}}{
 The train_cv function
 \subsection{Usage}{
@@ -100,6 +102,7 @@ The train_cv function
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-train"></a>}}
+\if{latex}{\out{\hypertarget{method-train}{}}}
 \subsection{Method \code{train()}}{
 The train function
 \subsection{Usage}{
@@ -116,6 +119,7 @@ The train function
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-predict"></a>}}
+\if{latex}{\out{\hypertarget{method-predict}{}}}
 \subsection{Method \code{predict()}}{
 The predict function
 \subsection{Usage}{
@@ -132,6 +136,7 @@ The predict function
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-importance"></a>}}
+\if{latex}{\out{\hypertarget{method-importance}{}}}
 \subsection{Method \code{importance()}}{
 The importance function
 \subsection{Usage}{
@@ -145,6 +150,7 @@ A named vector with the learner's variable importances.
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-importance2"></a>}}
+\if{latex}{\out{\hypertarget{method-importance2}{}}}
 \subsection{Method \code{importance2()}}{
 The importance2 function
 \subsection{Usage}{
@@ -159,6 +165,7 @@ Returns a list with the learner's variable importance values
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-valids"></a>}}
+\if{latex}{\out{\hypertarget{method-valids}{}}}
 \subsection{Method \code{valids()}}{
 The valids function
 \subsection{Usage}{
@@ -184,6 +191,7 @@ The function can be used to provide a subsample to the data
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-clone"></a>}}
+\if{latex}{\out{\hypertarget{method-clone}{}}}
 \subsection{Method \code{clone()}}{
 The objects of this class are cloneable with this method.
 \subsection{Usage}{

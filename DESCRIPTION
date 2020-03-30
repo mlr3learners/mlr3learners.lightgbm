@@ -1,6 +1,6 @@
 Package: mlr3learners.lightgbm
 Title: mlr3: LightGBM learner
-Version: 0.0.4.9001
+Version: 0.0.4.9002
 Authors@R: 
     person(given = "Lorenz A.",
            family = "Kapsner",
@@ -34,3 +34,4 @@ Suggests:
     knitr,
     future,
     mlr3tuning
+RoxygenNote: 7.1.0

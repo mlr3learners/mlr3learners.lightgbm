@@ -7,6 +7,8 @@
 \title{mlr3learners.lightgbm: mlr3: LightGBM learner}
 \description{
 Brings the LightGBM functionality to the mlr3 framework.
+
+Brings the LightGBM functionality to the mlr3 framework.
 }
 \seealso{
 Useful links:
@@ -15,8 +17,18 @@ Useful links:
   \item Report bugs at \url{https://github.com/kapsner/mlr3learners.lightgbm/issues}
 }
 
+
+Useful links:
+\itemize{
+  \item \url{https://github.com/kapsner/mlr3learners.lightgbm}
+  \item Report bugs at \url{https://github.com/kapsner/mlr3learners.lightgbm/issues}
+}
+
 }
 \author{
+\strong{Maintainer}: Lorenz A. Kapsner \email{lorenz.kapsner@gmail.com} (\href{https://orcid.org/0000-0003-1866-860X}{ORCID})
+
+
 \strong{Maintainer}: Lorenz A. Kapsner \email{lorenz.kapsner@gmail.com} (\href{https://orcid.org/0000-0003-1866-860X}{ORCID})
 
 }
