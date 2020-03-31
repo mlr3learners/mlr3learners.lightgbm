@@ -19,7 +19,7 @@ my_desc$set_authors(c(
 my_desc$del("Maintainer")
 
 # Set the version
-my_desc$set_version("0.0.4.9002")
+my_desc$set_version("0.0.4.9003")
 
 # The title of your package
 my_desc$set(Title = "mlr3: LightGBM learner")
@@ -86,6 +86,8 @@ usethis::use_package("mlr3tuning", type = "Suggests")
 usethis::use_build_ignore("LICENSE.md")
 usethis::use_build_ignore(".gitlab-ci.yml")
 usethis::use_build_ignore("data-raw")
+usethis::use_build_ignore("*.Rproj")
+usethis::use_build_ignore("data-raw")
 
 # gitignore
 usethis::use_git_ignore("/*")
@@ -108,6 +110,7 @@ usethis::use_git_ignore("/.Rhistory")
 usethis::use_git_ignore("!/*.Rproj")
 usethis::use_git_ignore("/.Rproj*")
 usethis::use_git_ignore("/.RData")
+usethis::use_git_ignore("!/man-roxygen/")
 
 # code coverage
 #covr::package_coverage()

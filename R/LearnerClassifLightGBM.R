@@ -157,8 +157,6 @@ LearnerClassifLightGBM <- R6::R6Class(
       self$lgb_learner$autodetect_categorical <- self$autodetect_categorical
     },
 
-    #' @description The internal .train function
-    #'
     .train = function(task) {
 
       private$pre_train_checks(task)
@@ -169,8 +167,6 @@ LearnerClassifLightGBM <- R6::R6Class(
       ) # use the mlr3misc::invoke function (it's similar to do.call())
     },
 
-    #' @description The train_cv function
-    #'
     train_cv = function(task, row_ids) {
 
       if (is.null(self$model)) {
@@ -202,8 +198,6 @@ LearnerClassifLightGBM <- R6::R6Class(
       }
     },
 
-    #' @description The internal .predict function
-    #'
     .predict = function(task) {
 
       p <- mlr3misc::invoke(

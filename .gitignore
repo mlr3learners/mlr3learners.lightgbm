@@ -20,3 +20,4 @@
 !/.gitlab-ci.yml
 doc
 Meta
+!/man-roxygen/
