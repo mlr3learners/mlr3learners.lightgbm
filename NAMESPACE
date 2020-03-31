@@ -2,6 +2,7 @@
 
 export(LearnerClassifLightGBM)
 export(LearnerRegrLightGBM)
+export(lgb_rmsle)
 import(data.table)
 import(mlr3misc)
 import(paradox)

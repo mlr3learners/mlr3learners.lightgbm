@@ -3,159 +3,6 @@
 LightGBM <- R6::R6Class(
   "LightGBM",
 
-  private = list(
-
-    valid_state = NULL,
-
-    # data: train, valid, test
-    train_input = NULL,
-    valid_input = NULL,
-    test_input = NULL,
-    input_rules = NULL,
-
-    # the list, passed to the train function
-    valid_list = NULL,
-
-    # save importance values
-    imp = NULL,
-
-    # convert object types
-    # this is necessary, since mlr3 tuning does pass wrong types
-    convert_types = function() {
-
-      self$nrounds <- as.integer(self$nrounds)
-      if (!is.null(self$early_stopping_rounds)) {
-        self$early_stopping_rounds <- as.integer(self$early_stopping_rounds)
-      }
-      self$cv_folds <- as.integer(self$cv_folds)
-
-      # check for user-changed num_iterations here
-      if (!is.null(self$param_set$values[["num_iterations"]])) {
-        # if yes, pass value to nrounds
-        self$nrounds <- self$param_set$values[["num_iterations"]]
-      }
-
-      # set correct types for parameters
-      for (param in names(self$param_set$values)) {
-        value <- self$param_set$values[[param]]
-        if (self$param_set$class[[param]] == "ParamInt") {
-          self$param_set$values[[param]] <- as.integer(round(value))
-        } else if (self$param_set$class[[param]] == "ParamDbl") {
-          self$param_set$values[[param]] <- as.numeric(value)
-        }
-      }
-    },
-
-    #' @description The backend_preprocessing function
-    #'
-    #' @param task An mlr3 task
-    #'
-    backend_preprocessing = function(task) {
-
-      stopifnot(
-        !is.null(self$param_set$values[["objective"]])
-      )
-
-      # extract data
-      data <- task$data()
-
-      # give param_set to transform target function
-      self$trans_tar$param_set <- self$param_set
-
-      # create training label
-      self$train_label <- self$trans_tar$transform_target(
-        vector = data[, get(task$target_names)],
-        positive = task$positive,
-        negative = task$negative,
-        mapping = "dtrain"
-      )
-
-      # some further special treatments, when we have a classification task
-      if (self$param_set$values[["objective"]] %in%
-          c("binary", "multiclass", "multiclassova", "lambdarank")) {
-        # store the class label names
-        self$label_names <- sort(unique(self$train_label))
-
-        # if a validation set is provided, check if value mappings are
-        # identical
-        if (!is.null(private$valid_input)) {
-          stopifnot(
-            identical(
-              self$trans_tar$value_mapping_dtrain,
-              self$trans_tar$value_mapping_dvalid
-            )
-          )
-        }
-
-        # extract classification classes and set num_class
-        n <- data[, nlevels(factor(get(task$target_names)))]
-        if (n > 2) {
-          stopifnot(
-            self$param_set$values[["objective"]] %in%
-              c("multiclass", "multiclassova", "lambdarank")
-          )
-        }
-        # set num_class only in multiclass-objective
-        if (self$param_set$values[["objective"]] == "multiclass") {
-          self$param_set$values[["num_class"]] <- n
-        } else {
-          self$param_set$values <-
-            self$param_set$values[names(self$param_set$values) != "num_class"]
-        }
-      }
-
-      if (isFALSE(private$valid_state)) {
-        private$input_rules <- NULL
-      }
-
-      # create lgb.Datasets
-      private$train_input <- lightgbm::lgb.prepare(
-        data[, task$feature_names, with = F]
-      )
-      self$train_data <- lightgbm::lgb.Dataset(
-        data = as.matrix(private$train_input),
-        label = self$train_label,
-        reference = private$input_rules,
-        free_raw_data = FALSE
-      )
-
-      if ("weights" %in% task$properties) {
-        lightgbm::setinfo(self$train_data, "weight", task$weights$weight)
-      }
-
-      # if user has not specified categorical_feature, look in data for
-      # categorical features
-      if (is.null(self$categorical_feature) && self$autodetect_categorical) {
-        if (any(task$feature_types$type %in%
-                c("factor", "ordered", "character"))) {
-          cat_feat <- task$feature_types[
-            get("type") %in% c("factor", "ordered", "character"), get("id")
-            ]
-          self$categorical_feature <- cat_feat
-        }
-      }
-
-      if (!is.null(self$categorical_feature)) {
-        self$train_data$set_colnames(task$feature_names)
-      }
-
-      if (is.null(private$input_rules)) {
-        private$input_rules <- self$train_data
-      }
-
-      # add to training data to validation set:
-      if (!is.null(self$valid_data)) {
-        if (!is.null(self$categorical_feature)) {
-          self$valid_data$set_colnames(task$feature_names)
-        }
-        private$valid_list <- c(
-          list(dvalid = self$valid_data),
-          list(dtrain = self$train_data)
-        )
-      }
-    }
-  ),
-
   public = list(
 
     #' @field nrounds Number of training rounds.
@@ -208,6 +55,9 @@ LightGBM <- R6::R6Class(
     #' @field model The trained lightgbm model.
     model = NULL,
 
+    #' @field eval A custom evaluation function
+    eval = NULL,
+
     # define methods
     #' @description The initialize function.
     #'
@@ -248,14 +98,15 @@ LightGBM <- R6::R6Class(
       private$convert_types()
 
       self$cv_model <- lightgbm::lgb.cv(
-        params = self$param_set$values,
-        data = self$train_data,
-        nrounds = self$nrounds,
-        nfold = self$cv_folds,
-        categorical_feature = self$categorical_feature,
-        eval_freq = 20L,
-        early_stopping_rounds = self$early_stopping_rounds,
-        stratified = TRUE
+        params = self$param_set$values
+        , data = self$train_data
+        , nrounds = self$nrounds
+        , nfold = self$cv_folds
+        , categorical_feature = self$categorical_feature
+        , eval_freq = 20L
+        , early_stopping_rounds = self$early_stopping_rounds
+        , stratified = TRUE
+        , eval = self$eval
       )
       message(
         sprintf(
@@ -283,13 +134,14 @@ LightGBM <- R6::R6Class(
       }
 
       self$model <- lightgbm::lgb.train(
-        params = self$param_set$values,
-        data = self$train_data,
-        nrounds = self$nrounds,
-        valids = private$valid_list,
-        categorical_feature = self$categorical_feature,
-        eval_freq = 20L,
-        early_stopping_rounds = self$early_stopping_rounds
+        params = self$param_set$values
+        , data = self$train_data
+        , nrounds = self$nrounds
+        , valids = private$valid_list
+        , categorical_feature = self$categorical_feature
+        , eval_freq = 20L
+        , early_stopping_rounds = self$early_stopping_rounds
+        , eval = self$eval
       )
       message(
         sprintf("Final model: current iter: %s", self$model$current_iter())
@@ -420,6 +272,155 @@ LightGBM <- R6::R6Class(
       }
 
       private$input_rules <- self$valid_data
+    }
+  ),
+
+  private = list(
+
+    valid_state = NULL,
+
+    # data: train, valid, test
+    train_input = NULL,
+    valid_input = NULL,
+    test_input = NULL,
+    input_rules = NULL,
+
+    # the list, passed to the train function
+    valid_list = NULL,
+
+    # save importance values
+    imp = NULL,
+
+    # convert object types
+    # this is necessary, since mlr3 tuning does pass wrong types
+    convert_types = function() {
+
+      self$nrounds <- as.integer(self$nrounds)
+      if (!is.null(self$early_stopping_rounds)) {
+        self$early_stopping_rounds <- as.integer(self$early_stopping_rounds)
+      }
+      self$cv_folds <- as.integer(self$cv_folds)
+
+      # check for user-changed num_iterations here
+      if (!is.null(self$param_set$values[["num_iterations"]])) {
+        # if yes, pass value to nrounds
+        self$nrounds <- self$param_set$values[["num_iterations"]]
+      }
+
+      # set correct types for parameters
+      for (param in names(self$param_set$values)) {
+        value <- self$param_set$values[[param]]
+        if (self$param_set$class[[param]] == "ParamInt") {
+          self$param_set$values[[param]] <- as.integer(round(value))
+        } else if (self$param_set$class[[param]] == "ParamDbl") {
+          self$param_set$values[[param]] <- as.numeric(value)
+        }
+      }
+    },
+
+    backend_preprocessing = function(task) {
+
+      stopifnot(
+        !is.null(self$param_set$values[["objective"]])
+      )
+
+      # extract data
+      data <- task$data()
+
+      # give param_set to transform target function
+      self$trans_tar$param_set <- self$param_set
+
+      # create training label
+      self$train_label <- self$trans_tar$transform_target(
+        vector = data[, get(task$target_names)],
+        positive = task$positive,
+        negative = task$negative,
+        mapping = "dtrain"
+      )
+
+      # some further special treatments, when we have a classification task
+      if (self$param_set$values[["objective"]] %in%
+          c("binary", "multiclass", "multiclassova", "lambdarank")) {
+        # store the class label names
+        self$label_names <- sort(unique(self$train_label))
+
+        # if a validation set is provided, check if value mappings are
+        # identical
+        if (!is.null(private$valid_input)) {
+          stopifnot(
+            identical(
+              self$trans_tar$value_mapping_dtrain,
+              self$trans_tar$value_mapping_dvalid
+            )
+          )
+        }
+
+        # extract classification classes and set num_class
+        n <- data[, nlevels(factor(get(task$target_names)))]
+        if (n > 2) {
+          stopifnot(
+            self$param_set$values[["objective"]] %in%
+              c("multiclass", "multiclassova", "lambdarank")
+          )
+        }
+        # set num_class only in multiclass-objective
+        if (self$param_set$values[["objective"]] == "multiclass") {
+          self$param_set$values[["num_class"]] <- n
+        } else {
+          self$param_set$values <-
+            self$param_set$values[names(self$param_set$values) != "num_class"]
+        }
+      }
+
+      if (isFALSE(private$valid_state)) {
+        private$input_rules <- NULL
+      }
+
+      # create lgb.Datasets
+      private$train_input <- lightgbm::lgb.prepare(
+        data[, task$feature_names, with = F]
+      )
+      self$train_data <- lightgbm::lgb.Dataset(
+        data = as.matrix(private$train_input),
+        label = self$train_label,
+        reference = private$input_rules,
+        free_raw_data = FALSE
+      )
+
+      if ("weights" %in% task$properties) {
+        lightgbm::setinfo(self$train_data, "weight", task$weights$weight)
+      }
+
+      # if user has not specified categorical_feature, look in data for
+      # categorical features
+      if (is.null(self$categorical_feature) && self$autodetect_categorical) {
+        if (any(task$feature_types$type %in%
+                c("factor", "ordered", "character"))) {
+          cat_feat <- task$feature_types[
+            get("type") %in% c("factor", "ordered", "character"), get("id")
+            ]
+          self$categorical_feature <- cat_feat
+        }
+      }
+
+      if (!is.null(self$categorical_feature)) {
+        self$train_data$set_colnames(task$feature_names)
+      }
+
+      if (is.null(private$input_rules)) {
+        private$input_rules <- self$train_data
+      }
+
+      # add to training data to validation set:
+      if (!is.null(self$valid_data)) {
+        if (!is.null(self$categorical_feature)) {
+          self$valid_data$set_colnames(task$feature_names)
+        }
+        private$valid_list <- c(
+          list(dvalid = self$valid_data),
+          list(dtrain = self$train_data)
+        )
+      }
     }
   )
 )

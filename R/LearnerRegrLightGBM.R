@@ -36,6 +36,9 @@ LearnerRegrLightGBM <- R6::R6Class(
     #' @field autodetect_categorical Automatically detect categorical features.
     autodetect_categorical = NULL,
 
+    #' @field eval A custom evaluation function
+    eval = NULL,
+
     # define methods
     #' @description The initialize function.
     #'
@@ -136,41 +139,15 @@ LearnerRegrLightGBM <- R6::R6Class(
 
       private$pre_train_checks(task)
 
+      if (!is.null(self$eval)) {
+        self$lgb_learner$eval <- self$eval
+        self$param_set$values$metric <- "None"
+      }
+
       mlr3misc::invoke(
         .f = self$lgb_learner$train,
         task = task
       ) # use the mlr3misc::invoke function (it's similar to do.call())
-    },
-
-    train_cv = function(task, row_ids) {
-
-      if (is.null(self$model)) {
-
-        task <- mlr3::assert_task(as_task(task))
-        mlr3::assert_learnable(task, self)
-
-        row_ids <- mlr3::assert_row_ids(row_ids)
-
-        mlr3::assert_task(task)
-
-        # subset to test set w/o cloning
-        row_ids <- assert_row_ids(row_ids)
-        prev_use <- task$row_roles$use
-        on.exit({
-          task$row_roles$use <- prev_use
-        }, add = TRUE)
-        task$row_roles$use <- row_ids
-
-        private$pre_train_checks(task)
-
-        self$lgb_learner$train_cv(task)
-
-        self$cv_model <- self$lgb_learner$cv_model
-
-      } else {
-
-        stop("A final model has already been trained!")
-      }
     },
 
     .predict = function(task) {

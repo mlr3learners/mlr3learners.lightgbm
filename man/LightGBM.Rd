@@ -47,6 +47,8 @@ the `lgb.cv` before the training step}
 \item{\code{autodetect_categorical}}{Automatically detect categorical features.}
 
 \item{\code{model}}{The trained lightgbm model.}
+
+\item{\code{eval}}{A custom evaluation function}
 }
 \if{html}{\out{</div>}}
 }
@@ -67,21 +69,11 @@ the `lgb.cv` before the training step}
 \if{html}{\out{<a id="method-new"></a>}}
 \if{latex}{\out{\hypertarget{method-new}{}}}
 \subsection{Method \code{new()}}{
-The backend_preprocessing function
-
-
 The initialize function.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{LightGBM$new()}\if{html}{\out{</div>}}
 }
 
-\subsection{Arguments}{
-\if{html}{\out{<div class="arguments">}}
-\describe{
-\item{\code{task}}{An mlr3 task}
-}
-\if{html}{\out{</div>}}
-}
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-train_cv"></a>}}

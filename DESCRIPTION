@@ -1,6 +1,6 @@
 Package: mlr3learners.lightgbm
 Title: mlr3: LightGBM learner
-Version: 0.0.4.9003
+Version: 0.0.4.9005
 Authors@R: 
     person(given = "Lorenz A.",
            family = "Kapsner",
@@ -24,7 +24,8 @@ Imports:
     mlr3misc,
     ggplot2,
     mlr3,
-    plyr
+    plyr,
+    MLmetrics
 Suggests: 
     testthat,
     lintr,
@@ -34,3 +35,4 @@ Suggests:
     knitr,
     future,
     mlr3tuning
+RoxygenNote: 7.1.0

@@ -18,7 +18,8 @@ test_that(
 
     lintlist <- list(
       "R" = list(
-        "LearnerClassifLightGBM.R" = "snake_case"
+        "eval_rmsle.R" = NULL
+        , "LearnerClassifLightGBM.R" = "snake_case"
         , "LearnerRegrLightGBM.R" = "snake_case"
         , "lgbparams.R" = NULL
         , "LightGBM.R" = list(

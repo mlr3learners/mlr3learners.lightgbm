@@ -19,7 +19,7 @@ my_desc$set_authors(c(
 my_desc$del("Maintainer")
 
 # Set the version
-my_desc$set_version("0.0.4.9003")
+my_desc$set_version("0.0.4.9005")
 
 # The title of your package
 my_desc$set(Title = "mlr3: LightGBM learner")
@@ -71,6 +71,7 @@ usethis::use_package("mlr3misc", type = "Imports")
 usethis::use_package("ggplot2", type = "Imports")
 usethis::use_package("mlr3", type = "Imports")
 usethis::use_package("plyr", type = "Imports")
+usethis::use_package("MLmetrics", type = "Imports")
 
 # Suggests
 usethis::use_package("testthat", type = "Suggests")
@@ -85,8 +86,6 @@ usethis::use_package("mlr3tuning", type = "Suggests")
 # buildignore
 usethis::use_build_ignore("LICENSE.md")
 usethis::use_build_ignore(".gitlab-ci.yml")
-usethis::use_build_ignore("data-raw")
-usethis::use_build_ignore("*.Rproj")
 usethis::use_build_ignore("data-raw")
 
 # gitignore

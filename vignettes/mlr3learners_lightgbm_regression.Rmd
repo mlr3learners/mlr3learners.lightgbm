@@ -66,10 +66,16 @@ learner$nrounds <- 100
 
 learner$param_set$values <- list(
   "learning_rate" = 0.1,
-  "seed" = 17L,
-  "metric" = "rmse"
+  "seed" = 17L
 )
 ```
+
+Use the custom "rmsle" evaluation function:
+
+```{r}
+learner$eval <- mlr3learners.lightgbm::lgb_rmsle
+```
+
 
 # Train the learner 
 
@@ -81,7 +87,7 @@ learner$train(task, row_ids = split$train_index)
 
 # Evaluate the model performance 
 
-Basic metrics can be assesed directly from the learner model: 
+Basic metrics can be assessed directly from the learner model: 
 
 ```{r}
 learner$model$current_iter()
