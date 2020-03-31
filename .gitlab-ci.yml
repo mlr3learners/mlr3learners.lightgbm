@@ -75,6 +75,7 @@ testing:
     - apt-get update && apt-get -y --no-install-recommends install cmake
     - git clone --recursive --branch stable --depth 1 https://github.com/microsoft/LightGBM
     - cd LightGBM && Rscript build_r.R
+    - R -e "devtools::install(pkg = '.', upgrade = 'always')"
     - R -e "devtools::test(pkg = '.')"
   except:
     refs:
