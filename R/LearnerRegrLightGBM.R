@@ -10,6 +10,98 @@ LearnerRegrLightGBM <- R6::R6Class(
   "LearnerRegrLightGBM",
   inherit = LearnerRegr,
 
+  public = list(
+
+    # define fields
+    #' @field lgb_learner The lightgbm learner instance
+    lgb_learner = NULL,
+
+    #' @field nrounds Number of training rounds.
+    nrounds = NULL,
+
+    #' @field early_stopping_rounds A integer. Activates early stopping.
+    #'   Requires at least one validation data and one metric. If there's
+    #'   more than one, will check all of them except the training data.
+    #'   Returns the model with (best_iter + early_stopping_rounds).
+    #'   If early stopping occurs, the model will have 'best_iter' field.
+    early_stopping_rounds = NULL,
+
+    #' @field categorical_feature A list of str or int. Type int represents
+    #'   index, type str represents feature names.
+    categorical_feature = NULL,
+
+    #' @field cv_model The cross validation model.
+    cv_model = NULL,
+
+    #' @field autodetect_categorical Automatically detect categorical features.
+    autodetect_categorical = NULL,
+
+    # define methods
+    #' @description The initialize function.
+    #'
+    initialize = function() {
+
+      # instantiate the learner
+      self$lgb_learner <- LightGBM$new()
+
+      # set default parameters
+      self$nrounds <- self$lgb_learner$nrounds
+      self$early_stopping_rounds <- self$lgb_learner$early_stopping_rounds
+      self$categorical_feature <- self$lgb_learner$categorical_feature
+
+      self$autodetect_categorical <- self$lgb_learner$autodetect_categorical
+
+      # set default parameter set
+      ps <- self$lgb_learner$param_set
+
+      super$initialize(
+        # see the mlr3book for a description:
+        # https://mlr3book.mlr-org.com/extending-mlr3.html
+        id = "regr.lightgbm",
+        packages = "lightgbm",
+        feature_types = c(
+          "numeric", "factor",
+          "character", "integer"
+        ),
+        predict_types = "response",
+        param_set = ps,
+        properties = c("weights",
+                       "missings",
+                       "importance"),
+        man = "mlr3learners.lightgbm::LearnerRegrLightGBM"
+      )
+    },
+
+    # Add method for importance, if learner supports that.
+    # It must return a sorted (decreasing) numerical, named vector.
+    #' @description The importance function
+    #'
+    #' @details A named vector with the learner's variable importances.
+    #'
+    importance = function() {
+      if (is.null(self$model)) {
+        stop("No model stored")
+      }
+
+      if (is.null(private$imp)) {
+        private$imp <- self$lgb_learner$importance()
+      }
+      if (nrow(private$imp) != 0) {
+        ret <- sapply(private$imp$Feature, function(x) {
+          return(private$imp[which(private$imp$Feature == x), ]$Gain)
+        }, USE.NAMES = TRUE, simplify = TRUE)
+      } else {
+        ret <- sapply(
+          self$lgb_learner$train_data$get_colnames(),
+          function(x) {
+            return(0)
+          }, USE.NAMES = TRUE, simplify = FALSE)
+      }
+
+      return(unlist(ret))
+    }
+  ),
+
   private = list(
 
     # save importance values
@@ -99,96 +191,6 @@ LearnerRegrLightGBM <- R6::R6Class(
         response = p
       )
 
-    }
-  ),
-
-  public = list(
-
-    #' @field lgb_learner The lightgbm learner instance
-    lgb_learner = NULL,
-
-    #' @field nrounds Number of training rounds.
-    nrounds = NULL,
-
-    #' @field early_stopping_rounds A integer. Activates early stopping.
-    #'   Requires at least one validation data and one metric. If there's
-    #'   more than one, will check all of them except the training data.
-    #'   Returns the model with (best_iter + early_stopping_rounds).
-    #'   If early stopping occurs, the model will have 'best_iter' field.
-    early_stopping_rounds = NULL,
-
-    #' @field categorical_feature A list of str or int. Type int represents
-    #'   index, type str represents feature names.
-    categorical_feature = NULL,
-
-    #' @field cv_model The cross validation model.
-    cv_model = NULL,
-
-    #' @field autodetect_categorical Automatically detect categorical features.
-    autodetect_categorical = NULL,
-
-    # define methods
-    #' @description The initialize function.
-    #'
-    initialize = function() {
-
-      # instantiate the learner
-      self$lgb_learner <- LightGBM$new()
-
-      # set default parameters
-      self$nrounds <- self$lgb_learner$nrounds
-      self$early_stopping_rounds <- self$lgb_learner$early_stopping_rounds
-      self$categorical_feature <- self$lgb_learner$categorical_feature
-
-      self$autodetect_categorical <- self$lgb_learner$autodetect_categorical
-
-      # set default parameter set
-      ps <- self$lgb_learner$param_set
-
-      super$initialize(
-        # see the mlr3book for a description:
-        # https://mlr3book.mlr-org.com/extending-mlr3.html
-        id = "regr.lightgbm",
-        packages = "lightgbm",
-        feature_types = c(
-          "numeric", "factor",
-          "character", "integer"
-        ),
-        predict_types = "response",
-        param_set = ps,
-        properties = c("weights",
-                       "missings",
-                       "importance")
-      )
-    },
-
-    # Add method for importance, if learner supports that.
-    # It must return a sorted (decreasing) numerical, named vector.
-    #' @description The importance function
-    #'
-    #' @details A named vector with the learner's variable importances.
-    #'
-    importance = function() {
-      if (is.null(self$model)) {
-        stop("No model stored")
-      }
-
-      if (is.null(private$imp)) {
-        private$imp <- self$lgb_learner$importance()
-      }
-      if (nrow(private$imp) != 0) {
-        ret <- sapply(private$imp$Feature, function(x) {
-          return(private$imp[which(private$imp$Feature == x), ]$Gain)
-        }, USE.NAMES = TRUE, simplify = TRUE)
-      } else {
-        ret <- sapply(
-          self$lgb_learner$train_data$get_colnames(),
-          function(x) {
-            return(0)
-          }, USE.NAMES = TRUE, simplify = FALSE)
-      }
-
-      return(unlist(ret))
     }
   )
 )

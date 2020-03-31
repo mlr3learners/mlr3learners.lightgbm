@@ -46,11 +46,11 @@ LightGBM <- R6::R6Class(
       }
     },
 
-    #' @description The data_preprocessing function
+    #' @description The backend_preprocessing function
     #'
     #' @param task An mlr3 task
     #'
-    data_preprocessing = function(task) {
+    backend_preprocessing = function(task) {
 
       stopifnot(
         !is.null(self$param_set$values[["objective"]])
@@ -243,7 +243,7 @@ LightGBM <- R6::R6Class(
         )
       )
 
-      private$data_preprocessing(task)
+      private$backend_preprocessing(task)
 
       private$convert_types()
 
@@ -278,7 +278,7 @@ LightGBM <- R6::R6Class(
       if (self$nrounds_by_cv) {
         self$train_cv(task)
       } else if (isFALSE(self$nrounds_by_cv)) {
-        private$data_preprocessing(task)
+        private$backend_preprocessing(task)
         private$convert_types()
       }
 

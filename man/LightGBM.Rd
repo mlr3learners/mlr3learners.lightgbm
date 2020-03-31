@@ -67,7 +67,7 @@ the `lgb.cv` before the training step}
 \if{html}{\out{<a id="method-new"></a>}}
 \if{latex}{\out{\hypertarget{method-new}{}}}
 \subsection{Method \code{new()}}{
-The data_preprocessing function
+The backend_preprocessing function
 
 
 The initialize function.

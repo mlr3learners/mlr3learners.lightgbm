@@ -62,15 +62,6 @@ index, type str represents feature names.}
 \if{html}{\out{<a id="method-new"></a>}}
 \if{latex}{\out{\hypertarget{method-new}{}}}
 \subsection{Method \code{new()}}{
-The internal .train function
-
-
-The train_cv function
-
-
-The internal .predict function
-
-
 The initialize function.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{LearnerRegrLightGBM$new()}\if{html}{\out{</div>}}
