@@ -1,0 +1,6 @@
+^\.travis\.yml$
+^\.lintr$
+^\.vscode$
+^\.ccache$
+^\.github$
+^clang-.*

@@ -4,15 +4,16 @@
 \name{mlr3learners.lightgbm-package}
 \alias{mlr3learners.lightgbm}
 \alias{mlr3learners.lightgbm-package}
-\title{mlr3learners.lightgbm: mlr3: LightGBM learner}
+\title{mlr3learners.lightgbm: Learners from lightgbm package for mlr3}
 \description{
-Brings the LightGBM functionality to the mlr3 framework.
+Adds `lgb.train()` from the lightgbm package to
+    mlr3.
 }
 \seealso{
 Useful links:
 \itemize{
-  \item \url{https://github.com/kapsner/mlr3learners.lightgbm}
-  \item Report bugs at \url{https://github.com/kapsner/mlr3learners.lightgbm/issues}
+  \item \url{https://github.com/mlr3learners/mlr3learners.lightgbm}
+  \item Report bugs at \url{https://github.com/mlr3learners/mlr3learners.lightgbm/issues}
 }
 
 }
