@@ -1,7 +1,7 @@
 library(mlr3learners.lightgbm)
 
-test_that("classif.lgb.train", {
-  learner = lrn("classif.lgb.train")
+test_that("classif.lightgbm", {
+  learner = lrn("classif.lightgbm")
   fun = lightgbm::lgb.train
   exclude = c()
 
