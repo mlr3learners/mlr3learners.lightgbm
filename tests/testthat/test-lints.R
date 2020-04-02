@@ -1,11 +1,11 @@
 context("lints")
 
 if (dir.exists("../../00_pkg_src")) {
-  prefix <- "../../00_pkg_src/mlr3learners.lightgbm/"
+  prefix = "../../00_pkg_src/mlr3learners.lightgbm/"
 } else if (dir.exists("../../R")) {
-  prefix <- "../../"
+  prefix = "../../"
 } else if (dir.exists("./R")) {
-  prefix <- "./"
+  prefix = "./"
 }
 
 
@@ -16,7 +16,7 @@ test_that(
     # skip on covr
     skip_on_covr()
 
-    lintlist <- list(
+    lintlist = list(
       "R" = list(
         "LearnerClassifLightGBM.R" = "snake_case"
         , "LearnerRegrLightGBM.R" = "snake_case"

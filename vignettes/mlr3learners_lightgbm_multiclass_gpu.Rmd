@@ -28,7 +28,7 @@ You can compile the GPU version on Linux/ in docker with the following commands:
 ```{bash}
 git clone --recursive --branch stable --depth 1 https://github.com/microsoft/LightGBM
 cd LightGBM && \
-sed -i -e 's/use_gpu <- FALSE/use_gpu <- TRUE/g' R-package/src/install.libs.R && \
+sed -i -e 's/use_gpu = FALSE/use_gpu = TRUE/g' R-package/src/install.libs.R && \
 Rscript build_r.R
 ```
 
@@ -46,17 +46,17 @@ library(mlr3learners.lightgbm)
 # Load the mlr3 task
 
 ```{r}
-task <- mlr3::tsk("iris")
+task = mlr3::tsk("iris")
 ```
 
 To have independent validation data and test data, we further create a list `split`, containing the respective row indices.
 
 ```{r}
 set.seed(17)
-split <- list(
+split = list(
   train_index = sample(seq_len(task$nrow), size = 0.7 * task$nrow)
 )
-split$test_index <- setdiff(seq_len(task$nrow), split$train_index)
+split$test_index = setdiff(seq_len(task$nrow), split$train_index)
                             
 table(task$data()[split$train_index, task$target_names, with = F])
 table(task$data()[split$test_index, task$target_names, with = F])
@@ -67,7 +67,7 @@ table(task$data()[split$test_index, task$target_names, with = F])
 Then, the `classif.lightgbm` class needs to be instantiated: 
 
 ```{r}
-learner <- mlr3::lrn("classif.lightgbm")
+learner = mlr3::lrn("classif.lightgbm")
 ```
 
 # Configure the learner 
@@ -81,10 +81,10 @@ learner$param_set
 In order to use the GPU acceleration, the parameter `device_type = "gpu"` (default: "cpu") needs to be set. According to the [LightGBM parameter manual](https://lightgbm.readthedocs.io/en/latest/Parameters.html), 'it is recommended to use the smaller `max_bin` (e.g. 63) to get the better speed up'. 
 
 ```{r}
-learner$early_stopping_rounds <- 10
-learner$nrounds <- 100
+learner$early_stopping_rounds = 10
+learner$nrounds = 100
 
-learner$param_set$values <- list(
+learner$param_set$values = list(
   "objective" = "multiclass",
   "learning_rate" = 0.1,
   "seed" = 17L,
@@ -112,7 +112,7 @@ learner$model$current_iter()
 The learner's `predict` function returns an object of mlr3's class `PredictionClassif`. 
 
 ```{r}
-predictions <- learner$predict(task, row_ids = split$test_index)
+predictions = learner$predict(task, row_ids = split$test_index)
 head(predictions$response)
 ```
 
@@ -131,6 +131,6 @@ predictions$score(mlr3::msr("classif.logloss"))
 The variable importance plot can be calculated by using the learner's `importance` function:
 
 ```{r}
-importance <- learner$importance()
+importance = learner$importance()
 importance
 ```

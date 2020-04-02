@@ -6,7 +6,7 @@
 #' @importFrom mlr3 mlr_learners LearnerRegr
 #'
 #' @export
-LearnerRegrLightGBM <- R6::R6Class(
+LearnerRegrLightGBM = R6::R6Class(
   "LearnerRegrLightGBM",
   inherit = LearnerRegr,
 
@@ -42,17 +42,17 @@ LearnerRegrLightGBM <- R6::R6Class(
     initialize = function() {
 
       # instantiate the learner
-      self$lgb_learner <- LightGBM$new()
+      self$lgb_learner = LightGBM$new()
 
       # set default parameters
-      self$nrounds <- self$lgb_learner$nrounds
-      self$early_stopping_rounds <- self$lgb_learner$early_stopping_rounds
-      self$categorical_feature <- self$lgb_learner$categorical_feature
+      self$nrounds = self$lgb_learner$nrounds
+      self$early_stopping_rounds = self$lgb_learner$early_stopping_rounds
+      self$categorical_feature = self$lgb_learner$categorical_feature
 
-      self$autodetect_categorical <- self$lgb_learner$autodetect_categorical
+      self$autodetect_categorical = self$lgb_learner$autodetect_categorical
 
       # set default parameter set
-      ps <- self$lgb_learner$param_set
+      ps = self$lgb_learner$param_set
 
       super$initialize(
         # see the mlr3book for a description:
@@ -84,14 +84,14 @@ LearnerRegrLightGBM <- R6::R6Class(
       }
 
       if (is.null(private$imp)) {
-        private$imp <- self$lgb_learner$importance()
+        private$imp = self$lgb_learner$importance()
       }
       if (nrow(private$imp) != 0) {
-        ret <- sapply(private$imp$Feature, function(x) {
+        ret = sapply(private$imp$Feature, function(x) {
           return(private$imp[which(private$imp$Feature == x), ]$Gain)
         }, USE.NAMES = TRUE, simplify = TRUE)
       } else {
-        ret <- sapply(
+        ret = sapply(
           self$lgb_learner$train_data$get_colnames(),
           function(x) {
             return(0)
@@ -112,7 +112,7 @@ LearnerRegrLightGBM <- R6::R6Class(
       if (is.null(self$param_set$values[["objective"]])) {
         # if not provided, set default objective to "regression"
         # this is needed for the learner's init_data function
-        self$param_set$values <- mlr3misc::insert_named(
+        self$param_set$values = mlr3misc::insert_named(
           self$param_set$values,
           list("objective" = "regression")
         )
@@ -125,11 +125,11 @@ LearnerRegrLightGBM <- R6::R6Class(
         )
       }
 
-      self$lgb_learner$nrounds <- self$nrounds
-      self$lgb_learner$early_stopping_rounds <- self$early_stopping_rounds
-      self$lgb_learner$categorical_feature <- self$categorical_feature
-      self$lgb_learner$param_set <- self$param_set
-      self$lgb_learner$autodetect_categorical <- self$autodetect_categorical
+      self$lgb_learner$nrounds = self$nrounds
+      self$lgb_learner$early_stopping_rounds = self$early_stopping_rounds
+      self$lgb_learner$categorical_feature = self$categorical_feature
+      self$lgb_learner$param_set = self$param_set
+      self$lgb_learner$autodetect_categorical = self$autodetect_categorical
     },
 
     .train = function(task) {
@@ -146,26 +146,26 @@ LearnerRegrLightGBM <- R6::R6Class(
 
       if (is.null(self$model)) {
 
-        task <- mlr3::assert_task(as_task(task))
+        task = mlr3::assert_task(as_task(task))
         mlr3::assert_learnable(task, self)
 
-        row_ids <- mlr3::assert_row_ids(row_ids)
+        row_ids = mlr3::assert_row_ids(row_ids)
 
         mlr3::assert_task(task)
 
         # subset to test set w/o cloning
-        row_ids <- assert_row_ids(row_ids)
-        prev_use <- task$row_roles$use
+        row_ids = assert_row_ids(row_ids)
+        prev_use = task$row_roles$use
         on.exit({
-          task$row_roles$use <- prev_use
+          task$row_roles$use = prev_use
         }, add = TRUE)
-        task$row_roles$use <- row_ids
+        task$row_roles$use = row_ids
 
         private$pre_train_checks(task)
 
         self$lgb_learner$train_cv(task)
 
-        self$cv_model <- self$lgb_learner$cv_model
+        self$cv_model = self$lgb_learner$cv_model
 
       } else {
 
@@ -175,7 +175,7 @@ LearnerRegrLightGBM <- R6::R6Class(
 
     .predict = function(task) {
 
-      p <- mlr3misc::invoke(
+      p = mlr3misc::invoke(
         .f = self$lgb_learner$predict,
         task = task
       )

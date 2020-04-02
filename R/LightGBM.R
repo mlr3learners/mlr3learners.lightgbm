@@ -1,6 +1,6 @@
 #' @title LightGBM Learner
 #'
-LightGBM <- R6::R6Class(
+LightGBM = R6::R6Class(
   "LightGBM",
 
   private = list(
@@ -23,25 +23,25 @@ LightGBM <- R6::R6Class(
     # this is necessary, since mlr3 tuning does pass wrong types
     convert_types = function() {
 
-      self$nrounds <- as.integer(self$nrounds)
+      self$nrounds = as.integer(self$nrounds)
       if (!is.null(self$early_stopping_rounds)) {
-        self$early_stopping_rounds <- as.integer(self$early_stopping_rounds)
+        self$early_stopping_rounds = as.integer(self$early_stopping_rounds)
       }
-      self$cv_folds <- as.integer(self$cv_folds)
+      self$cv_folds = as.integer(self$cv_folds)
 
       # check for user-changed num_iterations here
       if (!is.null(self$param_set$values[["num_iterations"]])) {
         # if yes, pass value to nrounds
-        self$nrounds <- self$param_set$values[["num_iterations"]]
+        self$nrounds = self$param_set$values[["num_iterations"]]
       }
 
       # set correct types for parameters
       for (param in names(self$param_set$values)) {
-        value <- self$param_set$values[[param]]
+        value = self$param_set$values[[param]]
         if (self$param_set$class[[param]] == "ParamInt") {
-          self$param_set$values[[param]] <- as.integer(round(value))
+          self$param_set$values[[param]] = as.integer(round(value))
         } else if (self$param_set$class[[param]] == "ParamDbl") {
-          self$param_set$values[[param]] <- as.numeric(value)
+          self$param_set$values[[param]] = as.numeric(value)
         }
       }
     },
@@ -57,13 +57,13 @@ LightGBM <- R6::R6Class(
       )
 
       # extract data
-      data <- task$data()
+      data = task$data()
 
       # give param_set to transform target function
-      self$trans_tar$param_set <- self$param_set
+      self$trans_tar$param_set = self$param_set
 
       # create training label
-      self$train_label <- self$trans_tar$transform_target(
+      self$train_label = self$trans_tar$transform_target(
         vector = data[, get(task$target_names)],
         positive = task$positive,
         negative = task$negative,
@@ -74,7 +74,7 @@ LightGBM <- R6::R6Class(
       if (self$param_set$values[["objective"]] %in%
           c("binary", "multiclass", "multiclassova", "lambdarank")) {
         # store the class label names
-        self$label_names <- sort(unique(self$train_label))
+        self$label_names = sort(unique(self$train_label))
 
         # if a validation set is provided, check if value mappings are
         # identical
@@ -88,7 +88,7 @@ LightGBM <- R6::R6Class(
         }
 
         # extract classification classes and set num_class
-        n <- data[, nlevels(factor(get(task$target_names)))]
+        n = data[, nlevels(factor(get(task$target_names)))]
         if (n > 2) {
           stopifnot(
             self$param_set$values[["objective"]] %in%
@@ -97,22 +97,22 @@ LightGBM <- R6::R6Class(
         }
         # set num_class only in multiclass-objective
         if (self$param_set$values[["objective"]] == "multiclass") {
-          self$param_set$values[["num_class"]] <- n
+          self$param_set$values[["num_class"]] = n
         } else {
-          self$param_set$values <-
+          self$param_set$values =
             self$param_set$values[names(self$param_set$values) != "num_class"]
         }
       }
 
       if (isFALSE(private$valid_state)) {
-        private$input_rules <- NULL
+        private$input_rules = NULL
       }
 
       # create lgb.Datasets
-      private$train_input <- lightgbm::lgb.prepare(
+      private$train_input = lightgbm::lgb.prepare(
         data[, task$feature_names, with = F]
       )
-      self$train_data <- lightgbm::lgb.Dataset(
+      self$train_data = lightgbm::lgb.Dataset(
         data = as.matrix(private$train_input),
         label = self$train_label,
         reference = private$input_rules,
@@ -128,10 +128,10 @@ LightGBM <- R6::R6Class(
       if (is.null(self$categorical_feature) && self$autodetect_categorical) {
         if (any(task$feature_types$type %in%
                 c("factor", "ordered", "character"))) {
-          cat_feat <- task$feature_types[
+          cat_feat = task$feature_types[
             get("type") %in% c("factor", "ordered", "character"), get("id")
             ]
-          self$categorical_feature <- cat_feat
+          self$categorical_feature = cat_feat
         }
       }
 
@@ -140,7 +140,7 @@ LightGBM <- R6::R6Class(
       }
 
       if (is.null(private$input_rules)) {
-        private$input_rules <- self$train_data
+        private$input_rules = self$train_data
       }
 
       # add to training data to validation set:
@@ -148,7 +148,7 @@ LightGBM <- R6::R6Class(
         if (!is.null(self$categorical_feature)) {
           self$valid_data$set_colnames(task$feature_names)
         }
-        private$valid_list <- c(
+        private$valid_list = c(
           list(dvalid = self$valid_data),
           list(dtrain = self$train_data)
         )
@@ -213,21 +213,21 @@ LightGBM <- R6::R6Class(
     #'
     initialize = function() {
 
-      self$nrounds <- 10L
+      self$nrounds = 10L
 
-      self$cv_folds <- 5L
+      self$cv_folds = 5L
 
-      self$nrounds_by_cv <- TRUE
+      self$nrounds_by_cv = TRUE
 
-      self$param_set <- lgbparams()
+      self$param_set = lgbparams()
 
-      self$autodetect_categorical <- TRUE
+      self$autodetect_categorical = TRUE
 
-      self$trans_tar <- TransformTarget$new(
+      self$trans_tar = TransformTarget$new(
         param_set = self$param_set
       )
 
-      private$valid_state <- FALSE
+      private$valid_state = FALSE
 
     },
 
@@ -247,7 +247,7 @@ LightGBM <- R6::R6Class(
 
       private$convert_types()
 
-      self$cv_model <- lightgbm::lgb.cv(
+      self$cv_model = lightgbm::lgb.cv(
         params = self$param_set$values,
         data = self$train_data,
         nrounds = self$nrounds,
@@ -264,10 +264,10 @@ LightGBM <- R6::R6Class(
         )
       )
       # set nrounds to best iteration from cv-model
-      self$nrounds <- self$cv_model$best_iter
+      self$nrounds = self$cv_model$best_iter
       # if we already have figured out the best nrounds, which are provided
       # to the train function, we don't need early stopping anymore
-      self$early_stopping_rounds <- NULL
+      self$early_stopping_rounds = NULL
     },
 
     #' @description The train function
@@ -282,7 +282,7 @@ LightGBM <- R6::R6Class(
         private$convert_types()
       }
 
-      self$model <- lightgbm::lgb.train(
+      self$model = lightgbm::lgb.train(
         params = self$param_set$values,
         data = self$train_data,
         nrounds = self$nrounds,
@@ -302,7 +302,7 @@ LightGBM <- R6::R6Class(
     #' @param task An mlr3 task
     #'
     predict = function(task) {
-      newdata <- task$data(cols = task$feature_names) # get newdata
+      newdata = task$data(cols = task$feature_names) # get newdata
 
       data.table::setcolorder(
         newdata,
@@ -310,13 +310,13 @@ LightGBM <- R6::R6Class(
       )
 
       # create lgb.Datasets
-      private$test_input <- lightgbm::lgb.prepare(
+      private$test_input = lightgbm::lgb.prepare(
         newdata
       )
 
-      test_data <- as.matrix(private$test_input)
+      test_data = as.matrix(private$test_input)
 
-      p <- self$model$predict(
+      p = self$model$predict(
         data = test_data,
         reshape = TRUE
       )
@@ -336,7 +336,7 @@ LightGBM <- R6::R6Class(
       }
 
       if (is.null(private$imp)) {
-        private$imp <- lightgbm::lgb.importance(self$model)
+        private$imp = lightgbm::lgb.importance(self$model)
       }
       return(private$imp)
     },
@@ -351,10 +351,10 @@ LightGBM <- R6::R6Class(
       }
 
       if (is.null(private$imp)) {
-        private$imp <- lightgbm::lgb.importance(self$model)
+        private$imp = lightgbm::lgb.importance(self$model)
       }
 
-      plot <- lightgbm::lgb.plot.importance(private$imp)
+      plot = lightgbm::lgb.plot.importance(private$imp)
       return(list(
         importance = private$imp,
         plot = plot
@@ -373,30 +373,30 @@ LightGBM <- R6::R6Class(
     #'
     valids = function(task, row_ids) {
 
-      private$valid_state <- TRUE
+      private$valid_state = TRUE
 
-      task <- mlr3::assert_task(as_task(task))
+      task = mlr3::assert_task(as_task(task))
       mlr3::assert_learnable(task, self)
 
-      row_ids <- mlr3::assert_row_ids(row_ids)
+      row_ids = mlr3::assert_row_ids(row_ids)
 
       mlr3::assert_task(task)
 
       # subset to test set w/o cloning
-      row_ids <- assert_row_ids(row_ids)
-      prev_use <- task$row_roles$use
+      row_ids = assert_row_ids(row_ids)
+      prev_use = task$row_roles$use
       on.exit({
-        task$row_roles$use <- prev_use
+        task$row_roles$use = prev_use
       }, add = TRUE)
-      task$row_roles$use <- row_ids
+      task$row_roles$use = row_ids
 
-      vdata <- task$data()
+      vdata = task$data()
 
       # give param_set to transform target function
-      self$trans_tar$param_set <- self$param_set
+      self$trans_tar$param_set = self$param_set
 
       # create label
-      self$valid_label <- self$trans_tar$transform_target(
+      self$valid_label = self$trans_tar$transform_target(
         vector = vdata[, get(task$target_names)],
         positive = task$positive,
         negative = task$negative,
@@ -404,11 +404,11 @@ LightGBM <- R6::R6Class(
       )
 
       # create lgb.Datasets
-      private$valid_input <- lightgbm::lgb.prepare(
+      private$valid_input = lightgbm::lgb.prepare(
         vdata[, task$feature_names, with = F]
       )
 
-      self$valid_data <- lightgbm::lgb.Dataset(
+      self$valid_data = lightgbm::lgb.Dataset(
         data = as.matrix(private$valid_input),
         label = self$valid_label,
         free_raw_data = FALSE
@@ -419,7 +419,7 @@ LightGBM <- R6::R6Class(
         lightgbm::setinfo(self$valid_data, "weight", task$weights$weight)
       }
 
-      private$input_rules <- self$valid_data
+      private$input_rules = self$valid_data
     }
   )
 )

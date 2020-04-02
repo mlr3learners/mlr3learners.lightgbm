@@ -1,16 +1,16 @@
 library(mlbench)
 data("Glass")
-dataset <- data.table::as.data.table(Glass)
+dataset = data.table::as.data.table(Glass)
 dataset[, ("Type") := factor(as.numeric(get("Type")) - 1L)]
 
-train.index <- caret::createDataPartition(
+train.index = caret::createDataPartition(
   y = dataset$Type,
   times = 1,
   p = 0.7
 )
-valid.index <- setdiff(1:nrow(dataset), train.index$Resample1)
+valid.index = setdiff(1:nrow(dataset), train.index$Resample1)
 
-task <- TaskClassif$new(
+task = TaskClassif$new(
   id = "Glass",
   target = "Type",
   backend = dataset
@@ -18,12 +18,12 @@ task <- TaskClassif$new(
 
 ps = lgbparams()
 
-ps$values <- list("metric" = "multi_logloss")
-ps$values <- list("learning_rate" = 0.01)
-ps$values <- list("bagging_fraction" = 0.6)
+ps$values = list("metric" = "multi_logloss")
+ps$values = list("learning_rate" = 0.01)
+ps$values = list("bagging_fraction" = 0.6)
 
 
-lightgbm <- reticulate::import("lightgbm")
+lightgbm = reticulate::import("lightgbm")
 pars = ps$get_values(tags = "train")
 
 # Get formula, data, classwt, cutoff for the LightGBM
@@ -46,25 +46,25 @@ stopifnot(
 )
 
 if (n > 2) {
-  pars[["objective"]] <- "multiclass"
-  pars[["num_class"]] <- n
+  pars[["objective"]] = "multiclass"
+  pars[["num_class"]] = n
   if (is.null(pars[["metric"]])) {
-    pars[["metric"]] <- c("multi_logloss", "multi_error")
+    pars[["metric"]] = c("multi_logloss", "multi_error")
   }
 } else {
-  pars[["objective"]] <- "binary"
+  pars[["objective"]] = "binary"
   if (is.null(pars[["metric"]]))  {
-    pars[["metric"]] <- c("auc", "binary_error")
+    pars[["metric"]] = c("auc", "binary_error")
   }
 }
 
-x_train <- as.matrix(data[, task$feature_names, with = FALSE])
+x_train = as.matrix(data[, task$feature_names, with = FALSE])
 for (i in colnames(x_train)) {
-  x_train[which(is.na(x_train[, i])), i] <- NaN
+  x_train[which(is.na(x_train[, i])), i] = NaN
 }
-x_label <- data[, get(task$target_names)]
+x_label = data[, get(task$target_names)]
 
-mymodel <- lightgbm$train(
+mymodel = lightgbm$train(
   train_set = lightgbm$Dataset(
     data = x_train,
     label = x_label
@@ -78,17 +78,17 @@ mymodel <- lightgbm$train(
   )
 )
 
-newdata <- task$data(cols = task$feature_names)
+newdata = task$data(cols = task$feature_names)
 
 p = mlr3misc::invoke(.f = mymodel$predict,
            data = newdata,
            is_reshape = T)
-colnames(p) <- as.character(unique(x_label))
+colnames(p) = as.character(unique(x_label))
 
 PredictionClassif$new(task = task, prob = p)
 
 
-imp <- data.table::data.table(
+imp = data.table::data.table(
   "Feature" = mymodel$feature_name(),
   "Value" = as.numeric(as.character(mymodel$feature_importance()))
 )[order(get("Value"), decreasing = T)]

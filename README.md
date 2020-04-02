@@ -38,17 +38,17 @@ library(mlr3)
 task = mlr3::tsk("iris")
 learner = mlr3::lrn("classif.lightgbm")
 
-learner$early_stopping_rounds <- 1000
-learner$num_boost_round <- 5000
+learner$early_stopping_rounds = 1000
+learner$num_boost_round = 5000
 
-learner$param_set$values <- list(
+learner$param_set$values = list(
   "objective" = "multiclass",
   "learning_rate" = 0.01,
   "seed" = 17L
 )
 
 learner$train(task, row_ids = 1:120)
-predictions <- learner$predict(task, row_ids = 121:150)
+predictions = learner$predict(task, row_ids = 121:150)
 ```
 
 For further information and examples, please view the `mlr3learners.lightgbm` [package vignettes](vignettes/) and the [mlr3book](https://mlr3book.mlr-org.com/index.html).  
@@ -62,14 +62,14 @@ To install the lightgbm R package with GPU support, execute the following comman
 ```bash
 git clone --recursive --branch stable --depth 1 https://github.com/microsoft/LightGBM
 cd LightGBM && \
-sed -i -e 's/use_gpu <- FALSE/use_gpu <- TRUE/g' R-package/src/install.libs.R && \
+sed -i -e 's/use_gpu = FALSE/use_gpu = TRUE/g' R-package/src/install.libs.R && \
 Rscript build_r.R
 ```
 
 In order to use the GPU acceleration, the parameter `device_type = "gpu"` (default: "cpu") needs to be set. According to the [LightGBM parameter manual](https://lightgbm.readthedocs.io/en/latest/Parameters.html), 'it is recommended to use the smaller `max_bin` (e.g. 63) to get the better speed up'. 
 
 ```r
-learner$param_set$values <- list(
+learner$param_set$values = list(
   "objective" = "multiclass",
   "learning_rate" = 0.01,
   "seed" = 17L,

@@ -1,6 +1,6 @@
-lgbparams <- function() {
+lgbparams = function() {
   # parameter set using the paradox package
-  ps <- ParamSet$new(
+  ps = ParamSet$new(
     # https://lightgbm.readthedocs.io/en/latest/Parameters.html#
     # core-parameters
     params = list(

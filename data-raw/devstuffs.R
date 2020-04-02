@@ -1,10 +1,10 @@
-packagename <- "mlr3learners.lightgbm"
+packagename = "mlr3learners.lightgbm"
 
 # remove existing description object
 unlink("DESCRIPTION")
 
 # Create a new description object
-my_desc <- desc::description$new("!new")
+my_desc = desc::description$new("!new")
 
 # Set your package name
 my_desc$set("Package", packagename)

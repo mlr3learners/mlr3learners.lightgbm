@@ -31,17 +31,17 @@ library(mlr3learners.lightgbm)
 # Load the mlr3 task
 
 ```{r}
-task <- mlr3::tsk("boston_housing")
+task = mlr3::tsk("boston_housing")
 ```
 
 To have independent validation data and test data, we further create a list `split`, containing the respective row indices.
 
 ```{r}
 set.seed(17)
-split <- list(
+split = list(
   train_index = sample(seq_len(task$nrow), size = 0.7 * task$nrow)
 )
-split$test_index <- setdiff(seq_len(task$nrow), split$train_index)
+split$test_index = setdiff(seq_len(task$nrow), split$train_index)
 ```
 
 # Instantiate the lightgbm learner 
@@ -49,7 +49,7 @@ split$test_index <- setdiff(seq_len(task$nrow), split$train_index)
 Then, the `regr.lightgbm` class needs to be instantiated: 
 
 ```{r}
-learner <- mlr3::lrn("regr.lightgbm")
+learner = mlr3::lrn("regr.lightgbm")
 ```
 
 # Configure the learner 
@@ -61,10 +61,10 @@ learner$param_set
 ```
 
 ```{r}
-learner$early_stopping_rounds <- 10
-learner$nrounds <- 100
+learner$early_stopping_rounds = 10
+learner$nrounds = 100
 
-learner$param_set$values <- list(
+learner$param_set$values = list(
   "learning_rate" = 0.1,
   "seed" = 17L,
   "metric" = "rmse"
@@ -90,7 +90,7 @@ learner$model$current_iter()
 The learner's `predict` function returns an object of mlr3's class `PredictionRegr`. 
 
 ```{r}
-predictions <- learner$predict(task, row_ids = split$test_index)
+predictions = learner$predict(task, row_ids = split$test_index)
 head(predictions$response)
 ```
 
@@ -103,6 +103,6 @@ predictions$score(mlr3::msr("regr.rmsle"))
 The variable importance plot can be calculated by using the learner's `importance` function:
 
 ```{r}
-importance <- learner$importance()
+importance = learner$importance()
 importance
 ```
