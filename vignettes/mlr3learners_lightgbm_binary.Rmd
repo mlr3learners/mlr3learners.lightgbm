@@ -57,17 +57,19 @@ learner <- mlr3::lrn("classif.lightgbm")
 
 # Configure the learner 
 
-In the next step, some of the learner's parameters need to be set. E.g., the parameters `nrounds` and `early_stopping_rounds` can be set here. Please refer to the [LightGBM manual](https://lightgbm.readthedocs.io) for further details these parameters. Almost all possible parameters have been implemented here. You can inspect them using the following command: 
+In the next step, some of the learner's parameters need to be set. E.g., the parameters `num_iterations` and `early_stopping_round` can be set here. Please refer to the [LightGBM manual](https://lightgbm.readthedocs.io) for further details these parameters. Almost all possible parameters have been implemented here. You can inspect them using the following command: 
 
 ```{r eval=FALSE}
 learner$param_set
 ```
 
 ```{r}
-learner$early_stopping_rounds <- 10
-learner$nrounds <- 100
-
 learner$param_set$values <- list(
+  "objective" = "binary",
+  "early_stopping_round" = 10,
+  "nrounds_by_cv" = TRUE,
+  "nfolds" = 5,
+  "num_iterations" = 100,
   "learning_rate" = 0.1,
   "seed" = 17L,
   "metric" = "auc"

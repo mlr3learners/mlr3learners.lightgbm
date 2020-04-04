@@ -2,15 +2,15 @@ TransformTarget <- R6::R6Class(
   "TransformTarget",
 
   public = list(
-    param_set = NULL,
+    params = NULL,
 
     value_mapping_dtrain = NULL,
     value_mapping_dvalid = NULL,
 
 
-    initialize = function(param_set) {
+    initialize = function(params) {
 
-      self$param_set <- param_set
+      self$params <- params
 
     },
 
@@ -21,12 +21,12 @@ TransformTarget <- R6::R6Class(
       )
 
       # transform target to numeric for multiclass classification tasks
-      if (self$param_set$values[["objective"]] %in%
+      if (self$params[["objective"]] %in%
           c("binary", "multiclass", "multiclassova", "lambdarank")) {
 
         error <- FALSE
 
-        if (self$param_set$values[["objective"]] == "binary") {
+        if (self$params[["objective"]] == "binary") {
           stopifnot(
             is.character(positive),
             is.character(negative)
