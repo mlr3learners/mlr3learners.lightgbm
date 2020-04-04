@@ -6,3 +6,9 @@
 ^clang-.*
 ^.*\.Rproj$
 ^\.Rproj\.user$
+^\.gitlab-ci\.yml$
+^\.gitlab-ci\.yml\.save$
+^data-raw$
+^LICENSE\.md$
+^man-roxygen$
+^tic\.R$

@@ -17,7 +17,7 @@ my_desc$set_authors(c(
          comment = c(ORCID = "0000-0003-1866-860X")),
   person(given = "Patrick",
          family = "Schratz",
-         role = "cbt",
+         role = "ctb",
          email = "patrick.schratz@gmail.com",
          comment = c(ORCID = "0000-0003-0748-6624"))
 ))
