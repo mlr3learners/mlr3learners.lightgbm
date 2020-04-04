@@ -26,12 +26,25 @@ Before you can use the `mlr3learners.lightgbm` package, you need to install the 
 ```{r setup}
 library(mlr3)
 library(mlr3learners.lightgbm)
+library(mlbench)
 ```
 
-# Load the mlr3 task
+# Create an mlr3 task
 
 ```{r}
-task <- mlr3::tsk("pima")
+data("PimaIndiansDiabetes2")
+dataset <- data.table::as.data.table(PimaIndiansDiabetes2)
+target_col <- "diabetes"
+
+dataset <- lightgbm::lgb.prepare(dataset)
+dataset[, (target_col) := factor(get(target_col) - 1L)]
+
+task <- mlr3::TaskClassif$new(
+  id = "pima",
+  backend = dataset,
+  target = target_col,
+  positive = "1"
+)
 ```
 
 To have independent validation data and test data, we further create a list `split`, containing the respective row indices.
@@ -52,7 +65,7 @@ table(task$data()[split$test_index, task$target_names, with = F])
 Then, the `classif.lightgbm` class needs to be instantiated: 
 
 ```{r}
-learner <- mlr3::lrn("classif.lightgbm")
+learner <- mlr3::lrn("classif.lightgbm", objective = "binary")
 ```
 
 # Configure the learner 
@@ -64,15 +77,15 @@ learner$param_set
 ```
 
 ```{r}
-learner$param_set$values <- list(
-  "objective" = "binary",
-  "early_stopping_round" = 10,
-  "nrounds_by_cv" = TRUE,
-  "nfolds" = 5,
-  "num_iterations" = 100,
-  "learning_rate" = 0.1,
-  "seed" = 17L,
-  "metric" = "auc"
+learner$param_set$values <- mlr3misc::insert_named(
+  learner$param_set$values,
+    list(
+    "early_stopping_round" = 10,
+    "learning_rate" = 0.1,
+    "seed" = 17L,
+    "metric" = "auc",
+    "num_iterations" = 100
+  )
 )
 ```
 

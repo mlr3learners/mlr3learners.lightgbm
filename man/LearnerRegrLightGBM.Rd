@@ -15,30 +15,6 @@ Regression LightGBM Learner
 \section{Super classes}{
 \code{\link[mlr3:Learner]{mlr3::Learner}} -> \code{\link[mlr3:LearnerRegr]{mlr3::LearnerRegr}} -> \code{LearnerRegrLightGBM}
 }
-\section{Public fields}{
-\if{html}{\out{<div class="r6-fields">}}
-\describe{
-\item{\code{lgb_learner}}{The lightgbm learner instance}
-
-\item{\code{nrounds}}{Number of training rounds.}
-
-\item{\code{early_stopping_rounds}}{A integer. Activates early stopping.
-Requires at least one validation data and one metric. If there's
-more than one, will check all of them except the training data.
-Returns the model with (best_iter + early_stopping_rounds).
-If early stopping occurs, the model will have 'best_iter' field.}
-
-\item{\code{categorical_feature}}{A list of str or int. Type int represents
-index, type str represents feature names.}
-
-\item{\code{cv_model}}{The cross validation model.}
-
-\item{\code{autodetect_categorical}}{Automatically detect categorical features.}
-
-\item{\code{eval}}{A custom evaluation function}
-}
-\if{html}{\out{</div>}}
-}
 \section{Methods}{
 \subsection{Public methods}{
 \itemize{
@@ -64,7 +40,7 @@ index, type str represents feature names.}
 \if{html}{\out{<a id="method-new"></a>}}
 \if{latex}{\out{\hypertarget{method-new}{}}}
 \subsection{Method \code{new()}}{
-The initialize function.
+Creates a new instance of this [R6][R6::R6Class] class.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{LearnerRegrLightGBM$new()}\if{html}{\out{</div>}}
 }

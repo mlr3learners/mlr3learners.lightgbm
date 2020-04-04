@@ -464,7 +464,11 @@ LearnerRegrLightGBM <- R6::R6Class(
       ps$values = list(
         # FIXME: Add this change to the description of the help page
         # Be silent by default
-        verbose = -1
+        verbose = -1,
+        # Find best num_iterations with internal cross-validation by default
+        nrounds_by_cv = TRUE,
+        # Do a 5-fold CV by default
+        nfolds = 5
       )
     },
 
