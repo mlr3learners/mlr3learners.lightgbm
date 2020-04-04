@@ -1,6 +1,6 @@
-lgbparams <- function() {
+lgbparams = function() {
   # parameter set using the paradox package
-  ps <- ParamSet$new(
+  ps = ParamSet$new(
     # https://lightgbm.readthedocs.io/en/latest/Parameters.html#
     params = list(
       #######################################
@@ -62,21 +62,21 @@ lgbparams <- function() {
                             "tweedie")),
       # Metric Parameters
       ParamFct$new(id = "metric",
-              default = "",
-              levels = c("", "None",
-                         "l1", "mean_absolute_error",
-                         "mae", "regression_l1",
-                         "l2", "mean_squared_error",
-                         "mse", "regression_l2",
-                         "regression", "rmse",
-                         "root_mean_squared_error", "l2_root",
-                         "quantile", "lambdarank",
-                         "mean_absolute_percentage_error",
-                         "mean_average_precision", "mape",
-                         "huber", "fair",
-                         "poisson", "gamma",
-                         "gamma_deviance", "tweedie"),
-              tags = "train"),
+                   default = "",
+                   levels = c("", "None",
+                              "l1", "mean_absolute_error",
+                              "mae", "regression_l1",
+                              "l2", "mean_squared_error",
+                              "mse", "regression_l2",
+                              "regression", "rmse",
+                              "root_mean_squared_error", "l2_root",
+                              "quantile", "lambdarank",
+                              "mean_absolute_percentage_error",
+                              "mean_average_precision", "mape",
+                              "huber", "fair",
+                              "poisson", "gamma",
+                              "gamma_deviance", "tweedie"),
+                   tags = "train"),
       #######################################
       #######################################
       # Classification only

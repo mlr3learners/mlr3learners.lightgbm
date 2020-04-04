@@ -1,6 +1,8 @@
-# mlr3learners.lightgbm (!!!under development!!!)
+# mlr3learners.lightgbm
 
 <!-- badges: start -->
+[![R CMD Check via {tic}](https://github.com/mlr3learners/mlr3learners.lightgbm/workflows/R%20CMD%20Check%20via%20{tic}/badge.svg?branch=master)](https://github.com/mlr3learners/mlr3learners.lightgbm/actions)
+[![Parameter Check](https://github.com/mlr3learners/mlr3learners.lightgbm/workflows/Parameter%20Check/badge.svg?branch=master)](https://github.com/mlr3learners/mlr3learners.lightgbm/actions)
 [![pipeline status](https://gitlab.com/kapsner/mlr3learners-lightgbm/badges/master/pipeline.svg)](https://gitlab.com/kapsner/mlr3learners-lightgbm/commits/master)
 [![coverage report](https://gitlab.com/kapsner/mlr3learners-lightgbm/badges/master/coverage.svg)](https://gitlab.com/kapsner/mlr3learners-lightgbm/commits/master)
 <!-- badges: end -->
@@ -34,6 +36,7 @@ devtools::install_github("mlr3learners/mlr3learners.lightgbm")
 ```r
 library(mlr3)
 task = mlr3::tsk("iris")
+<<<<<<< HEAD
 learner = mlr3::lrn("classif.lightgbm", objective = "multiclass")
 
 learner$param_set$values <- mlr3misc::insert_named(
@@ -46,10 +49,21 @@ learner$param_set$values <- mlr3misc::insert_named(
     "num_iterations" = 100,
     "num_class" = 3
   )
+=======
+learner = mlr3::lrn("classif.lightgbm")
+
+learner$early_stopping_rounds = 1000
+learner$num_boost_round = 5000
+
+learner$param_set$values = list(
+  "objective" = "multiclass",
+  "learning_rate" = 0.01,
+  "seed" = 17L
+>>>>>>> development
 )
 
 learner$train(task, row_ids = 1:120)
-predictions <- learner$predict(task, row_ids = 121:150)
+predictions = learner$predict(task, row_ids = 121:150)
 ```
 
 For further information and examples, please view the `mlr3learners.lightgbm` [package vignettes](vignettes/) and the [mlr3book](https://mlr3book.mlr-org.com/index.html).  
@@ -63,13 +77,14 @@ To install the lightgbm R package with GPU support, execute the following comman
 ```bash
 git clone --recursive --branch stable --depth 1 https://github.com/microsoft/LightGBM
 cd LightGBM && \
-sed -i -e 's/use_gpu <- FALSE/use_gpu <- TRUE/g' R-package/src/install.libs.R && \
+sed -i -e 's/use_gpu = FALSE/use_gpu = TRUE/g' R-package/src/install.libs.R && \
 Rscript build_r.R
 ```
 
 In order to use the GPU acceleration, the parameter `device_type = "gpu"` (default: "cpu") needs to be set. According to the [LightGBM parameter manual](https://lightgbm.readthedocs.io/en/latest/Parameters.html), 'it is recommended to use the smaller `max_bin` (e.g. 63) to get the better speed up'. 
 
 ```r
+<<<<<<< HEAD
 learner$param_set$values <- mlr3misc::insert_named(
   learner$param_set$values,
     list(
@@ -84,6 +99,15 @@ learner$param_set$values <- mlr3misc::insert_named(
       "num_class" = 3
       )
   )
+=======
+learner$param_set$values = list(
+  "objective" = "multiclass",
+  "learning_rate" = 0.01,
+  "seed" = 17L,
+  "device_type" = "gpu",
+  "max_bin" = 63L
+)
+>>>>>>> development
 ```
 
 All other steps are similar to the workflow without GPU support. 

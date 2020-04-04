@@ -33,17 +33,17 @@ library(mlbench)
 
 ```{r}
 data("PimaIndiansDiabetes2")
-dataset <- data.table::as.data.table(PimaIndiansDiabetes2)
-target_col <- "diabetes"
+dataset = data.table::as.data.table(PimaIndiansDiabetes2)
+target_col = "diabetes"
 
-vec <- setdiff(colnames(dataset), target_col)
+vec = setdiff(colnames(dataset), target_col)
 
-dataset <- cbind(
+dataset = cbind(
   dataset[, c(target_col), with = F],
   lightgbm::lgb.prepare(dataset[, vec, with = F])
 )
 
-task <- mlr3::TaskClassif$new(
+task = mlr3::TaskClassif$new(
   id = "pima",
   backend = dataset,
   target = target_col,
@@ -55,10 +55,10 @@ To have independent validation data and test data, we further create a list `spl
 
 ```{r}
 set.seed(17)
-split <- list(
+split = list(
   train_index = sample(seq_len(task$nrow), size = 0.7 * task$nrow)
 )
-split$test_index <- setdiff(seq_len(task$nrow), split$train_index)
+split$test_index = setdiff(seq_len(task$nrow), split$train_index)
                             
 table(task$data()[split$train_index, task$target_names, with = F])
 table(task$data()[split$test_index, task$target_names, with = F])
@@ -69,7 +69,7 @@ table(task$data()[split$test_index, task$target_names, with = F])
 Then, the `classif.lightgbm` class needs to be instantiated: 
 
 ```{r}
-learner <- mlr3::lrn("classif.lightgbm", objective = "binary")
+learner = mlr3::lrn("classif.lightgbm", objective = "binary")
 ```
 
 # Configure the learner 
@@ -81,7 +81,7 @@ learner$param_set
 ```
 
 ```{r}
-learner$param_set$values <- mlr3misc::insert_named(
+learner$param_set$values = mlr3misc::insert_named(
   learner$param_set$values,
     list(
     "early_stopping_round" = 10,
@@ -98,8 +98,8 @@ learner$param_set$values <- mlr3misc::insert_named(
 The learner is now ready to be trained by using its `train` function. 
 
 ```{r results='hide', message=FALSE, warning=FALSE, error=FALSE}
-#learner$categorical_feature <- c("pregnant", "age")
-#learner$categorical_feature <- c(1, 7)
+#learner$categorical_feature = c("pregnant", "age")
+#learner$categorical_feature = c(1, 7)
 learner$train(task, row_ids = split$train_index)
 ```
 
@@ -114,7 +114,7 @@ learner$model$current_iter()
 The learner's `predict` function returns an object of mlr3's class `PredictionClassif`. 
 
 ```{r}
-predictions <- learner$predict(task, row_ids = split$test_index)
+predictions = learner$predict(task, row_ids = split$test_index)
 head(predictions$response)
 ```
 
@@ -134,6 +134,6 @@ predictions$score(mlr3::msr("classif.auc"))
 The variable importance plot can be calculated by using the learner's `importance` function:
 
 ```{r}
-importance <- learner$importance()
+importance = learner$importance()
 importance
 ```

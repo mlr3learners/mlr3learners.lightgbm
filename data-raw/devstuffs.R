@@ -1,32 +1,38 @@
-packagename <- "mlr3learners.lightgbm"
+packagename = "mlr3learners.lightgbm"
 
 # remove existing description object
 unlink("DESCRIPTION")
 
 # Create a new description object
-my_desc <- desc::description$new("!new")
+my_desc = desc::description$new("!new")
 
 # Set your package name
 my_desc$set("Package", packagename)
 
 # Set author names 2
 my_desc$set_authors(c(
-  person("Lorenz A.", "Kapsner", email = "lorenz.kapsner@gmail.com", role = c("cre", "aut"),
-         comment = c(ORCID = "0000-0003-1866-860X"))
+  person("Lorenz A.", "Kapsner",
+         email = "lorenz.kapsner@gmail.com",
+         role = c("cre", "aut"),
+         comment = c(ORCID = "0000-0003-1866-860X")),
+  person(given = "Patrick",
+         family = "Schratz",
+         role = "cbt",
+         email = "patrick.schratz@gmail.com",
+         comment = c(ORCID = "0000-0003-0748-6624"))
 ))
 
 # Remove some author fields
 my_desc$del("Maintainer")
 
 # Set the version
-my_desc$set_version("0.0.4.9005")
+my_desc$set_version("0.0.4.9006")
 
 # The title of your package
 my_desc$set(Title = "mlr3: LightGBM learner")
 
 # The description of your package
-my_desc$set(Description = paste0("Brings the LightGBM functionality ",
-                                 "to the mlr3 framework."))
+my_desc$set(Description = paste0("Adds `lgb.train()` from the lightgbm package to mlr3."))
 
 # The date when description file has been created
 my_desc$set("Date" = as.character(Sys.Date()))
@@ -84,6 +90,35 @@ usethis::use_package("knitr", type = "Suggests")
 usethis::use_package("future", type = "Suggests")
 usethis::use_package("mlr3tuning", type = "Suggests")
 usethis::use_package("mlbench", type = "Suggests")
+# buildignore
+# usethis::use_build_ignore("LICENSE.md")
+# usethis::use_build_ignore(".gitlab-ci.yml")
+# usethis::use_build_ignore("data-raw")
+# usethis::use_build_ignore("*.Rproj")
+# usethis::use_build_ignore("data-raw")
+
+# gitignore
+# usethis::use_git_ignore("/*")
+# usethis::use_git_ignore("/*/")
+# usethis::use_git_ignore("*.log")
+# usethis::use_git_ignore("!/.gitignore")
+# usethis::use_git_ignore("!/.gitlab-ci.yml")
+# usethis::use_git_ignore("!/data-raw/")
+# usethis::use_git_ignore("!/DESCRIPTION")
+# usethis::use_git_ignore("!/inst/")
+# usethis::use_git_ignore("!/LICENSE.md")
+# usethis::use_git_ignore("!/man/")
+# usethis::use_git_ignore("!NAMESPACE")
+# usethis::use_git_ignore("!/R/")
+# usethis::use_git_ignore("!/tests/")
+# usethis::use_git_ignore("!/vignettes/")
+# usethis::use_git_ignore("!/README.md")
+# usethis::use_git_ignore("!/tests/")
+# usethis::use_git_ignore("/.Rhistory")
+# usethis::use_git_ignore("!/*.Rproj")
+# usethis::use_git_ignore("/.Rproj*")
+# usethis::use_git_ignore("/.RData")
+# usethis::use_git_ignore("!/man-roxygen/")
 
 # code coverage
 #covr::package_coverage()

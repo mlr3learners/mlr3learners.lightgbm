@@ -31,13 +31,13 @@ library(mlbench)
 
 ```{r}
 data("PimaIndiansDiabetes2")
-dataset <- data.table::as.data.table(PimaIndiansDiabetes2)
-target_col <- "diabetes"
+dataset = data.table::as.data.table(PimaIndiansDiabetes2)
+target_col = "diabetes"
 
-dataset <- lightgbm::lgb.prepare(dataset)
+dataset = lightgbm::lgb.prepare(dataset)
 dataset[, (target_col) := factor(get(target_col) - 1L)]
 
-task <- mlr3::TaskClassif$new(
+task = mlr3::TaskClassif$new(
   id = "pima",
   backend = dataset,
   target = target_col,
@@ -47,21 +47,18 @@ task <- mlr3::TaskClassif$new(
 
 ```{r}
 set.seed(17)
-split <- list(
+split = list(
   train_index = sample(seq_len(task$nrow), size = 0.7 * task$nrow)
 )
-split$test_index <- setdiff(seq_len(task$nrow), split$train_index)
+split$test_index = setdiff(seq_len(task$nrow), split$train_index)
 ```
 
 # Early stopping using the internal lightgbm implementation 
 
 ```{r message=F, error=F, warning=F}
-learner <- mlr3::lrn("classif.lightgbm", objective = "binary")
-learner$early_stopping_rounds <- 10
-learner$nrounds <- 100
-
+learner = mlr3::lrn("classif.lightgbm", objective = "binary")
 # define parameters
-learner$param_set$values <- mlr3misc::insert_named(
+learner$param_set$values = mlr3misc::insert_named(
   learner$param_set$values,
     list(
     "early_stopping_round" = 10,
@@ -82,10 +79,10 @@ learner$model$current_iter()
 # Early stopping using the mlr3tuning implementation 
 
 ```{r message=F, error=F, warning=F}
-learner <- mlr3::lrn("classif.lightgbm")
+learner = mlr3::lrn("classif.lightgbm")
 
 # define parameters
-learner$param_set$values <- mlr3misc::insert_named(
+learner$param_set$values = mlr3misc::insert_named(
   learner$param_set$values,
     list(
       "objective" = "binary",
@@ -98,29 +95,29 @@ learner$param_set$values <- mlr3misc::insert_named(
 )
 
 # define num_iterations as tuning parameter
-tune_ps <- ParamSet$new(list(
+tune_ps = ParamSet$new(list(
   ParamDbl$new("num_iterations", lower = 1L, upper = 100L)
 ))
 
 # design_points
-design <- paradox::generate_design_grid(
+design = paradox::generate_design_grid(
   tune_ps,
   param_resolutions = c(
     num_iterations = 100
 ))
 
 # Create the resampling strategy and the measure
-resampling <- mlr3::rsmp("cv", folds = 5)
-measure <- mlr3::msr("classif.auc")
+resampling = mlr3::rsmp("cv", folds = 5)
+measure = mlr3::msr("classif.auc")
 
 # Create the tuner 
-tuner <- mlr3tuning::tnr("design_points", design = design$data, batch_size = 1)
+tuner = mlr3tuning::tnr("design_points", design = design$data, batch_size = 1)
 
 # Create the terminator 
-terminator <- mlr3tuning::term("stagnation", iters = 10)
+terminator = mlr3tuning::term("stagnation", iters = 10)
 
 # Instantiate the AutoTuner instance 
-at <- mlr3tuning::AutoTuner$new(
+at = mlr3tuning::AutoTuner$new(
   learner = learner,
   resampling = resampling,
   measures = measure,

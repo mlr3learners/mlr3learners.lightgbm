@@ -6,7 +6,7 @@
 #' @importFrom mlr3 mlr_learners LearnerRegr
 #'
 #' @export
-LearnerRegrLightGBM <- R6::R6Class(
+LearnerRegrLightGBM = R6::R6Class(
   "LearnerRegrLightGBM",
   inherit = LearnerRegr,
   public = list(
@@ -469,16 +469,16 @@ LearnerRegrLightGBM <- R6::R6Class(
         stop("No model stored")
       }
       if (is.null(private$imp)) {
-        private$imp <- lightgbm::lgb.importance(self$model)
+        private$imp = lightgbm::lgb.importance(self$model)
       }
       # this is required to correctly format importance values
       # otherwise, unit tests will fail
       if (nrow(private$imp) != 0) {
-        ret <- sapply(private$imp$Feature, function(x) {
+        ret = sapply(private$imp$Feature, function(x) {
           return(private$imp[which(private$imp$Feature == x), ]$Gain)
         }, USE.NAMES = TRUE, simplify = TRUE)
       } else {
-        ret <- sapply(
+        ret = sapply(
           private$dtrain$get_colnames(),
           function(x) {
             return(0)
@@ -495,12 +495,12 @@ LearnerRegrLightGBM <- R6::R6Class(
     dtrain = NULL,
     .train = function(task) {
       # extract training data
-      data <- task$data()
+      data = task$data()
       # prepare data for lightgbm
-      data <- lightgbm::lgb.prepare(data)
-      label <- data[, get(task$target_names)]
+      data = lightgbm::lgb.prepare(data)
+      label = data[, get(task$target_names)]
       # create lightgbm dataset
-      private$dtrain <- lightgbm::lgb.Dataset(
+      private$dtrain = lightgbm::lgb.Dataset(
         data = as.matrix(data[, task$feature_names, with = F]),
         label = label,
         free_raw_data = FALSE
@@ -511,7 +511,7 @@ LearnerRegrLightGBM <- R6::R6Class(
       }
       # set "metric" to "none", if custom eval provided
       if (!is.null(self$param_set$values[["custom_eval"]])) {
-        self$param_set$values$metric <- "None"
+        self$param_set$values$metric = "None"
       }
       # extract config-parameters
       feval = self$param_set$values[["custom_eval"]]
@@ -531,7 +531,7 @@ LearnerRegrLightGBM <- R6::R6Class(
           )
         )
         # train the CV-model
-        cv_model <- lightgbm::lgb.cv(
+        cv_model = lightgbm::lgb.cv(
           params = pars
           , data = private$dtrain
           , nfold = nfolds
@@ -545,10 +545,10 @@ LearnerRegrLightGBM <- R6::R6Class(
           )
         )
         # replace num_iterations with value found with CV
-        pars[["num_iterations"]] <- cv_model$best_iter
+        pars[["num_iterations"]] = cv_model$best_iter
         # set early_stopping to NULL since this is not needed in final
         # training anymore
-        pars[["early_stopping_round"]] <- NULL
+        pars[["early_stopping_round"]] = NULL
       }
       # train model
       mlr3misc::invoke(
@@ -559,17 +559,17 @@ LearnerRegrLightGBM <- R6::R6Class(
       ) # use the mlr3misc::invoke function (it's similar to do.call())
     },
     .predict = function(task) {
-      newdata <- task$data(cols = task$feature_names) # get newdata
+      newdata = task$data(cols = task$feature_names) # get newdata
       data.table::setcolorder(
         newdata,
         private$dtrain$get_colnames()
       )
       # create lgb.Datasets
-      test_input <- lightgbm::lgb.prepare(
+      test_input = lightgbm::lgb.prepare(
         newdata
       )
-      test_data <- as.matrix(test_input)
-      p <- mlr3misc::invoke(
+      test_data = as.matrix(test_input)
+      p = mlr3misc::invoke(
         .f = self$model$predict
         , data = test_data
         , reshape = TRUE

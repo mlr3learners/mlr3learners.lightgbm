@@ -1,2 +1,8 @@
+^\.travis\.yml$
+^\.lintr$
+^\.vscode$
+^\.ccache$
+^\.github$
+^clang-.*
 ^.*\.Rproj$
 ^\.Rproj\.user$

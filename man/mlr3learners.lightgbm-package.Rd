@@ -6,7 +6,7 @@
 \alias{mlr3learners.lightgbm-package}
 \title{mlr3learners.lightgbm: mlr3: LightGBM learner}
 \description{
-Brings the LightGBM functionality to the mlr3 framework.
+Adds `lgb.train()` from the lightgbm package to mlr3.
 }
 \seealso{
 Useful links:
@@ -18,5 +18,10 @@ Useful links:
 }
 \author{
 \strong{Maintainer}: Lorenz A. Kapsner \email{lorenz.kapsner@gmail.com} (\href{https://orcid.org/0000-0003-1866-860X}{ORCID})
+
+Other contributors:
+\itemize{
+  \item Patrick Schratz \email{patrick.schratz@gmail.com} (\href{https://orcid.org/0000-0003-0748-6624}{ORCID})
+}
 
 }
