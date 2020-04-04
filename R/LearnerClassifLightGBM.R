@@ -31,6 +31,9 @@ LearnerClassifLightGBM = R6::R6Class(
                        default = 5L,
                        lower = 3L,
                        tags = c("config", "train")),
+          ParamUty$new(id = "init_model",
+                       default = NULL,
+                       tags = c("config", "train")),
           #######################################
           #######################################
           # Classification only
@@ -557,6 +560,8 @@ LearnerClassifLightGBM = R6::R6Class(
       self$param_set$values[["nrounds_by_cv"]] = NULL
       nfolds = self$param_set$values[["nfolds"]]
       self$param_set$values[["nfolds"]] = NULL
+      init_model = self$param_set$values[["init_model"]]
+      self$param_set$values[["init_model"]] = NULL
       # get training parameters
       pars = self$param_set$get_values(tags = "train")
       # train CV model, in case that nrounds_by_cv is true
@@ -574,6 +579,7 @@ LearnerClassifLightGBM = R6::R6Class(
           , nfold = nfolds
           , stratified = TRUE
           , eval = feval
+          , init_model  = init_model
         )
         message(
           sprintf(
@@ -593,6 +599,7 @@ LearnerClassifLightGBM = R6::R6Class(
         , data = private$dtrain
         , params = pars
         , eval = feval
+        , init_model  = init_model
       ) # use the mlr3misc::invoke function (it's similar to do.call())
     },
     .predict = function(task) {

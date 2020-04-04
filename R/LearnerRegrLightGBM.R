@@ -29,6 +29,9 @@ LearnerRegrLightGBM = R6::R6Class(
                          default = 5L,
                          lower = 3L,
                          tags = c("config", "train")),
+            ParamUty$new(id = "init_model",
+                         default = NULL,
+                         tags = c("config", "train")),
             #######################################
             #######################################
             # Regression only
