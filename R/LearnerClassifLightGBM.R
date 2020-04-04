@@ -23,14 +23,14 @@ LearnerClassifLightGBM <- R6::R6Class(
           # Config Parameters
           ParamUty$new(id = "custom_eval",
                        default = NULL,
-                       tags = "config"),
+                       tags = c("config", "train")),
           ParamLgl$new(id = "nrounds_by_cv",
                        default = TRUE,
-                       tags = "config"),
+                       tags = c("config", "train")),
           ParamInt$new(id = "nfolds",
                        default = 5L,
                        lower = 3L,
-                       tags = "config"),
+                       tags = c("config", "train")),
           #######################################
           #######################################
           # Classification only
@@ -406,7 +406,7 @@ LearnerClassifLightGBM <- R6::R6Class(
                        tags = "train"),
           ParamUty$new(id = "group_column",
                        default = "",
-                       tags = ""),
+                       tags = "train"),
           ParamUty$new(id = "ignore_column",
                        default = "",
                        tags = "train"),
@@ -479,12 +479,7 @@ LearnerClassifLightGBM <- R6::R6Class(
         man = "mlr3learners.lightgbm::mlr_learners_classif_lightgbm"
       )
     },
-    # Add method for importance, if learner supports that.
-    # It must return a sorted (decreasing) numerical, named vector.
     #' @description The importance function
-    #'
-    #' @details A named vector with the learner's variable importances.
-    #'
     importance = function() {
       if (is.null(self$model)) {
         stop("No model stored")
@@ -494,53 +489,77 @@ LearnerClassifLightGBM <- R6::R6Class(
       }
       # this is required to correctly format importance values
       # otherwise, unit tests will fail
-      ret <- sapply(private$imp$Feature, function(x) {
-        return(private$imp[which(private$imp$Feature == x), ]$Gain)
-      }, USE.NAMES = TRUE, simplify = TRUE)
+      if (nrow(private$imp) != 0) {
+        ret <- sapply(private$imp$Feature, function(x) {
+          return(private$imp[which(private$imp$Feature == x), ]$Gain)
+        }, USE.NAMES = TRUE, simplify = TRUE)
+      } else {
+        ret <- sapply(
+          private$dtrain$get_colnames(),
+          function(x) {
+            return(0)
+          }, USE.NAMES = TRUE, simplify = FALSE)
+      }
       return(unlist(ret))
     }
   ),
   private = list(
     # save importance values
     imp = NULL,
+    # save training data (required for accessing function get_colnames()
+    # from importance and from prediction)
+    dtrain = NULL,
     .train = function(task) {
       # extract training data
       data <- task$data()
-      # check for numeric/integer targets, starting with "0" only:
-      stopifnot(
-        min(
-          as.numeric(
-            as.character(data[, get(task$target_names)]
-            ))) == 0
-      )
-      # TaskClassif's target is always of class "factor", thus
-      # lgb.prepare would convert it to integer values.
-      # To avoid that, do the transformation before lgb.prepare
-      data[, (task$target_names) := as.integer(as.character(
-        get(task$target_names)
-      ))]
-      # prepare data for lightgbm
-      data <- lightgbm::lgb.prepare(data)
+      # create training label
       label <- data[, get(task$target_names)]
+      # guess objective (for mlr3learners autotest)
+      n <- length(unique(label))
+      if (is.null(self$param_set$values[["objective"]])) {
+        if (n == 2) {
+          self$param_set$values[["objective"]] <- "binary"
+        } else {
+          self$param_set$values[["objective"]] <- "multiclass"
+          self$param_set$values[["num_class"]] <- n
+        }
+      }
+      # TaskClassif's target is always of class "factor",
+      # we need to convert it to integers and keep the mappings
+      # in order to be able to restore them later for the predictions
+      label <- private$transform_target(
+        vector = data[, get(task$target_names)],
+        positive = task$positive,
+        negative = task$negative,
+        mapping = "dtrain"
+      )
+      # store the class label names
+      private$label_names <- sort(unique(label))
+      # prepare data for lightgbm
+      data <- lightgbm::lgb.prepare(data[, task$feature_names, with = F])
       # create lightgbm dataset
-      dtrain <- lightgbm::lgb.Dataset(
-        data = as.matrix(data[, task$feature_names, with = F]),
+      private$dtrain <- lightgbm::lgb.Dataset(
+        data = as.matrix(data),
         label = label,
         free_raw_data = FALSE
       )
       # set weights in dtrain (if available in task)
       if ("weights" %in% task$properties) {
-        lightgbm::setinfo(dtrain, "weight", task$weights$weight)
+        lightgbm::setinfo(private$dtrain, "weight", task$weights$weight)
       }
       # set "metric" to "none", if custom eval provided
       if (!is.null(self$param_set$values[["custom_eval"]])) {
         self$param_set$values$metric <- "None"
       }
+      # extract config-parameters
+      feval = self$param_set$values[["custom_eval"]]
+      self$param_set$values[["custom_eval"]] = NULL
+      nrounds_by_cv = self$param_set$values[["nrounds_by_cv"]]
+      self$param_set$values[["nrounds_by_cv"]] = NULL
+      nfolds = self$param_set$values[["nfolds"]]
+      self$param_set$values[["nfolds"]] = NULL
       # get training parameters
       pars = self$param_set$get_values(tags = "train")
-      feval = self$param_set$values[["custom_eval"]]
-      nrounds_by_cv = self$param_set$values[["nrounds_by_cv"]]
-      nfolds = self$param_set$values[["nfolds"]]
       # train CV model, in case that nrounds_by_cv is true
       if (isTRUE(nrounds_by_cv)) {
         message(
@@ -552,7 +571,7 @@ LearnerClassifLightGBM <- R6::R6Class(
         # train the CV-model
         cv_model <- lightgbm::lgb.cv(
           params = pars
-          , data = dtrain
+          , data = private$dtrain
           , nfold = nfolds
           , stratified = TRUE
           , eval = feval
@@ -572,7 +591,7 @@ LearnerClassifLightGBM <- R6::R6Class(
       # train model
       mlr3misc::invoke(
         .f = lightgbm::lgb.train
-        , data = dtrain
+        , data = private$dtrain
         , params = pars
         , eval = feval
       ) # use the mlr3misc::invoke function (it's similar to do.call())
@@ -581,32 +600,120 @@ LearnerClassifLightGBM <- R6::R6Class(
       newdata <- task$data(cols = task$feature_names) # get newdata
       data.table::setcolorder(
         newdata,
-        task$feature_names
+        private$dtrain$get_colnames()
       )
       # create lgb.Datasets
       test_input <- lightgbm::lgb.prepare(
         newdata
       )
       test_data <- as.matrix(test_input)
-      p <- self$model$predict(
-        data = test_data,
-        reshape = TRUE
+      p <- mlr3misc::invoke(
+        .f = self$model$predict
+        , data = test_data
+        , reshape = TRUE
       )
-      if (self$param_set$values[["objective"]] == "binary") {
+      if (self$param_set$values[["objective"]] %in%
+          c("multiclass", "multiclassova", "lambdarank")) {
+        # process target variable
+        c_names <- as.character(unique(private$label_names))
+        c_names <- plyr::revalue(
+          x = c_names,
+          replace = private$value_mapping_dtrain
+        )
+        colnames(p) <- c_names
+      } else if (self$param_set$values[["objective"]] == "binary") {
         # reshape binary prob to matrix
         p <- cbind(
           "0" = 1 - p,
           "1" = p
         )
-      } else {
-        colnames(p) <- unname(
-          unlist(task$levels(cols = task$target_names))
+        c_names <- colnames(p)
+        c_names <- plyr::revalue(
+          x = c_names,
+          replace = private$value_mapping_dtrain
         )
+        colnames(p) <- c_names
       }
       mlr3::PredictionClassif$new(
         task = task,
         prob = p
       )
+    },
+    # Transforming the targets is required to pass mlr3's auto tests.
+    # Even though we have a classification task, lightgbm accepts only
+    # numerics/integers as label. We therefore need to remember the mappings
+    # to the original levels when transforming to integers in order to
+    # make correct mlr3 predictions and pass the unit tests
+    value_mapping_dtrain = NULL,
+    value_mapping_dvalid = NULL,
+    label_names = NULL,
+    transform_target = function(vector, positive, negative, mapping) {
+      stopifnot(
+        mapping %in% c("dvalid", "dtrain")
+      )
+      # init error-flag
+      error <- FALSE
+      # binary use-case
+      if (self$param_set$values[["objective"]] == "binary") {
+        stopifnot(
+          is.character(positive),
+          is.character(negative)
+        )
+        message(paste0("positive class: ", positive))
+        message(paste0("negative class: ", negative))
+        repl <- c(0, 1)
+        names(repl) <- c(negative, positive)
+        vector <- as.integer(plyr::revalue(
+          x = as.character(vector),
+          replace = repl
+        ))
+        new_levels <- unname(repl)
+        old_levels <- names(repl)
+        names(old_levels) <- new_levels
+        private[[paste0("value_mapping_", mapping)]] <- old_levels
+      } else {
+        # mulitclass use case
+        old_levels <- factor(levels(factor(sort(vector))))
+        # if target is not numeric
+        if (!is.numeric(vector)) {
+          # store target as integer (less memory), beginning
+          # with "0"
+          vector <- (as.integer(factor(vector)) - 1L)
+          new_levels <- (as.integer(old_levels) - 1L)
+          old_levels <- as.character(old_levels)
+          names(old_levels) <- new_levels
+          private[[paste0("value_mapping_", mapping)]] <- old_levels
+          # if target is numeric
+        } else if (is.numeric(vector)) {
+          vector <- as.integer(round(vector, 0))
+          new_levels <- as.integer(old_levels)
+          # check, if minimum != 0 --> if == 0, we have nothing to do
+          if (min(vector) != 0) {
+            # if min == 1, substract 1 --> lightgbm need the first class
+            # to be 0
+            if (min(vector) == 1) {
+              vector <- as.integer(vector) - 1L
+              new_levels <- as.integer(old_levels) - 1L
+              # else stop with warning
+            } else {
+              error <- TRUE
+            }
+          }
+          old_levels <- as.character(old_levels)
+          names(old_levels) <- new_levels
+          private[[paste0("value_mapping_", mapping)]] <- old_levels
+        } else {
+          error <- TRUE
+        }
+        # if error occured
+        if (error) {
+          stop(
+            paste0("Please provide a valid target variable ",
+                   "for classification tasks")
+          )
+        }
+      }
+      return(vector)
     }
   )
 )

@@ -26,12 +26,23 @@ Before you can use the `mlr3learners.lightgbm` package, you need to install the 
 ```{r setup}
 library(mlr3)
 library(mlr3learners.lightgbm)
+library(mlbench)
 ```
 
-# Load the mlr3 task
+# Create the mlr3 task
 
 ```{r}
-task <- mlr3::tsk("boston_housing")
+data("BostonHousing2")
+dataset <- data.table::as.data.table(BostonHousing2)
+target_col <- "medv"
+
+dataset <- lightgbm::lgb.prepare(dataset)
+
+task <- mlr3::TaskRegr$new(
+  id = "bostonhousing",
+  backend = dataset,
+  target = target_col
+)
 ```
 
 To have independent validation data and test data, we further create a list `split`, containing the respective row indices.
@@ -49,33 +60,31 @@ split$test_index <- setdiff(seq_len(task$nrow), split$train_index)
 Then, the `regr.lightgbm` class needs to be instantiated: 
 
 ```{r}
-learner <- mlr3::lrn("regr.lightgbm")
+learner <- mlr3::lrn("regr.lightgbm", objective = "regression")
 ```
 
 # Configure the learner 
 
-In the next step, some of the learner's parameters need to be set. E.g., the parameters `nrounds` and `early_stopping_rounds` can be set here. Please refer to the [LightGBM manual](https://lightgbm.readthedocs.io) for further details these parameters. Almost all possible parameters have been implemented here. You can inspect them using the following command: 
+In the next step, some of the learner's parameters need to be set. E.g., the parameters `num_iterations` and `early_stopping_round` can be set here. Please refer to the [LightGBM manual](https://lightgbm.readthedocs.io) for further details these parameters. Almost all possible parameters have been implemented here. You can inspect them using the following command: 
 
 ```{r eval=FALSE}
 learner$param_set
 ```
 
-```{r}
-learner$early_stopping_rounds <- 10
-learner$nrounds <- 100
-
-learner$param_set$values <- list(
-  "learning_rate" = 0.1,
-  "seed" = 17L
-)
-```
-
 Use the custom "rmsle" evaluation function:
 
 ```{r}
-learner$eval <- mlr3learners.lightgbm::lgb_rmsle
+learner$param_set$values <- mlr3misc::insert_named(
+  learner$param_set$values,
+    list(
+    "early_stopping_round" = 10,
+    "learning_rate" = 0.1,
+    "seed" = 17L,
+    "num_iterations" = 100,
+    "custom_eval" = mlr3learners.lightgbm::lgb_rmsle
+  )
+)
 ```
-
 
 # Train the learner 
 

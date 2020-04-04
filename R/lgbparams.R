@@ -7,14 +7,14 @@ lgbparams <- function() {
       # Config Parameters
       ParamUty$new(id = "custom_eval",
                    default = NULL,
-                   tags = "config"),
+                   tags = c("config", "train")),
       ParamLgl$new(id = "nrounds_by_cv",
                    default = TRUE,
-                   tags = "config"),
+                   tags = c("config", "train")),
       ParamInt$new(id = "nfolds",
                    default = 5L,
                    lower = 3L,
-                   tags = "config"),
+                   tags = c("config", "train")),
       #######################################
       #######################################
       # Regression only
@@ -452,7 +452,7 @@ lgbparams <- function() {
                    tags = "train"),
       ParamUty$new(id = "group_column",
                    default = "",
-                   tags = ""),
+                   tags = "train"),
       ParamUty$new(id = "ignore_column",
                    default = "",
                    tags = "train"),

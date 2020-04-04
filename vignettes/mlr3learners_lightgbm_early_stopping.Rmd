@@ -24,12 +24,25 @@ knitr::opts_chunk$set(
 library(mlr3)
 library(mlr3learners.lightgbm)
 library(paradox)
+library(mlbench)
 ```
 
 # Load the dataset 
 
 ```{r}
-task <- mlr3::tsk("pima")
+data("PimaIndiansDiabetes2")
+dataset <- data.table::as.data.table(PimaIndiansDiabetes2)
+target_col <- "diabetes"
+
+dataset <- lightgbm::lgb.prepare(dataset)
+dataset[, (target_col) := factor(get(target_col) - 1L)]
+
+task <- mlr3::TaskClassif$new(
+  id = "pima",
+  backend = dataset,
+  target = target_col,
+  positive = "1"
+)
 ```
 
 ```{r}
@@ -43,17 +56,20 @@ split$test_index <- setdiff(seq_len(task$nrow), split$train_index)
 # Early stopping using the internal lightgbm implementation 
 
 ```{r message=F, error=F, warning=F}
-learner <- mlr3::lrn("classif.lightgbm")
+learner <- mlr3::lrn("classif.lightgbm", objective = "binary")
 learner$early_stopping_rounds <- 10
 learner$nrounds <- 100
 
 # define parameters
-learner$param_set$values <- list(
-  "objective" = "binary",
-  "learning_rate" = 0.1,
-  "seed" = 17L,
-  "bagging_freq" = 5L,
-  "metric" = "auc"
+learner$param_set$values <- mlr3misc::insert_named(
+  learner$param_set$values,
+    list(
+    "early_stopping_round" = 10,
+    "learning_rate" = 0.1,
+    "seed" = 17L,
+    "metric" = "auc",
+    "num_iterations" = 100
+  )
 )
 
 system.time(
@@ -68,17 +84,17 @@ learner$model$current_iter()
 ```{r message=F, error=F, warning=F}
 learner <- mlr3::lrn("classif.lightgbm")
 
-# switch off lightgbm's internal CV
-learner$lgb_learner$nrounds_by_cv <- FALSE
-
 # define parameters
-learner$param_set$values <- list(
-  "objective" = "binary",
-  "learning_rate" = 0.1,
-  "seed" = 17L,
-  "bagging_freq" = 5L,
-  "num_threads" = 1L,
-  "metric" = "auc"
+learner$param_set$values <- mlr3misc::insert_named(
+  learner$param_set$values,
+    list(
+      "objective" = "binary",
+      "nrounds_by_cv" = FALSE,
+      "learning_rate" = 0.1,
+      "seed" = 17L,
+      "metric" = "auc",
+      "num_threads" = 1
+  )
 )
 
 # define num_iterations as tuning parameter

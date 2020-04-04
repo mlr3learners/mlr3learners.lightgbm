@@ -36,14 +36,18 @@ data("PimaIndiansDiabetes2")
 dataset <- data.table::as.data.table(PimaIndiansDiabetes2)
 target_col <- "diabetes"
 
-dataset <- lightgbm::lgb.prepare(dataset)
-dataset[, (target_col) := factor(get(target_col) - 1L)]
+vec <- setdiff(colnames(dataset), target_col)
+
+dataset <- cbind(
+  dataset[, c(target_col), with = F],
+  lightgbm::lgb.prepare(dataset[, vec, with = F])
+)
 
 task <- mlr3::TaskClassif$new(
   id = "pima",
   backend = dataset,
   target = target_col,
-  positive = "1"
+  positive = "pos"
 )
 ```
 

@@ -24,12 +24,29 @@ knitr::opts_chunk$set(
 library(mlr3)
 library(mlr3learners.lightgbm)
 library(paradox)
+library(mlbench)
 ```
 
 # Load the dataset 
 
 ```{r}
-task <- mlr3::tsk("pima")
+data("PimaIndiansDiabetes2")
+dataset <- data.table::as.data.table(PimaIndiansDiabetes2)
+target_col <- "diabetes"
+
+vec <- setdiff(colnames(dataset), target_col)
+
+dataset <- cbind(
+  dataset[, c(target_col), with = F],
+  lightgbm::lgb.prepare(dataset[, vec, with = F])
+)
+
+task <- mlr3::TaskClassif$new(
+  id = "pima",
+  backend = dataset,
+  target = target_col,
+  positive = "pos"
+)
 ```
 
 ```{r}
@@ -45,26 +62,23 @@ split$test_index <- setdiff(seq_len(task$nrow), split$train_index)
 Initially, the `classif.lgbpy` class needs to be instantiated: 
 
 ```{r}
-learner <- mlr3::lrn("classif.lightgbm")
+learner <- mlr3::lrn("classif.lightgbm", objective = "binary")
 ```
 
 # Configure the learner 
 
-```{r}
-learner$early_stopping_rounds <- 10
-learner$nrounds <- 100
-```
-
 We will here switch off the parallelization of the lightgbm learner by setting the parameter `num_threads = 1L`. Instead, we will later parallelize the resampling using the `future` package, as recommended by the [mlr3 team](https://mlr3book.mlr-org.com/parallelization.html#parallelization).  
 
 ```{r}
-learner$param_set$values <- list(
-  "objective" = "binary",
-  "learning_rate" = 0.1,
-  "seed" = 17L,
-  "bagging_freq" = 5L,
-  "num_threads" = 1L,
-  "metric" = "auc"
+learner$param_set$values <- mlr3misc::insert_named(
+  learner$param_set$values,
+    list(
+      "learning_rate" = 0.1,
+      "bagging_freq" = 5L,
+      "seed" = 17L,
+      "metric" = "auc",
+      "num_threads" = 1
+  )
 )
 
 tune_ps <- ParamSet$new(list(
@@ -158,15 +172,12 @@ at$tuning_instance$archive(unnest = "params")[, c("bagging_fraction", "min_data_
 
 ```{r}
 at$tuning_instance$result$params
-nrounds <- best$learners[[1]]$lgb_learner$nrounds
-nrounds
 ```
 
 # Importance 
 
 ```{r}
-at$learner$importance()
-at$learner$lgb_learner$importance2()
+importance <- at$learner$importance()
 ```
 
 # Predict test data with best model

@@ -9,7 +9,7 @@
 
 # Features 
 
-* integrated native CV before the actual model training to find the optimal `nrounds` for the given training data and parameter set  
+* integrated native CV before the actual model training to find the optimal `num_iterations` for the given training data and parameter set  
 * GPU support  
 
 # Installation 
@@ -26,7 +26,7 @@ If the lightgbm R package is installed, you can continue and install the [mlr3le
 
 ```r
 install.packages("devtools")
-devtools::install_github("kapsner/mlr3learners.lightgbm")
+devtools::install_github("mlr3learners/mlr3learners.lightgbm")
 ```
 
 # Example
@@ -34,15 +34,18 @@ devtools::install_github("kapsner/mlr3learners.lightgbm")
 ```r
 library(mlr3)
 task = mlr3::tsk("iris")
-learner = mlr3::lrn("classif.lightgbm")
+learner = mlr3::lrn("classif.lightgbm", objective = "multiclass")
 
-learner$early_stopping_rounds <- 1000
-learner$num_boost_round <- 5000
-
-learner$param_set$values <- list(
-  "objective" = "multiclass",
-  "learning_rate" = 0.01,
-  "seed" = 17L
+learner$param_set$values <- mlr3misc::insert_named(
+  learner$param_set$values,
+    list(
+    "early_stopping_round" = 10,
+    "learning_rate" = 0.1,
+    "seed" = 17L,
+    "metric" = "multi_logloss",
+    "num_iterations" = 100,
+    "num_class" = 3
+  )
 )
 
 learner$train(task, row_ids = 1:120)
@@ -67,13 +70,20 @@ Rscript build_r.R
 In order to use the GPU acceleration, the parameter `device_type = "gpu"` (default: "cpu") needs to be set. According to the [LightGBM parameter manual](https://lightgbm.readthedocs.io/en/latest/Parameters.html), 'it is recommended to use the smaller `max_bin` (e.g. 63) to get the better speed up'. 
 
 ```r
-learner$param_set$values <- list(
-  "objective" = "multiclass",
-  "learning_rate" = 0.01,
-  "seed" = 17L,
-  "device_type" = "gpu",
-  "max_bin" = 63L
-)
+learner$param_set$values <- mlr3misc::insert_named(
+  learner$param_set$values,
+    list(
+      "objective" = "multiclass",
+      "device_type" = "gpu",
+      "max_bin" = 63L,
+      "early_stopping_round" = 10,
+      "learning_rate" = 0.1,
+      "seed" = 17L,
+      "metric" = "multi_logloss",
+      "num_iterations" = 100,
+      "num_class" = 3
+      )
+  )
 ```
 
 All other steps are similar to the workflow without GPU support. 

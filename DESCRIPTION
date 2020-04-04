@@ -34,5 +34,6 @@ Suggests:
     qpdf,
     knitr,
     future,
-    mlr3tuning
+    mlr3tuning,
+    mlbench
 RoxygenNote: 7.1.0

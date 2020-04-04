@@ -55,10 +55,6 @@ The importance function
 \if{html}{\out{<div class="r">}}\preformatted{LearnerRegrLightGBM$importance()}\if{html}{\out{</div>}}
 }
 
-\subsection{Details}{
-A named vector with the learner's variable importances.
-}
-
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-clone"></a>}}

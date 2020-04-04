@@ -9,13 +9,10 @@
 LearnerRegrLightGBM <- R6::R6Class(
   "LearnerRegrLightGBM",
   inherit = LearnerRegr,
-
   public = list(
-
     #' @description
     #' Creates a new instance of this [R6][R6::R6Class] class.
     initialize = function() {
-
       # initialize ParamSet
       ps = ParamSet$new(
           # https://lightgbm.readthedocs.io/en/latest/Parameters.html#
@@ -24,14 +21,14 @@ LearnerRegrLightGBM <- R6::R6Class(
             # Config Parameters
             ParamUty$new(id = "custom_eval",
                          default = NULL,
-                         tags = "config"),
+                         tags = c("config", "train")),
             ParamLgl$new(id = "nrounds_by_cv",
                          default = TRUE,
-                         tags = "config"),
+                         tags = c("config", "train")),
             ParamInt$new(id = "nfolds",
                          default = 5L,
                          lower = 3L,
-                         tags = "config"),
+                         tags = c("config", "train")),
             #######################################
             #######################################
             # Regression only
@@ -393,7 +390,7 @@ LearnerRegrLightGBM <- R6::R6Class(
                          tags = "train"),
             ParamUty$new(id = "group_column",
                          default = "",
-                         tags = ""),
+                         tags = "train"),
             ParamUty$new(id = "ignore_column",
                          default = "",
                          tags = "train"),
@@ -438,28 +435,6 @@ LearnerRegrLightGBM <- R6::R6Class(
                          tags = "train")
           )
         )
-
-
-      # instantiate the learner
-      private$lgb_superclass <- LightGBM$new(ps)
-
-      super$initialize(
-        # see the mlr3book for a description:
-        # https://mlr3book.mlr-org.com/extending-mlr3.html
-        id = "regr.lightgbm",
-        packages = "lightgbm",
-        feature_types = c(
-          "numeric", "factor",
-          "character", "integer"
-        ),
-        predict_types = "response",
-        param_set = ps,
-        properties = c("weights",
-                       "missings",
-                       "importance"),
-        man = "mlr3learners.lightgbm::mlr_learners_regr_lightgbm"
-      )
-
       # custom defaults
       ps$values = list(
         # FIXME: Add this change to the description of the help page
@@ -468,95 +443,141 @@ LearnerRegrLightGBM <- R6::R6Class(
         # Find best num_iterations with internal cross-validation by default
         nrounds_by_cv = TRUE,
         # Do a 5-fold CV by default
-        nfolds = 5
+        nfolds = 5,
+        # Default objective is "regression"
+        objective = "regression"
+      )
+      super$initialize(
+        # see the mlr3book for a description:
+        # https://mlr3book.mlr-org.com/extending-mlr3.html
+        id = "regr.lightgbm",
+        packages = "lightgbm",
+        feature_types = c(
+          "numeric", "integer"
+        ),
+        predict_types = "response",
+        param_set = ps,
+        properties = c("weights",
+                       "missings",
+                       "importance"),
+        man = "mlr3learners.lightgbm::mlr_learners_regr_lightgbm"
       )
     },
-
-    # Add method for importance, if learner supports that.
-    # It must return a sorted (decreasing) numerical, named vector.
     #' @description The importance function
-    #'
-    #' @details A named vector with the learner's variable importances.
-    #'
     importance = function() {
       if (is.null(self$model)) {
         stop("No model stored")
       }
-
       if (is.null(private$imp)) {
-        private$imp <- private$lgb_superclass$importance()
+        private$imp <- lightgbm::lgb.importance(self$model)
       }
+      # this is required to correctly format importance values
+      # otherwise, unit tests will fail
       if (nrow(private$imp) != 0) {
         ret <- sapply(private$imp$Feature, function(x) {
           return(private$imp[which(private$imp$Feature == x), ]$Gain)
         }, USE.NAMES = TRUE, simplify = TRUE)
       } else {
         ret <- sapply(
-          private$lgb_superclass$train_data$get_colnames(),
+          private$dtrain$get_colnames(),
           function(x) {
             return(0)
           }, USE.NAMES = TRUE, simplify = FALSE)
       }
-
       return(unlist(ret))
     }
   ),
-
   private = list(
-
     # save importance values
     imp = NULL,
-
-    # The lightgbm learner instance
-    lgb_superclass = NULL,
-
-
-    # some pre training checks for this learner
-    pre_train_checks = function(task) {
-      if (is.null(self$param_set$values[["objective"]])) {
-        # if not provided, set default objective to "regression"
-        # this is needed for the learner's init_data function
-        self$param_set$values <- mlr3misc::insert_named(
-          self$param_set$values,
-          list("objective" = "regression")
-        )
-        message("No objective provided... Setting objective to 'regression'")
-      } else {
-        stopifnot(
-          !(self$param_set$values[["objective"]] %in%
-              c("binary", "multiclass",
-                "multiclassova", "lambdarank"))
-        )
-      }
-    },
-
+    # save training data (required for accessing function get_colnames()
+    # from importance and from prediction)
+    dtrain = NULL,
     .train = function(task) {
-
-      private$pre_train_checks(task)
-
-      if (!is.null(self$param_set[["custom_eval"]])) {
-        private$lgb_superclass$eval <- self$eval
+      # extract training data
+      data <- task$data()
+      # prepare data for lightgbm
+      data <- lightgbm::lgb.prepare(data)
+      label <- data[, get(task$target_names)]
+      # create lightgbm dataset
+      private$dtrain <- lightgbm::lgb.Dataset(
+        data = as.matrix(data[, task$feature_names, with = F]),
+        label = label,
+        free_raw_data = FALSE
+      )
+      # set weights in dtrain (if available in task)
+      if ("weights" %in% task$properties) {
+        lightgbm::setinfo(private$dtrain, "weight", task$weights$weight)
+      }
+      # set "metric" to "none", if custom eval provided
+      if (!is.null(self$param_set$values[["custom_eval"]])) {
         self$param_set$values$metric <- "None"
       }
-
+      # extract config-parameters
+      feval = self$param_set$values[["custom_eval"]]
+      self$param_set$values[["custom_eval"]] = NULL
+      nrounds_by_cv = self$param_set$values[["nrounds_by_cv"]]
+      self$param_set$values[["nrounds_by_cv"]] = NULL
+      nfolds = self$param_set$values[["nfolds"]]
+      self$param_set$values[["nfolds"]] = NULL
+      # get training parameters
+      pars = self$param_set$get_values(tags = "train")
+      # train CV model, in case that nrounds_by_cv is true
+      if (isTRUE(nrounds_by_cv)) {
+        message(
+          sprintf(
+            paste0("Optimizing nrounds with %s fold CV."),
+            nfolds
+          )
+        )
+        # train the CV-model
+        cv_model <- lightgbm::lgb.cv(
+          params = pars
+          , data = private$dtrain
+          , nfold = nfolds
+          , stratified = TRUE
+          , eval = feval
+        )
+        message(
+          sprintf(
+            paste0("CV results: best iter %s; best score: %s"),
+            cv_model$best_iter, cv_model$best_score
+          )
+        )
+        # replace num_iterations with value found with CV
+        pars[["num_iterations"]] <- cv_model$best_iter
+        # set early_stopping to NULL since this is not needed in final
+        # training anymore
+        pars[["early_stopping_round"]] <- NULL
+      }
+      # train model
       mlr3misc::invoke(
-        .f = private$lgb_superclass$train,
-        task = task
+        .f = lightgbm::lgb.train
+        , data = private$dtrain
+        , params = pars
+        , eval = feval
       ) # use the mlr3misc::invoke function (it's similar to do.call())
     },
-
     .predict = function(task) {
-
-      p <- mlr3misc::invoke(
-        .f = private$lgb_superclass$predict,
-        task = task
+      newdata <- task$data(cols = task$feature_names) # get newdata
+      data.table::setcolorder(
+        newdata,
+        private$dtrain$get_colnames()
       )
-
+      # create lgb.Datasets
+      test_input <- lightgbm::lgb.prepare(
+        newdata
+      )
+      test_data <- as.matrix(test_input)
+      p <- mlr3misc::invoke(
+        .f = self$model$predict
+        , data = test_data
+        , reshape = TRUE
+      )
       mlr3::PredictionRegr$new(
         task = task,
         response = p
       )
-
     }
   )
 )

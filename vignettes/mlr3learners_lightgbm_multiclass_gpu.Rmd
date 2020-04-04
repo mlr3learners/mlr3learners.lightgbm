@@ -43,10 +43,22 @@ devtools::install_github("kapsner/mlr3learners.lightgbm")
 library(mlr3)
 library(mlr3learners.lightgbm)
 ```
-# Load the mlr3 task
+
+# Create the mlr3 task
 
 ```{r}
-task <- mlr3::tsk("iris")
+data("iris")
+dataset <- data.table::as.data.table(iris)
+target_col <- "Species"
+
+dataset <- lightgbm::lgb.prepare(dataset)
+dataset[, (target_col) := factor(get(target_col) - 1L)]
+
+task <- mlr3::TaskClassif$new(
+  id = "iris",
+  backend = dataset,
+  target = target_col,
+)
 ```
 
 To have independent validation data and test data, we further create a list `split`, containing the respective row indices.
@@ -72,7 +84,7 @@ learner <- mlr3::lrn("classif.lightgbm")
 
 # Configure the learner 
 
-In the next step, some of the learner's parameters need to be set. E.g., the parameters `nrounds` and `early_stopping_rounds` can be set here. Please refer to the [LightGBM manual](https://lightgbm.readthedocs.io) for further details these parameters. Almost all possible parameters have been implemented here. You can inspect them using the following command: 
+In the next step, some of the learner's parameters need to be set. E.g., the parameters `num_iterations` and `early_stopping_round` can be set here. Please refer to the [LightGBM manual](https://lightgbm.readthedocs.io) for further details these parameters. Almost all possible parameters have been implemented here. You can inspect them using the following command: 
 
 ```{r eval=FALSE}
 learner$param_set
@@ -81,16 +93,20 @@ learner$param_set
 In order to use the GPU acceleration, the parameter `device_type = "gpu"` (default: "cpu") needs to be set. According to the [LightGBM parameter manual](https://lightgbm.readthedocs.io/en/latest/Parameters.html), 'it is recommended to use the smaller `max_bin` (e.g. 63) to get the better speed up'. 
 
 ```{r}
-learner$early_stopping_rounds <- 10
-learner$nrounds <- 100
-
-learner$param_set$values <- list(
-  "objective" = "multiclass",
-  "learning_rate" = 0.1,
-  "seed" = 17L,
-  "device_type" = "gpu",
-  "max_bin" = 63L
-)
+learner$param_set$values <- mlr3misc::insert_named(
+  learner$param_set$values,
+    list(
+      "objective" = "multiclass",
+      "device_type" = "gpu",
+      "max_bin" = 63L,
+      "early_stopping_round" = 10,
+      "learning_rate" = 0.1,
+      "seed" = 17L,
+      "metric" = "multi_logloss",
+      "num_iterations" = 100,
+      "num_class" = 3
+      )
+  )
 ```
 
 # Train the learner 
