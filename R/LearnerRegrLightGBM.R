@@ -554,7 +554,7 @@ LearnerRegrLightGBM = R6::R6Class(
           "weights",
           "missings",
           "importance"),
-        man = "mlr3learners.lightgbm::mlr_learners_regr_lightgbm"
+        man = "mlr3learners.lightgbm::mlr_learners_regr.lightgbm"
       )
     },
     #' @description The importance function

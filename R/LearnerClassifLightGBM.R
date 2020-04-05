@@ -572,7 +572,7 @@ LearnerClassifLightGBM = R6::R6Class(
           "multiclass",
           "missings",
           "importance"),
-        man = "mlr3learners.lightgbm::mlr_learners_classif_lightgbm"
+        man = "mlr3learners.lightgbm::mlr_learners_classif.lightgbm"
       )
     },
     #' @description The importance function
@@ -612,8 +612,10 @@ LearnerClassifLightGBM = R6::R6Class(
       data = task$data()
       # create training label
       label = data[, get(task$target_names)]
-      # guess objective (for mlr3learners autotest)
-      n = length(unique(label))
+
+      # Patrick: A param should not be auto-set within the train call
+      # Just require this to be set by the user.
+
       if (is.null(self$param_set$values[["objective"]])) {
         if (n == 2) {
           self$param_set$values[["objective"]] = "binary"
@@ -622,6 +624,8 @@ LearnerClassifLightGBM = R6::R6Class(
           self$param_set$values[["num_class"]] = n
         }
       }
+
+      # Patrick: Uff...
       # TaskClassif's target is always of class "factor",
       # we need to convert it to integers and keep the mappings
       # in order to be able to restore them later for the predictions
@@ -633,8 +637,10 @@ LearnerClassifLightGBM = R6::R6Class(
       )
       # store the class label names
       private$label_names = sort(unique(label))
+
+      # Patrick: Next "uff" :D
       # prepare data for lightgbm
-      data = lightgbm::lgb.prepare(data[, task$feature_names, with = F])
+      data = lightgbm::lgb.prepare(data[, task$feature_names, with = FALSE])
       # create lightgbm dataset
       private$dtrain = lightgbm::lgb.Dataset(
         data = as.matrix(data),
@@ -645,6 +651,7 @@ LearnerClassifLightGBM = R6::R6Class(
       if ("weights" %in% task$properties) {
         lightgbm::setinfo(private$dtrain, "weight", task$weights$weight)
       }
+      #
       # set "metric" to "none", if custom eval provided
       if (!is.null(self$param_set$values[["custom_eval"]])) {
         self$param_set$values$metric = "None"
@@ -699,7 +706,7 @@ LearnerClassifLightGBM = R6::R6Class(
         , params = pars
         , eval = feval
         , init_model = init_model
-      ) # use the mlr3misc::invoke function (it's similar to do.call())
+      )
     },
     .predict = function(task) {
       newdata = task$data(cols = task$feature_names) # get newdata
