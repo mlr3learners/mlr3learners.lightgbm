@@ -615,6 +615,18 @@ LearnerClassifLightGBM = R6::R6Class(
 
       # Patrick: A param should not be auto-set within the train call
       # Just require this to be set by the user.
+      #
+      # Lorenz: I get your point, but this is required here,
+      # since we offer "twoclass" and "multiclass"
+      # in the learner's metadata --> this is being expressed with the
+      # parameter "objective". If we do not guess it here, mlr3learner's
+      # autotests will fail.
+      # A workaround could be to copy-paste the whole
+      # classifier-code and provide 1 with "twoclass only" metadata and the
+      # copied one with "mutliclass only.
+      #
+      # guess objective (for mlr3learners autotest)
+      n = length(unique(label))
 
       if (is.null(self$param_set$values[["objective"]])) {
         if (n == 2) {
@@ -639,6 +651,11 @@ LearnerClassifLightGBM = R6::R6Class(
       private$label_names = sort(unique(label))
 
       # Patrick: Next "uff" :D
+      # Lorenz: I know :) I will move this to an external function
+      # "backend_preprocessing" in the future. Maybe also with the
+      # above-mentioned target-trafo. Then we will have to check for
+      # numeric targets only at the beginning of the training.
+      #
       # prepare data for lightgbm
       data = lightgbm::lgb.prepare(data[, task$feature_names, with = FALSE])
       # create lightgbm dataset
