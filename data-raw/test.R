@@ -27,7 +27,7 @@ lightgbm = reticulate::import("lightgbm")
 pars = ps$get_values(tags = "train")
 
 # Get formula, data, classwt, cutoff for the LightGBM
-data = task$data() #the data is avail
+data = task$data() # the data is avail
 levs = levels(data[[task$target_names]])
 n = length(levs)
 
@@ -53,7 +53,7 @@ if (n > 2) {
   }
 } else {
   pars[["objective"]] = "binary"
-  if (is.null(pars[["metric"]]))  {
+  if (is.null(pars[["metric"]])) {
     pars[["metric"]] = c("auc", "binary_error")
   }
 }
@@ -80,9 +80,10 @@ mymodel = lightgbm$train(
 
 newdata = task$data(cols = task$feature_names)
 
-p = mlr3misc::invoke(.f = mymodel$predict,
-           data = newdata,
-           is_reshape = T)
+p = mlr3misc::invoke(
+  .f = mymodel$predict,
+  data = newdata,
+  is_reshape = T)
 colnames(p) = as.character(unique(x_label))
 
 PredictionClassif$new(task = task, prob = p)
@@ -95,10 +96,12 @@ imp = data.table::data.table(
 
 imp
 
-ggplot2::ggplot(data = NULL,
-                ggplot2::aes(x = reorder(imp$Feature, imp$Value),
-                             y = imp$Value,
-                             fill = imp$Value)) +
+ggplot2::ggplot(
+  data = NULL,
+  ggplot2::aes(
+    x = reorder(imp$Feature, imp$Value),
+    y = imp$Value,
+    fill = imp$Value)) +
   ggplot2::geom_col() +
   ggplot2::coord_flip() +
   ggplot2::scale_fill_gradientn(colours = grDevices::rainbow(n = nrow(imp))) +

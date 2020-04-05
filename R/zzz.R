@@ -18,7 +18,7 @@ register_mlr3 = function(libname, pkgname) {
 .onLoad = function(libname, pkgname) { # nolint
   register_mlr3()
   setHook(packageEvent("mlr3", "onLoad"), function(...) register_mlr3(),
-          action = "append")
+    action = "append")
 }
 
 .onUnload = function(libpath) { # nolint
@@ -26,6 +26,6 @@ register_mlr3 = function(libname, pkgname) {
   hooks = getHook(event)
   pkgname = vapply(hooks, function(x) environment(x)$pkgname, NA_character_)
   setHook(event, hooks[pkgname != "mlr3learners.lightgbm"],
-          action = "replace")
+    action = "replace")
 }
 # nocov end

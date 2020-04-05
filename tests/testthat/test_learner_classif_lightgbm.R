@@ -3,7 +3,6 @@ context("LearnerClassifLightGBM")
 test_that(
   desc = "LearnerClassifLightGBM",
   code = {
-
     learner = LearnerClassifLightGBM$new()
     expect_learner(learner)
     learner$param_set$values = mlr3misc::insert_named(

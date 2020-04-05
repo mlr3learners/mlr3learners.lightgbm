@@ -12,21 +12,22 @@ my_desc$set("Package", packagename)
 # Set author names 2
 my_desc$set_authors(c(
   person("Lorenz A.", "Kapsner",
-         email = "lorenz.kapsner@gmail.com",
-         role = c("cre", "aut"),
-         comment = c(ORCID = "0000-0003-1866-860X")),
-  person(given = "Patrick",
-         family = "Schratz",
-         role = "ctb",
-         email = "patrick.schratz@gmail.com",
-         comment = c(ORCID = "0000-0003-0748-6624"))
+    email = "lorenz.kapsner@gmail.com",
+    role = c("cre", "aut"),
+    comment = c(ORCID = "0000-0003-1866-860X")),
+  person(
+    given = "Patrick",
+    family = "Schratz",
+    role = "ctb",
+    email = "patrick.schratz@gmail.com",
+    comment = c(ORCID = "0000-0003-0748-6624"))
 ))
 
 # Remove some author fields
 my_desc$del("Maintainer")
 
 # Set the version
-my_desc$set_version("0.0.4.9006")
+my_desc$set_version("0.0.4.9007")
 
 # The title of your package
 my_desc$set(Title = "mlr3: LightGBM learner")
@@ -51,7 +52,7 @@ my_desc$set("License", "LGPL-3")
 my_desc$write(file = "DESCRIPTION")
 
 # License
-#usethis::use_lgpl_license(name = "Lorenz A. Kapsner")
+# usethis::use_lgpl_license(name = "Lorenz A. Kapsner")
 
 
 # add Imports and Depends
@@ -70,11 +71,10 @@ my_desc$write(file = "DESCRIPTION")
 usethis::use_package("R", min_version = "2.10", type = "Depends")
 
 # Imports
-usethis::use_package("data.table", type="Imports")
+usethis::use_package("data.table", type = "Imports")
 usethis::use_package("R6", type = "Imports")
 usethis::use_package("paradox", type = "Imports")
 usethis::use_package("mlr3misc", type = "Imports")
-usethis::use_package("ggplot2", type = "Imports")
 usethis::use_package("mlr3", type = "Imports")
 usethis::use_package("plyr", type = "Imports")
 usethis::use_package("MLmetrics", type = "Imports")
@@ -121,8 +121,9 @@ usethis::use_package("mlbench", type = "Suggests")
 # usethis::use_git_ignore("!/man-roxygen/")
 
 # code coverage
-#covr::package_coverage()
+# covr::package_coverage()
 
 # lint package
-#lintr::lint_package()
+# lintr::lint_package()
 
+usethis::use_tidy_description()

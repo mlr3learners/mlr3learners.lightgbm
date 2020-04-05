@@ -11,7 +11,6 @@ test_that("classif.lightgbm", {
               "eval",
               "record",
               "eval_freq",
-              "init_model",
               "colnames",
               "early_stopping_rounds",
               "callbacks",

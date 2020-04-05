@@ -3,7 +3,6 @@ context("Test Regression")
 test_that(
   desc = "Learner Regression",
   code = {
-
     library(mlbench)
     data("BostonHousing2")
     dataset = data.table::as.data.table(BostonHousing2)
