@@ -712,8 +712,16 @@ LearnerClassifLightGBM = R6::R6Class(
         )
         # replace num_iterations with value found with CV
         pars[["num_iterations"]] = cv_model$best_iter
+        
         # set early_stopping to NULL since this is not needed in final
         # training anymore
+        # Lorenz: otherwise, if we wouldn't reset it,
+        # an error would be thrown, since early stopping
+        # would only work together with a validation set in lgb.train 
+        # what we don't want... early_stopping has been set during the CV step;
+        # we do not want early_stopping in final training 
+        # but instead use best num_iterations found
+        # with CV.
         pars[["early_stopping_round"]] = NULL
       }
       # train model
