@@ -18,24 +18,24 @@ LearnerRegrLightGBM = R6::R6Class(
         # https://lightgbm.readthedocs.io/en/latest/Parameters.html#
         params = list(
           #######################################
-          # Config Parameters
+          # Arguments of lgb.train/lgb.cv
           ParamUty$new(
             id = "custom_eval",
             default = NULL,
-            tags = c("config", "train")),
+            tags = c("args", "train")),
           ParamLgl$new(
             id = "nrounds_by_cv",
             default = TRUE,
-            tags = c("config", "train")),
+            tags = c("args", "train")),
           ParamInt$new(
             id = "nfolds",
             default = 5L,
             lower = 3L,
-            tags = c("config", "train")),
+            tags = c("args", "train")),
           ParamUty$new(
             id = "init_model",
             default = NULL,
-            tags = c("config", "train")),
+            tags = c("args", "train")),
           #######################################
           #######################################
           # Regression only
@@ -609,7 +609,7 @@ LearnerRegrLightGBM = R6::R6Class(
       if (!is.null(self$param_set$values[["custom_eval"]])) {
         self$param_set$values$metric = "None"
       }
-      # extract config-parameters
+      # extract args-parameters
       feval = self$param_set$values[["custom_eval"]]
       nrounds_by_cv = self$param_set$values[["nrounds_by_cv"]]
       nfolds = self$param_set$values[["nfolds"]]
@@ -617,11 +617,11 @@ LearnerRegrLightGBM = R6::R6Class(
       # get names of parameters to keep
       keep_params = setdiff(
         names(self$param_set$values),
-        names(self$param_set$get_values(tags = "config"))
+        names(self$param_set$get_values(tags = "args"))
       )
       # get training parameters
       pars = self$param_set$get_values(tags = "train")
-      # remove config parameters
+      # remove args parameters
       pars = pars[keep_params]
       # train CV model, in case that nrounds_by_cv is true
       if (isTRUE(nrounds_by_cv)) {
