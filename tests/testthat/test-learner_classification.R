@@ -44,6 +44,6 @@ test_that(
     expect_known_hash(predictions$response, "264f358a7c")
     importance = learner$importance()
 
-    expect_equal(importance[["glucose"]], 0.45657835120582451749)
+    expect_equal(importance[["glucose"]], 0.45686638496446557722)
   }
 )
