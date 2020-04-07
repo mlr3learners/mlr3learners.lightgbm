@@ -83,6 +83,7 @@ usethis::use_package("testthat", type = "Suggests")
 usethis::use_package("lintr", type = "Suggests")
 usethis::use_package("checkmate", type = "Suggests")
 usethis::use_package("MLmetrics", type = "Suggests") # for custom metrics
+
 # for vignettes
 usethis::use_package("rmarkdown", type = "Suggests")
 usethis::use_package("qpdf", type = "Suggests")
