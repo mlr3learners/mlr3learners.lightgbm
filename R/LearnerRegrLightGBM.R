@@ -590,11 +590,14 @@ LearnerRegrLightGBM = R6::R6Class(
     dtrain = NULL,
     .train = function(task) {
       # extract training data
-
       data = task$data()
+
+      # get label
+      label = data[, get(task$target_names)]
+
       # prepare data for lightgbm
       data = lightgbm::lgb.prepare(data)
-      label = data[, get(task$target_names)]
+
       # create lightgbm dataset
       private$dtrain = lightgbm::lgb.Dataset(
         data = as.matrix(data[, task$feature_names, with = F]),
@@ -603,7 +606,11 @@ LearnerRegrLightGBM = R6::R6Class(
       )
       # set weights in dtrain (if available in task)
       if ("weights" %in% task$properties) {
-        lightgbm::setinfo(private$dtrain, "weight", task$weights$weight)
+        lightgbm::setinfo(
+          private$dtrain,
+          "weight",
+          task$weights$weight
+        )
       }
       # set "metric" to "none", if custom eval provided
       if (!is.null(self$param_set$values[["custom_eval"]])) {
@@ -648,14 +655,14 @@ LearnerRegrLightGBM = R6::R6Class(
         )
         # replace num_iterations with value found with CV
         pars[["num_iterations"]] = cv_model$best_iter
-        
+
         # set early_stopping to NULL since this is not needed in final
         # training anymore
         # Lorenz: otherwise, if we wouldn't reset it,
         # an error would be thrown, since early stopping
-        # would only work together with a validation set in lgb.train 
+        # would only work together with a validation set in lgb.train
         # what we don't want... early_stopping has been set during the CV step;
-        # we do not want early_stopping in final training 
+        # we do not want early_stopping in final training
         # but instead use best num_iterations found
         # with CV.
         pars[["early_stopping_round"]] = NULL

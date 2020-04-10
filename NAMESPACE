@@ -2,6 +2,7 @@
 
 export(LearnerClassifLightGBM)
 export(LearnerRegrLightGBM)
+export(backend_preprocessing)
 export(lgb_rmsle)
 import(data.table)
 import(mlr3misc)
