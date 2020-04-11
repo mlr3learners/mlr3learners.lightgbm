@@ -80,6 +80,8 @@ usethis::use_package("plyr", type = "Imports")
 
 # Suggests
 usethis::use_package("testthat", type = "Suggests")
+usethis::use_package("ggplot2", type = "Suggests")
+usethis::use_package("stats", type = "Suggests")
 usethis::use_package("lintr", type = "Suggests")
 usethis::use_package("checkmate", type = "Suggests")
 usethis::use_package("MLmetrics", type = "Suggests") # for custom metrics

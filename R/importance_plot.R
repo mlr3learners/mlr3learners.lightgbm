@@ -37,7 +37,7 @@ importance_plot = function(importance, n = NULL, threshold = NULL) {
   # create plot
   imp_plot <- ggplot2::ggplot(
     data = NULL,
-    ggplot2::aes(x = reorder(names(importance), importance),
+    ggplot2::aes(x = stats::reorder(names(importance), importance),
                  y = importance,
                  fill = importance)
   ) +
