@@ -1,7 +1,7 @@
 Package: mlr3learners.lightgbm
 Title: mlr3: LightGBM learner
-Version: 0.0.4.9009
-Date: 2020-04-10
+Version: 0.0.4.9010
+Date: 2020-04-11
 Authors@R: 
     c(person(given = "Lorenz A.",
              family = "Kapsner",
