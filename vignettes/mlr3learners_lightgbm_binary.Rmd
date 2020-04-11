@@ -138,4 +138,6 @@ The variable importance plot can be calculated by using the learner's `importanc
 ```{r}
 importance = learner$importance()
 importance
+
+mlr3learners.lightgbm::importance_plot(importance)
 ```

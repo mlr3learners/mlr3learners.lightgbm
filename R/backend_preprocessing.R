@@ -27,7 +27,7 @@
 #'
 #' @export
 #'
-backend_preprocessing <- function(
+backend_preprocessing = function(
   datatable,
   target_col,
   task_type,
