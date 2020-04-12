@@ -1,7 +1,7 @@
 Package: mlr3learners.lightgbm
 Title: mlr3: LightGBM learner
-Version: 0.0.4.9010
-Date: 2020-04-11
+Version: 0.0.4.9011
+Date: 2020-04-12
 Authors@R: 
     c(person(given = "Lorenz A.",
              family = "Kapsner",
@@ -45,3 +45,4 @@ VignetteBuilder:
     knitr
 Encoding: UTF-8
 LazyData: true
+RoxygenNote: 7.1.0
