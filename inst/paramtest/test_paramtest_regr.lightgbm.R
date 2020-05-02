@@ -1,15 +1,9 @@
 library(mlr3learners.lightgbm)
 
-test_that("classif.lightgbm", {
-  learner = mlr3::lrn("classif.lightgbm")
+test_that("regr.lightgbm", {
+  learner = mlr3::lrn("regr.lightgbm")
   fun = lightgbm::lgb.train
 
-  # Lorenz: "parameters" in the lightgbm-way are only the learner parameters,
-  # passed as ParamSet to the "params" argument.
-  # All below "excluded" parameters are arguments to the function "lgb.train".
-  # Some of them are already included in "params" but with slightly different
-  # namings (I preferred the "main"-name and not aliases.
-  # Others arguments are not required (currently).
   # Please refer to: https://lightgbm.readthedocs.io/en/latest/Parameters.html
   exclude = c(
     "nrounds", # nrounds is included in the ParamSet as "num_iterations"

@@ -81,7 +81,7 @@ learner$param_set$values = mlr3misc::insert_named(
     "learning_rate" = 0.1,
     "seed" = 17L,
     "num_iterations" = 100,
-    "custom_eval" = mlr3learners.lightgbm::lgb_rmsle
+    "metric" = "rmse"
   )
 )
 ```
