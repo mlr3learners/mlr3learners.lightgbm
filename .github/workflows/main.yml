@@ -38,9 +38,14 @@ jobs:
       id_rsa: ${{ secrets.id_rsa }}
       # prevent rgl issues because no X11 display is available
       RGL_USE_NULL: true
+      BUILD_PKGDOWN: ${{ matrix.config.pkgdown }}
+      # macOS >= 10.15.4 linking
+      SDKROOT: /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk
+      # use GITHUB_TOKEN from GitHub to workaround rate limits in {remotes}
+      GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
 
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@master
 
       - uses: r-lib/actions/setup-r@master
         with:
@@ -51,7 +56,7 @@ jobs:
       # Linux: ~ 1 min
       # macOS: ~ 1 min 30s
       # Windows: never finishes
-      - uses: r-lib/actions/setup-tinytex@v1
+      - uses: r-lib/actions/setup-tinytex@master
         if: runner.os != 'Windows'
 
       - uses: r-lib/actions/setup-pandoc@master
@@ -135,7 +140,7 @@ jobs:
       - name: "[Stage] Install LightGBM"
         run: |
           git clone --recursive https://github.com/microsoft/LightGBM
-          cd LightGBM4
+          cd LightGBM
           Rscript build_r.R
 
 

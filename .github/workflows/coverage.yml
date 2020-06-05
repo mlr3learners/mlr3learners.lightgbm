@@ -101,7 +101,7 @@ jobs:
       - name: "[Stage] Install LightGBM"
         run: |
           git clone --recursive https://github.com/microsoft/LightGBM
-          cd LightGBM4
+          cd LightGBM
           Rscript build_r.R
 
 
