@@ -139,6 +139,7 @@ jobs:
       # Install LightGBM according to https://github.com/microsoft/LightGBM/blob/master/R-package/README.md
       - name: "[Stage] Install LightGBM"
         run: |
+          R -e "install.packages(c('R6', 'data.table', 'jsonlite'))"
           git clone --recursive https://github.com/microsoft/LightGBM
           cd LightGBM
           Rscript build_r.R
