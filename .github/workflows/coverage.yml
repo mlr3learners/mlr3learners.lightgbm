@@ -97,6 +97,14 @@ jobs:
         run: sudo R CMD javareconf
 
 
+      # Install LightGBM according to https://github.com/microsoft/LightGBM/blob/master/R-package/README.md
+      - name: "[Stage] Install LightGBM"
+        run: |
+          git clone --recursive https://github.com/microsoft/LightGBM
+          cd LightGBM4
+          Rscript build_r.R
+
+
       - name: Install dependencies
         run: |
           install.packages(c("remotes"))
