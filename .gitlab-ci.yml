@@ -2,13 +2,13 @@ variables:
   _R_CHECK_CRAN_INCOMING_: "false"
   _R_CHECK_FORCE_SUGGESTS_: "true"
   CI_IMAGE_NAME: "rocker/verse"
-  CI_IMAGE_TAG: "3.6.2"
+  CI_IMAGE_TAG: "4.0.0"
   R_PKG_NAME: "mlr3learners.lightgbm"
 
 default:
   image: ${CI_IMAGE_NAME}:${CI_IMAGE_TAG}
   before_script:
-    - echo "options('repos' = 'https://ftp.fau.de/cran/')" >> /etc/R/Rprofile.site
+    - echo "options('repos' = 'https://cloud.r-project.org/')" >> /etc/R/Rprofile.site
     - mkdir -p ci
 
 stages:
@@ -20,7 +20,7 @@ check:
   allow_failure: true # necessary when having development-packages (in remotes-section of DESCRIPTION)
   script:
     - R -e "devtools::install_dev_deps(pkg = '.', upgrade = 'always')"
-    - R -e "devtools::check(pkg = '.', args = c('--no-tests', '--no-vignettes'), build_args = c('--no-build-vignettes'), check_dir = '${CI_PROJECT_DIR}/ci')"
+    - R -e "rcmdcheck::rcmdcheck(path = '.', args = c('--no-tests', '--no-vignettes', '--as-cran'), build_args = c('--no-build-vignettes'), check_dir = '${CI_PROJECT_DIR}/ci')"
   artifacts:
     paths:
       - "${CI_PROJECT_DIR}/ci/*.Rcheck"

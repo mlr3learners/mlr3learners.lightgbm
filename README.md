@@ -3,6 +3,9 @@
 <!-- badges: start -->
 [![R CMD Check via {tic}](https://github.com/mlr3learners/mlr3learners.lightgbm/workflows/R%20CMD%20Check%20via%20{tic}/badge.svg?branch=master)](https://github.com/mlr3learners/mlr3learners.lightgbm/actions)
 [![Parameter Check](https://github.com/mlr3learners/mlr3learners.lightgbm/workflows/Parameter%20Check/badge.svg?branch=master)](https://github.com/mlr3learners/mlr3learners.lightgbm/actions)
+[![linting](https://github.com/mlr3learners/mlr3learners.lightgbm/workflows/lint/badge.svg?branch=master)](https://github.com/mlr3learners/mlr3learners.lightgbm/actions)
+[![test-coverage](https://github.com/mlr3learners/mlr3learners.lightgbm/workflows/test-coverage/badge.svg?branch=master)](https://github.com/mlr3learners/mlr3learners.lightgbm/actions)
+[![codecov](https://codecov.io/gh/mlr3learners/mlr3learners.lightgbm/branch/master/graph/badge.svg)](https://codecov.io/gh/mlr3learners/mlr3learners.lightgbm)
 [![pipeline status](https://gitlab.com/kapsner/mlr3learners-lightgbm/badges/master/pipeline.svg)](https://gitlab.com/kapsner/mlr3learners-lightgbm/commits/master)
 [![coverage report](https://gitlab.com/kapsner/mlr3learners-lightgbm/badges/master/coverage.svg)](https://gitlab.com/kapsner/mlr3learners-lightgbm/commits/master)
 <!-- badges: end -->
