@@ -120,9 +120,15 @@ jobs:
 
 
       # Install LightGBM according to https://github.com/microsoft/LightGBM/blob/master/R-package/README.md
+      - name: "[macOS] Install cmake and libomp"
+        if: runner.os == 'macOS'
+        run: |
+          brew install cmake
+          brew install libomp
+
       - name: "[Stage] Install LightGBM"
         run: |
-          R -e "install.packages(c('R6', 'data.table', 'jsonlite'))"
+          Rscript -e "install.packages(c('R6', 'data.table', 'jsonlite'))"
           git clone --recursive https://github.com/microsoft/LightGBM
           cd LightGBM
           Rscript build_r.R
