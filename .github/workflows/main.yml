@@ -134,6 +134,7 @@ jobs:
           Rscript build_r.R
 
       - name: "[Stage] Install LightGBM Linux/Windows"
+        if: runner.os != 'macOS'
         run: |
           Rscript -e "install.packages(c('R6', 'data.table', 'jsonlite'))"
           git clone --recursive https://github.com/microsoft/LightGBM
