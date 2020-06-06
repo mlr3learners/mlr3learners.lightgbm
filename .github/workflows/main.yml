@@ -119,11 +119,6 @@ jobs:
 
 
       # Install LightGBM according to https://github.com/microsoft/LightGBM/blob/master/R-package/README.md
-      # https://github.com/microsoft/LightGBM/blob/master/.ci/test_r_package.sh#L53
-      - name: "[macOS] Fix libomp issue"
-        if: runner.os == 'macOS'
-        run: sudo ln -sf "$(brew --cellar libomp)"/*/lib/libomp.dylib /Library/Frameworks/R.framework/Versions/*/Resources/lib/libomp.dylib
-
       - name: "[Stage] Install LightGBM"
         run: |
           Rscript -e "install.packages(c('R6', 'data.table', 'jsonlite'))"
