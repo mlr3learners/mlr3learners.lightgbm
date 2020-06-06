@@ -21,10 +21,10 @@ jobs:
       matrix:
         config:
           # use a different tic template type if you do not want to build on all listed platforms
-          - { os: windows-latest, r: "release", pkgdown: "true", latex: "true", java: "false" }
-          - { os: macOS-latest, r: "release", pkgdown: "true", latex: "true", java: "false" }
-          - { os: macOS-latest, r: "devel", pkgdown: "true", latex: "true", java: "false" }
-          - { os: ubuntu-latest, r: "release", pkgdown: "true", latex: "true", java: "false" }
+          - { os: windows-latest, r: "release", pkgdown: "false", latex: "false", java: "false" }
+          - { os: macOS-latest, r: "release", pkgdown: "false", latex: "false", java: "false" }
+          - { os: macOS-latest, r: "devel", pkgdown: "false", latex: "false", java: "false" }
+          - { os: ubuntu-latest, r: "release", pkgdown: "false", latex: "false", java: "false" }
 
     env:
       # otherwise remotes::fun() errors cause the build to fail. Example: Unavailability of binaries
@@ -120,11 +120,10 @@ jobs:
 
 
       # Install LightGBM according to https://github.com/microsoft/LightGBM/blob/master/R-package/README.md
+      # https://github.com/Microsoft/LightGBM/tree/master/R-package#mac-os-preparation
       - name: "[macOS] Install cmake and libomp"
         if: runner.os == 'macOS'
-        run: |
-          brew install cmake
-          brew install libomp
+        run: echo -e '\n\nCXX=/usr/local/bin/g++-8\n\nCC=/usr/local/bin/gcc-8' >> $HOME/.R/Makevars
 
       - name: "[Stage] Install LightGBM"
         run: |
