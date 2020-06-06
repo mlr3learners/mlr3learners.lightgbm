@@ -127,7 +127,7 @@ jobs:
           git clone --recursive https://github.com/microsoft/LightGBM
           cd LightGBM
           mkdir build  && cd build
-          cmake ..
+          cmake -USE_OPENMP=0 -BUILD_FOR_R=1 ..
           make -j4
           cd ../
           sed -i -e 's/use_precompile = FALSE/use_precompile = TRUE/g' R-package/src/install.libs.R
