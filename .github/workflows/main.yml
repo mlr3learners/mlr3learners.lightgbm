@@ -62,7 +62,6 @@ jobs:
         if: matrix.config.latex == 'true'
 
       - uses: r-lib/actions/setup-pandoc@master
-        if: matrix.config.latex == 'true'
 
       - uses: actions/setup-java@master
         if: matrix.config.java == 'true'
@@ -121,9 +120,9 @@ jobs:
 
       # Install LightGBM according to https://github.com/microsoft/LightGBM/blob/master/R-package/README.md
       # https://github.com/Microsoft/LightGBM/tree/master/R-package#mac-os-preparation
-      - name: "[macOS] Install cmake and libomp"
+      - name: "[macOS] Install lightgbm via brew"
         if: runner.os == 'macOS'
-        run: echo -e '\n\nCXX=/usr/local/bin/g++-8\n\nCC=/usr/local/bin/gcc-8' >> $HOME/.R/Makevars
+        run: brew install lightgbm
 
       - name: "[Stage] Install LightGBM"
         run: |
