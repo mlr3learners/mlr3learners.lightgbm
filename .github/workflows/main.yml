@@ -120,11 +120,20 @@ jobs:
 
       # Install LightGBM according to https://github.com/microsoft/LightGBM/blob/master/R-package/README.md
       # https://github.com/Microsoft/LightGBM/tree/master/R-package#mac-os-preparation
-      - name: "[macOS] Install libomp"
+      - name: "[Stage] Install LightGBM macOS"
         if: runner.os == 'macOS'
-        run: brew link --overwrite libomp
+        run: |
+          Rscript -e "install.packages(c('R6', 'data.table', 'jsonlite'))"
+          git clone --recursive https://github.com/microsoft/LightGBM
+          cd LightGBM
+          mkdir build  && cd build
+          cmake ..
+          make -j4
+          cd ../
+          sed -i -e 's/use_precompile = FALSE/use_precompile = TRUE/g' R-package/src/install.libs.R
+          Rscript build_r.R
 
-      - name: "[Stage] Install LightGBM"
+      - name: "[Stage] Install LightGBM Linux/Windows"
         run: |
           Rscript -e "install.packages(c('R6', 'data.table', 'jsonlite'))"
           git clone --recursive https://github.com/microsoft/LightGBM
