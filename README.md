@@ -14,12 +14,12 @@
 
 # Features 
 
-* integrated native CV before the actual model training to find the optimal `num_iterations` for the given training data and parameter set  
+* integrated learner-native cross-validation (CV) using `lgb.cv` before the actual model training to find the optimal `num_iterations` for the given training data and parameter set  
 * GPU support  
 
 # Installation 
 
-Before you can install the `mlr3learners.lightgbm` package, you need to install the lightgbm R package according to [its documentation](https://github.com/microsoft/LightGBM/blob/master/R-package/README.md) (this is necessary since lightgbm is neither on CRAN nor installable via `devtools::install_github`).  
+Before you can install the `mlr3learners.lightgbm` package, you need to install the lightgbm R package according to [its documentation](https://github.com/microsoft/LightGBM/blob/master/R-package/README.md) (this is necessary since lightgbm is [neither on CRAN](https://github.com/microsoft/LightGBM/issues/629) yet nor installable via `devtools::install_github`).  
 
 ```bash
 git clone --recursive https://github.com/microsoft/LightGBM
@@ -27,7 +27,7 @@ cd LightGBM && \
 Rscript build_r.R
 ```
 
-If the lightgbm R package is installed, you can continue and install the [mlr3learners.lightgbm](https://github.com/kapsner/mlr3learners.lightgbm) R package:
+When the lightgbm R package is installed, you can continue and install the [mlr3learners.lightgbm](https://github.com/mlr3learners/mlr3learners.lightgbm) R package:
 
 ```r
 install.packages("devtools")
