@@ -120,9 +120,9 @@ jobs:
 
       # Install LightGBM according to https://github.com/microsoft/LightGBM/blob/master/R-package/README.md
       # https://github.com/Microsoft/LightGBM/tree/master/R-package#mac-os-preparation
-      - name: "[macOS] Install lightgbm via brew"
+      - name: "[macOS] Install libomp"
         if: runner.os == 'macOS'
-        run: brew install lightgbm
+        run: brew link --overwrite libomp
 
       - name: "[Stage] Install LightGBM"
         run: |
