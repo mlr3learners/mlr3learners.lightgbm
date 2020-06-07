@@ -5,7 +5,8 @@ if (!ci_has_env("PARAMTEST")) {
   get_stage("install") %>%
     add_step(step_install_deps()) %>%
     add_code_step(git2r::clone("https://github.com/microsoft/LightGBM", "lightgbm")) %>%
-    add_code_step(system("Rscript -e 'setwd(file.path(getwd(), \"lightgbm\")); source(\"build_r.R\")'"))
+    add_code_step(setwd(file.path(getwd(), "lightgbm"))) %>%
+    add_code_step(source("build_r.R"))
 
   #do_drat("mlr3learners/mlr3learners.drat")
 } else {
@@ -13,7 +14,8 @@ if (!ci_has_env("PARAMTEST")) {
   get_stage("install") %>%
     add_step(step_install_deps()) %>%
     add_code_step(git2r::clone("https://github.com/microsoft/LightGBM", "lightgbm")) %>%
-    add_code_step(system("Rscript -e 'setwd(file.path(getwd(), \"lightgbm\")); source(\"build_r.R\")'"))
+    add_code_step(setwd(file.path(getwd(), "lightgbm"))) %>%
+    add_code_step(source("build_r.R"))
 
   get_stage("script") %>%
     add_code_step(testthat::test_dir(system.file("paramtest", package = "mlr3learners.lightgbm"),
