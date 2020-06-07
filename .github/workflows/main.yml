@@ -26,12 +26,12 @@ jobs:
           # - { os: macOS-latest, r: "devel", pkgdown: "false", latex: "false", java: "false" }
           # - { os: ubuntu-latest, r: "release", pkgdown: "false", latex: "false", java: "false" }
 
-          # - { os: windows-latest, r: "release", latex: "false" }
-          # - { os: windows-latest, r: "3.6", latex: "false" }
-          # - { os: macOS-latest, r: "release", latex: "false" }
-          # - { os: macOS-latest, r: "3.6", latex: "false" }
+          - { os: windows-latest, r: "release", latex: "false" }
+          - { os: windows-latest, r: "3.6", latex: "false" }
+          - { os: macOS-latest, r: "release", latex: "false" }
+          - { os: macOS-latest, r: "3.6", latex: "false" }
           - { os: ubuntu-latest, r: "release", latex: "false" }
-          # - { os: ubuntu-latest, r: "3.6", latex: "false" }
+          - { os: ubuntu-latest, r: "3.6", latex: "false" }
 
     env:
       # otherwise remotes::fun() errors cause the build to fail. Example: Unavailability of binaries
