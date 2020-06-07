@@ -20,12 +20,6 @@ jobs:
       fail-fast: false
       matrix:
         config:
-          # use a different tic template type if you do not want to build on all listed platforms
-          # - { os: windows-latest, r: "release", pkgdown: "false", latex: "false", java: "false" }
-          # - { os: macOS-latest, r: "release", pkgdown: "false", latex: "false", java: "false" }
-          # - { os: macOS-latest, r: "devel", pkgdown: "false", latex: "false", java: "false" }
-          # - { os: ubuntu-latest, r: "release", pkgdown: "false", latex: "false", java: "false" }
-
           - { os: windows-latest, r: "release", latex: "false" }
           - { os: windows-latest, r: "3.6", latex: "false" }
           - { os: macOS-latest, r: "release", latex: "false" }
@@ -60,7 +54,7 @@ jobs:
         with:
           r-version: ${{ matrix.config.r }}
           Ncpus: 4
-          remove-openmp-macos: false
+          remove-openmp-macos: true
 
       # LaTeX. Installation time:
       # Linux: ~ 1 min
@@ -70,11 +64,6 @@ jobs:
         if: matrix.config.latex == 'true'
 
       - uses: r-lib/actions/setup-pandoc@master
-
-      - uses: actions/setup-java@master
-        if: matrix.config.java == 'true'
-        with:
-          java-version: '8'
 
       # set date/week for use in cache creation
       # https://github.community/t5/GitHub-Actions/How-to-set-and-access-a-Workflow-variable/m-p/42970
@@ -100,10 +89,6 @@ jobs:
       - name: "[Stage] [Linux] Install curl"
         if: runner.os == 'Linux'
         run: sudo apt install libcurl4-openssl-dev
-
-      # - name: "[Stage] Configure R Java"
-      #   if: runner.os != 'Windows' && matrix.config.java == 'true'
-      #   run: sudo R CMD javareconf
 
       - name: "[Stage] Install"
         if: runner.os == 'macOS'
