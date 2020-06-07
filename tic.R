@@ -2,6 +2,11 @@
 if (!ci_has_env("PARAMTEST")) {
   do_package_checks()
 
+  get_stage("install") %>%
+    add_step(step_install_deps()) %>%
+    add_code_step(git2r::clone("https://github.com/microsoft/LightGBM")) %>%
+    add_code_step(system("cd LightGBM && R -q -e build_r.R"))
+
   #do_drat("mlr3learners/mlr3learners.drat")
 } else {
   # PARAMTEST
