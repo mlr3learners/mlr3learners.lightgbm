@@ -65,6 +65,8 @@ usethis::use_package("paradox", type = "Imports")
 usethis::use_package("mlr3misc", type = "Imports")
 usethis::use_package("mlr3", type = "Imports")
 usethis::use_package("plyr", type = "Imports")
+usethis::use_package("lightgbm", type = "Imports")
+
 
 # Suggests
 usethis::use_package("testthat", type = "Suggests")
@@ -76,11 +78,11 @@ usethis::use_package("MLmetrics", type = "Suggests") # for custom metrics
 
 # for vignettes
 usethis::use_package("rmarkdown", type = "Suggests")
-usethis::use_package("qpdf", type = "Suggests")
 usethis::use_package("knitr", type = "Suggests")
 usethis::use_package("future", type = "Suggests")
 usethis::use_package("mlr3tuning", type = "Suggests")
 usethis::use_package("mlbench", type = "Suggests")
+
 # buildignore
 # usethis::use_build_ignore("LICENSE.md")
 # usethis::use_build_ignore(".gitlab-ci.yml")
