@@ -20,7 +20,19 @@ test_that("classif.lightgbm", {
     "colnames", # colnames is not implemented
     "early_stopping_rounds", # implemented as "early_stopping_round"
     "callbacks", # not impolemented
-    "reset_data" # not implemented
+    "reset_data", # not implemented
+    # params is defined in lgb.train:
+    # https://github.com/mlr3learners/mlr3learners.lightgbm/blob/master/R/
+    # LearnerClassifLightGBM.R#L735
+    "params",
+    # data is defined in lgb.trian:
+    # https://github.com/mlr3learners/mlr3learners.lightgbm/blob/master/R/
+    # LearnerClassifLightGBM.R#L734
+    "data",
+    # eval is defined in lgb.train:
+    # https://github.com/mlr3learners/mlr3learners.lightgbm/blob/master/R/
+    # LearnerClassifLightGBM.R#L736
+    "eval"
   )
 
   ParamTest = run_paramtest(learner, fun, exclude)

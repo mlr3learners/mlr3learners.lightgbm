@@ -8,7 +8,7 @@
 #' @export
 
 lgb_rmsle = function(preds, dtrain) {
-  label = dtrain$getinfo("label")
+  label = lightgbm::getinfo(dtrain, "label")
   score = MLmetrics::RMSLE(y_pred = preds, y_true = label)
   return(list(name = "rmsle", value = score, higher_better = FALSE))
 }

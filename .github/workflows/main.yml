@@ -23,7 +23,7 @@ jobs:
           - { os: windows-latest, r: "release", latex: "false" }
           - { os: windows-latest, r: "3.6", latex: "false" }
           - { os: macOS-latest, r: "release", latex: "false" }
-          - { os: macOS-latest, r: "3.6", latex: "false" }
+          #- { os: macOS-latest, r: "3.6", latex: "false" }
           - { os: ubuntu-latest, r: "release", latex: "false" }
           - { os: ubuntu-latest, r: "3.6", latex: "false" }
 
