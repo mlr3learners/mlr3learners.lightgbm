@@ -27,7 +27,8 @@ Imports:
     mlr3misc,
     paradox,
     plyr,
-    R6
+    R6,
+    lightgbm
 Suggests: 
     checkmate,
     future,
@@ -37,7 +38,6 @@ Suggests:
     mlbench,
     MLmetrics,
     mlr3tuning,
-    qpdf,
     rmarkdown,
     stats,
     testthat
