@@ -6,10 +6,11 @@ if (!ci_has_env("PARAMTEST")) {
 } else {
   # PARAMTEST
   get_stage("install") %>%
-    add_step(step_install_deps())
+    add_step(step_install_deps()) %>%
+    add_code_step(git2r::clone("https://github.com/microsoft/LightGBM")) %>%
+    add_code_step(system("cd LightGBM && R -q -e build_r.R"))
 
   get_stage("script") %>%
-    add_code_step(remotes::install_dev("mlr3")) %>%
     add_code_step(testthat::test_dir(system.file("paramtest", package = "mlr3learners.lightgbm"),
       stop_on_failure = TRUE))
 }
