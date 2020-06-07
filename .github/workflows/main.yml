@@ -60,6 +60,7 @@ jobs:
         with:
           r-version: ${{ matrix.config.r }}
           Ncpus: 4
+          remove-openmp-macos: false
 
       # LaTeX. Installation time:
       # Linux: ~ 1 min
