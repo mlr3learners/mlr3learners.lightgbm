@@ -657,7 +657,7 @@ LearnerClassifLightGBM = R6::R6Class(
       # numeric targets only at the beginning of the training.
 
       # prepare data for lightgbm
-      data = lightgbm::lgb.prepare(data)
+      data = lightgbm::lgb.convert_with_rules(data)[[1]]
 
       # create lightgbm dataset
       private$dtrain = lightgbm::lgb.Dataset(
@@ -744,9 +744,9 @@ LearnerClassifLightGBM = R6::R6Class(
         private$dtrain$get_colnames()
       )
       # create lgb.Datasets
-      test_input = lightgbm::lgb.prepare(
+      test_input = lightgbm::lgb.convert_with_rules(
         newdata
-      )
+      )[[1]]
       test_data = as.matrix(test_input)
       p = mlr3misc::invoke(
         .f = self$model$predict

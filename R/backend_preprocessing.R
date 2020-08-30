@@ -80,7 +80,7 @@ backend_preprocessing = function(
   # create backend
   backend = cbind(
     label,
-    lightgbm::lgb.prepare(datatable[, vec, with = F])
+    lightgbm::lgb.convert_with_rules(datatable[, vec, with = F])[[1]]
   )
   colnames(backend)[1] = target_col
 
