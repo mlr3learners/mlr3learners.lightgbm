@@ -596,7 +596,7 @@ LearnerRegrLightGBM = R6::R6Class(
       label = data[, get(task$target_names)]
 
       # prepare data for lightgbm
-      data = lightgbm::lgb.convert_with_rules(data)[[]]
+      data = lightgbm::lgb.convert_with_rules(data)[[1]]
 
       # create lightgbm dataset
       private$dtrain = lightgbm::lgb.Dataset(
