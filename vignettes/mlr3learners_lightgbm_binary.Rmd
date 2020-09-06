@@ -19,10 +19,6 @@ knitr::opts_chunk$set(
 )
 ```
 
-# Install the lightgbm R package
-
-Before you can use the `mlr3learners.lightgbm` package, you need to install the `lightgbm` R package according to [its documentation](https://github.com/microsoft/LightGBM/blob/master/R-package/README.md) (this is necessary since lightgbm is neither on CRAN nor installable via `devtools::install_github`).
-
 ```{r setup}
 library(mlr3)
 library(mlr3learners.lightgbm)
@@ -43,11 +39,18 @@ dataset = cbind(
   lightgbm::lgb.prepare(dataset[, vec, with = F])
 )
 
+dataset = backend_preprocessing(
+  datatable = dataset,
+  target_col = target_col,
+  task_type = "class:binary",
+  positive = "pos"
+)
+
 task = mlr3::TaskClassif$new(
   id = "pima",
   backend = dataset,
   target = target_col,
-  positive = "pos"
+  positive = "1"
 )
 ```
 

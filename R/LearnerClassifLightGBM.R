@@ -659,7 +659,7 @@ LearnerClassifLightGBM = R6::R6Class(
 
       # create lightgbm dataset
       private$dtrain = lightgbm::lgb.Dataset(
-        data = data,
+        data = as.matrix(data),
         label = label,
         free_raw_data = FALSE
       )

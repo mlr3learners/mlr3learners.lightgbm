@@ -4,7 +4,7 @@
 \name{mlr3learners.lightgbm-package}
 \alias{mlr3learners.lightgbm}
 \alias{mlr3learners.lightgbm-package}
-\title{mlr3learners.lightgbm: mlr3: LightGBM learner}
+\title{mlr3learners.lightgbm: mlr3: LightGBM Learner}
 \description{
 Adds `lgb.train()` from the lightgbm package to
     mlr3.
@@ -12,8 +12,8 @@ Adds `lgb.train()` from the lightgbm package to
 \seealso{
 Useful links:
 \itemize{
-  \item \url{https://github.com/kapsner/mlr3learners.lightgbm}
-  \item Report bugs at \url{https://github.com/kapsner/mlr3learners.lightgbm/issues}
+  \item \url{https://github.com/mlr3learners/mlr3learners.lightgbm}
+  \item Report bugs at \url{https://github.com/mlr3learners/mlr3learners.lightgbm/issues}
 }
 
 }
@@ -23,6 +23,7 @@ Useful links:
 Other contributors:
 \itemize{
   \item Patrick Schratz \email{patrick.schratz@gmail.com} (\href{https://orcid.org/0000-0003-0748-6624}{ORCID}) [contributor]
+  \item Andrey Ogurtsov \email{ogurtsov.a.b@gmail.com} [contributor]
 }
 
 }

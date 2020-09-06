@@ -20,14 +20,19 @@ my_desc$set_authors(c(
     family = "Schratz",
     role = "ctb",
     email = "patrick.schratz@gmail.com",
-    comment = c(ORCID = "0000-0003-0748-6624"))
+    comment = c(ORCID = "0000-0003-0748-6624")),
+  person(
+    given = "Andrey",
+    family = "Ogurtsov",
+    role = "ctb",
+    email = "ogurtsov.a.b@gmail.com")
 ))
 
 # Remove some author fields
 my_desc$del("Maintainer")
 
 # Set the version
-my_desc$set_version("0.0.5.9010")
+my_desc$set_version("0.0.5.9011")
 
 # The title of your package
 my_desc$set(Title = "mlr3: LightGBM Learner")
@@ -82,6 +87,13 @@ usethis::use_package("knitr", type = "Suggests")
 usethis::use_package("future", type = "Suggests")
 usethis::use_package("mlr3tuning", type = "Suggests")
 usethis::use_package("mlbench", type = "Suggests")
+
+# Remotes
+desc::desc_set_remotes(c(paste0(
+  # see https://github.com/microsoft/LightGBM/tree/master/R-package
+  "url::https://github.com/microsoft/LightGBM/releases/download/v3.0.0/lightgbm-3.0.0-r-cran.tar.gz")
+),
+file = usethis::proj_get())
 
 # buildignore
 # usethis::use_build_ignore("LICENSE.md")

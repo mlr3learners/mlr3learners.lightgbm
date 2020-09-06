@@ -84,6 +84,10 @@ backend_preprocessing = function(
   )
   colnames(backend)[1] = target_col
 
+  if (task_type != "regression") {
+    backend[, (target_col) := factor(get(target_col))]
+  }
+
   # return backend
   return(backend)
 }

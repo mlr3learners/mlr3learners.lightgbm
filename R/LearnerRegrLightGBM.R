@@ -589,18 +589,19 @@ LearnerRegrLightGBM = R6::R6Class(
     # from importance and from prediction)
     dtrain = NULL,
     .train = function(task) {
-      # extract training data
-      data = task$data()
 
       # get label
-      label = data[, get(task$target_names)]
+      label = task$data(cols = task$target_names)
 
       # prepare data for lightgbm
-      data = lightgbm::lgb.convert_with_rules(data)[[1]]
+      data = lightgbm::lgb.convert_with_rules(
+        task$data(
+          cols = task$feature_names)
+      )[[1]]
 
       # create lightgbm dataset
       private$dtrain = lightgbm::lgb.Dataset(
-        data = as.matrix(data[, task$feature_names, with = F]),
+        data = as.matrix(data),
         label = label,
         free_raw_data = FALSE
       )
