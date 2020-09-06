@@ -607,11 +607,6 @@ LearnerClassifLightGBM = R6::R6Class(
     # from importance and from prediction)
     dtrain = NULL,
     .train = function(task) {
-      # extract training data
-
-      data = task$data()
-      # create training label
-      label = data[, get(task$target_names)]
 
       # Patrick: A param should not be auto-set within the train call
       # Just require this to be set by the user.
@@ -626,7 +621,7 @@ LearnerClassifLightGBM = R6::R6Class(
       # copied one with "mutliclass only.
       #
       # guess objective (for mlr3learners autotest)
-      n = length(unique(label))
+      n = length(unique(task$data(cols = task$target_names)))
 
       if (is.null(self$param_set$values[["objective"]])) {
         if (n == 2) {
@@ -642,7 +637,7 @@ LearnerClassifLightGBM = R6::R6Class(
       # we need to convert it to integers and keep the mappings
       # in order to be able to restore them later for the predictions
       label = private$transform_target(
-        vector = data[, get(task$target_names)],
+        vector = task$data(cols = task$target_names),
         positive = task$positive,
         negative = task$negative,
         mapping = "dtrain"
@@ -657,11 +652,14 @@ LearnerClassifLightGBM = R6::R6Class(
       # numeric targets only at the beginning of the training.
 
       # prepare data for lightgbm
-      data = lightgbm::lgb.convert_with_rules(data)[[1]]
+      data = lightgbm::lgb.convert_with_rules(
+        task$data(
+          cols = task$feature_names)
+      )[[1]]
 
       # create lightgbm dataset
       private$dtrain = lightgbm::lgb.Dataset(
-        data = as.matrix(data[, task$feature_names, with = F]),
+        data = data,
         label = label,
         free_raw_data = FALSE
       )

@@ -2,6 +2,7 @@
 ^\.lintr$
 ^\.vscode$
 ^\.ccache$
+^LightGBM$
 ^\.github$
 ^clang-.*
 ^.*\.Rproj$

@@ -3,6 +3,8 @@
 <!-- badges: start -->
 [![R CMD Check via {tic}](https://github.com/mlr3learners/mlr3learners.lightgbm/workflows/R%20CMD%20Check%20via%20{tic}/badge.svg?branch=master)](https://github.com/mlr3learners/mlr3learners.lightgbm/actions)
 [![Parameter Check](https://github.com/mlr3learners/mlr3learners.lightgbm/workflows/Parameter%20Check/badge.svg?branch=master)](https://github.com/mlr3learners/mlr3learners.lightgbm/actions)
+[![linting](https://github.com/mlr3learners/mlr3learners.lightgbm/workflows/lint/badge.svg?branch=master)](https://github.com/mlr3learners/mlr3learners.lightgbm/actions)
+[![codecov](https://codecov.io/gh/mlr3learners/mlr3learners.lightgbm/branch/master/graph/badge.svg)](https://codecov.io/gh/mlr3learners/mlr3learners.lightgbm)
 [![pipeline status](https://gitlab.com/kapsner/mlr3learners-lightgbm/badges/master/pipeline.svg)](https://gitlab.com/kapsner/mlr3learners-lightgbm/commits/master)
 [![coverage report](https://gitlab.com/kapsner/mlr3learners-lightgbm/badges/master/coverage.svg)](https://gitlab.com/kapsner/mlr3learners-lightgbm/commits/master)
 <!-- badges: end -->
@@ -11,12 +13,12 @@
 
 # Features 
 
-* integrated native CV before the actual model training to find the optimal `num_iterations` for the given training data and parameter set  
+* integrated learner-native cross-validation (CV) using `lgb.cv` before the actual model training to find the optimal `num_iterations` for the given training data and parameter set  
 * GPU support  
 
 # Installation 
 
-Before you can install the `mlr3learners.lightgbm` package, you need to install the lightgbm R package according to [its documentation](https://github.com/microsoft/LightGBM/blob/master/R-package/README.md) (this is necessary since lightgbm is neither on CRAN nor installable via `devtools::install_github`).  
+Before you can install the `mlr3learners.lightgbm` package, you need to install the lightgbm R package according to [its documentation](https://github.com/microsoft/LightGBM/blob/master/R-package/README.md) (this is necessary since lightgbm is [neither on CRAN](https://github.com/microsoft/LightGBM/issues/629) yet nor installable via `devtools::install_github`).  
 
 ```bash
 git clone --recursive https://github.com/microsoft/LightGBM
@@ -24,7 +26,7 @@ cd LightGBM && \
 Rscript build_r.R
 ```
 
-If the lightgbm R package is installed, you can continue and install the [mlr3learners.lightgbm](https://github.com/kapsner/mlr3learners.lightgbm) R package:
+When the lightgbm R package is installed, you can continue and install the [mlr3learners.lightgbm](https://github.com/mlr3learners/mlr3learners.lightgbm) R package:
 
 ```r
 install.packages("devtools")
@@ -90,7 +92,7 @@ learner$param_set$values = mlr3misc::insert_named(
 
 All other steps are similar to the workflow without GPU support. 
 
-The GPU support has been tested in a [Docker container](https://github.com/kapsner/docker_images/blob/master/Rdatascience/rdsc_gpu/Dockerfile) running on a Linux 19.10 host, Intel i7, 16 GB RAM, an NVIDIA(R) RTX 2060, CUDA(R) 10.2 and [nvidia-docker](https://github.com/NVIDIA/nvidia-docker). 
+The GPU support has been tested in a [Docker container](https://github.com/kapsner/docker_images/blob/master/Rdatascience/image_rdsc_gpu/Dockerfile) running on a Linux 19.10 host, Intel i7, 16 GB RAM, an NVIDIA(R) RTX 2060, CUDA(R) 10.2 and [nvidia-docker](https://github.com/NVIDIA/nvidia-docker). 
 
 # More Infos:
 

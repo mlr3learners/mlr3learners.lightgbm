@@ -27,10 +27,10 @@ my_desc$set_authors(c(
 my_desc$del("Maintainer")
 
 # Set the version
-my_desc$set_version("0.0.5")
+my_desc$set_version("0.0.5.9010")
 
 # The title of your package
-my_desc$set(Title = "mlr3: LightGBM learner")
+my_desc$set(Title = "mlr3: LightGBM Learner")
 
 # The description of your package
 my_desc$set(Description = paste0("Adds `lgb.train()` from the lightgbm package to mlr3."))
@@ -39,8 +39,8 @@ my_desc$set(Description = paste0("Adds `lgb.train()` from the lightgbm package t
 my_desc$set("Date" = as.character(Sys.Date()))
 
 # The urls
-my_desc$set("URL", "https://github.com/kapsner/mlr3learners.lightgbm")
-my_desc$set("BugReports", "https://github.com/kapsner/mlr3learners.lightgbm/issues")
+my_desc$set("URL", "https://github.com/mlr3learners/mlr3learners.lightgbm")
+my_desc$set("BugReports", "https://github.com/mlr3learners/mlr3learners.lightgbm/issues")
 
 # Vignette Builder
 my_desc$set("VignetteBuilder" = "knitr")
@@ -55,18 +55,6 @@ my_desc$write(file = "DESCRIPTION")
 # usethis::use_lgpl_license(name = "Lorenz A. Kapsner")
 
 
-# add Imports and Depends
-# Listing a package in either Depends or Imports ensures that it’s installed when needed
-# Imports just loads the package, Depends attaches it
-# Loading will load code, data and any DLLs; register S3 and S4 methods; and run the .onLoad() function.
-##      After loading, the package is available in memory, but because it’s not in the search path,
-##      you won’t be able to access its components without using ::.
-##      Confusingly, :: will also load a package automatically if it isn’t already loaded.
-##      It’s rare to load a package explicitly, but you can do so with requireNamespace() or loadNamespace().
-# Attaching puts the package in the search path. You can’t attach a package without first loading it,
-##      so both library() or require() load then attach the package.
-##      You can see the currently attached packages with search().
-
 # Depends
 usethis::use_package("R", min_version = "2.10", type = "Depends")
 
@@ -77,6 +65,8 @@ usethis::use_package("paradox", type = "Imports")
 usethis::use_package("mlr3misc", type = "Imports")
 usethis::use_package("mlr3", type = "Imports")
 usethis::use_package("plyr", type = "Imports")
+usethis::use_package("lightgbm", type = "Imports")
+
 
 # Suggests
 usethis::use_package("testthat", type = "Suggests")
@@ -88,11 +78,11 @@ usethis::use_package("MLmetrics", type = "Suggests") # for custom metrics
 
 # for vignettes
 usethis::use_package("rmarkdown", type = "Suggests")
-usethis::use_package("qpdf", type = "Suggests")
 usethis::use_package("knitr", type = "Suggests")
 usethis::use_package("future", type = "Suggests")
 usethis::use_package("mlr3tuning", type = "Suggests")
 usethis::use_package("mlbench", type = "Suggests")
+
 # buildignore
 # usethis::use_build_ignore("LICENSE.md")
 # usethis::use_build_ignore(".gitlab-ci.yml")
