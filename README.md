@@ -21,7 +21,7 @@
 Before you can install the `mlr3learners.lightgbm` package, you need to install the lightgbm R package according to [its documentation](https://github.com/microsoft/LightGBM/blob/master/R-package/README.md) (this is necessary since lightgbm is [neither on CRAN](https://github.com/microsoft/LightGBM/issues/629) yet nor installable via `devtools::install_github`).  
 
 ```bash
-git clone --recursive https://github.com/microsoft/LightGBM
+git clone --recursive --branch stable --depth 1 https://github.com/microsoft/LightGBM
 cd LightGBM && \
 Rscript build_r.R
 ```
@@ -29,8 +29,11 @@ Rscript build_r.R
 When the lightgbm R package is installed, you can continue and install the [mlr3learners.lightgbm](https://github.com/mlr3learners/mlr3learners.lightgbm) R package:
 
 ```r
-install.packages("devtools")
-devtools::install_github("mlr3learners/mlr3learners.lightgbm")
+install.packages("remotes")
+# stable version:
+remotes::install_github("mlr3learners/mlr3learners.lightgbm")
+# dev version:
+# remotes::install_github("mlr3learners/mlr3learners.lightgbm@development")
 ```
 
 # Example
