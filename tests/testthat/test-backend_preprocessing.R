@@ -15,6 +15,6 @@ test_that(
       positive = "pos"
     )
 
-    expect_known_hash(backend, "d4474ab2b4")
+    expect_known_hash(backend, "4e34ca3afc") # d4474ab2b4
   }
 )

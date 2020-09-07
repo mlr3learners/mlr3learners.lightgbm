@@ -34,11 +34,6 @@ target_col = "diabetes"
 
 vec = setdiff(colnames(dataset), target_col)
 
-dataset = cbind(
-  dataset[, c(target_col), with = F],
-  lightgbm::lgb.prepare(dataset[, vec, with = F])
-)
-
 dataset = backend_preprocessing(
   datatable = dataset,
   target_col = target_col,

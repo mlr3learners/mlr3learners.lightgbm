@@ -13,14 +13,16 @@ test_that(
     dataset = data.table::as.data.table(PimaIndiansDiabetes2)
     target_col = "diabetes"
 
-    dataset = lightgbm::lgb.prepare(dataset)
-    dataset[, (target_col) := factor(get(target_col) - 1L)]
+    dataset = cbind(
+      dataset[, c(target_col), with = F],
+      lightgbm::lgb.convert_with_rules(dataset[, vec, with = F])[[1]]
+    )
 
     task = mlr3::TaskClassif$new(
       id = "pima",
       backend = dataset,
       target = target_col,
-      positive = "1"
+      positive = "pos"
     )
 
     set.seed(17)
@@ -60,7 +62,7 @@ test_that(
     dataset = data.table::as.data.table(BostonHousing2)
     target_col = "medv"
 
-    dataset = lightgbm::lgb.prepare(dataset)
+    dataset = lightgbm::lgb.convert_with_rules(dataset)[[1]]
 
     task = mlr3::TaskRegr$new(
       id = "bostonhousing",

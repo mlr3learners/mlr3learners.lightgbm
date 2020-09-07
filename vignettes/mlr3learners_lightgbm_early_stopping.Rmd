@@ -34,8 +34,12 @@ data("PimaIndiansDiabetes2")
 dataset = data.table::as.data.table(PimaIndiansDiabetes2)
 target_col = "diabetes"
 
-dataset = lightgbm::lgb.prepare(dataset)
-dataset[, (target_col) := factor(get(target_col) - 1L)]
+dataset = backend_preprocessing(
+  datatable = dataset,
+  target_col = target_col,
+  task_type = "class:binary",
+  positive = "pos"
+)
 
 task = mlr3::TaskClassif$new(
   id = "pima",

@@ -8,7 +8,7 @@ test_that(
     dataset = data.table::as.data.table(BostonHousing2)
     target_col = "medv"
 
-    dataset = lightgbm::lgb.prepare(dataset)
+    dataset = lightgbm::lgb.convert_with_rules(dataset)[[1]]
 
     task = mlr3::TaskRegr$new(
       id = "bostonhousing",
@@ -43,6 +43,9 @@ test_that(
     expect_known_hash(predictions$response, "27b55df5ab")
     importance = learner$importance()
 
-    expect_equal(importance[["cmedv"]], 0.99991534830393857813)
+    expect_equal(
+      round(importance[["cmedv"]], 4),
+      round(0.99991534830393857813, 4)
+    )
   }
 )

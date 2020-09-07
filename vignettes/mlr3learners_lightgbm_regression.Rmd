@@ -32,7 +32,11 @@ data("BostonHousing2")
 dataset = data.table::as.data.table(BostonHousing2)
 target_col = "medv"
 
-dataset = lightgbm::lgb.prepare(dataset)
+dataset = backend_preprocessing(
+  datatable = dataset,
+  target_col = target_col,
+  task_type = "regression"
+)
 
 task = mlr3::TaskRegr$new(
   id = "bostonhousing",

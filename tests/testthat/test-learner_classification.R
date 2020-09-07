@@ -8,14 +8,18 @@ test_that(
     dataset = data.table::as.data.table(PimaIndiansDiabetes2)
     target_col = "diabetes"
 
-    dataset = lightgbm::lgb.prepare(dataset)
-    dataset[, (target_col) := factor(get(target_col) - 1L)]
+    vec = setdiff(colnames(dataset), target_col)
+
+    dataset = cbind(
+      dataset[, c(target_col), with = F],
+      lightgbm::lgb.convert_with_rules(dataset[, vec, with = F])[[1]]
+    )
 
     task = mlr3::TaskClassif$new(
       id = "pima",
       backend = dataset,
       target = target_col,
-      positive = "1"
+      positive = "pos"
     )
 
     set.seed(17)
@@ -41,9 +45,12 @@ test_that(
 
     predictions = learner$predict(task, row_ids = split$test_index)
 
-    expect_known_hash(predictions$response, "264f358a7c")
+    expect_known_hash(predictions$response, "b8b6d3c1bd") # 264f358a7c
     importance = learner$importance()
 
-    expect_equal(importance[["glucose"]], 0.45686638496446557722)
+    expect_equal(
+      round(importance[["glucose"]], 4),
+      round(0.45686638496446557722, 4)
+    )
   }
 )
