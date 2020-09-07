@@ -21,14 +21,18 @@
 As of lightgbm version 3.0.0, you can install the [mlr3learners.lightgbm](https://github.com/mlr3learners/mlr3learners.lightgbm) R package with:
 
 ```r
-install.packages("devtools")
-devtools::install_github("mlr3learners/mlr3learners.lightgbm")
+install.packages("remotes")
+# stable version:
+remotes::install_github("mlr3learners/mlr3learners.lightgbm")
+# dev version:
+# remotes::install_github("mlr3learners/mlr3learners.lightgbm@development")
 ```
 
 # Example
 
 ```r
 library(mlr3)
+library(mlr3learners.lightgbm)
 task = mlr3::tsk("iris")
 learner = mlr3::lrn("classif.lightgbm", objective = "multiclass")
 
@@ -59,7 +63,7 @@ To install the lightgbm R package with GPU support, execute the following comman
 ```bash
 git clone --recursive --branch stable --depth 1 https://github.com/microsoft/LightGBM
 cd LightGBM && \
-sed -i -e 's/use_gpu = FALSE/use_gpu = TRUE/g' R-package/src/install.libs.R && \
+sed -i -e 's/use_gpu <- FALSE/use_gpu <- TRUE/g' R-package/src/install.libs.R && \
 Rscript build_r.R
 ```
 
@@ -68,18 +72,18 @@ In order to use the GPU acceleration, the parameter `device_type = "gpu"` (defau
 ```r
 learner$param_set$values = mlr3misc::insert_named(
   learner$param_set$values,
-    list(
-      "objective" = "multiclass",
-      "device_type" = "gpu",
-      "max_bin" = 63L,
-      "early_stopping_round" = 10,
-      "learning_rate" = 0.1,
-      "seed" = 17L,
-      "metric" = "multi_logloss",
-      "num_iterations" = 100,
-      "num_class" = 3
-      )
+  list(
+    "objective" = "multiclass",
+    "device_type" = "gpu",
+    "max_bin" = 63L,
+    "early_stopping_round" = 10,
+    "learning_rate" = 0.1,
+    "seed" = 17L,
+    "metric" = "multi_logloss",
+    "num_iterations" = 100,
+    "num_class" = 3
   )
+)
 ```
 
 All other steps are similar to the workflow without GPU support. 
