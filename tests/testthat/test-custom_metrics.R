@@ -13,6 +13,8 @@ test_that(
     dataset = data.table::as.data.table(PimaIndiansDiabetes2)
     target_col = "diabetes"
 
+    vec = setdiff(colnames(dataset), target_col)
+
     dataset = cbind(
       dataset[, c(target_col), with = F],
       lightgbm::lgb.convert_with_rules(dataset[, vec, with = F])[[1]]
