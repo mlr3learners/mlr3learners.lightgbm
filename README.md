@@ -37,6 +37,7 @@ devtools::install_github("mlr3learners/mlr3learners.lightgbm")
 
 ```r
 library(mlr3)
+library(mlr3learners.lightgbm)
 task = mlr3::tsk("iris")
 learner = mlr3::lrn("classif.lightgbm", objective = "multiclass")
 
@@ -67,7 +68,7 @@ To install the lightgbm R package with GPU support, execute the following comman
 ```bash
 git clone --recursive --branch stable --depth 1 https://github.com/microsoft/LightGBM
 cd LightGBM && \
-sed -i -e 's/use_gpu = FALSE/use_gpu = TRUE/g' R-package/src/install.libs.R && \
+sed -i -e 's/use_gpu <- FALSE/use_gpu <- TRUE/g' R-package/src/install.libs.R && \
 Rscript build_r.R
 ```
 
