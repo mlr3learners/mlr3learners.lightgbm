@@ -89,11 +89,11 @@ usethis::use_package("mlr3tuning", type = "Suggests")
 usethis::use_package("mlbench", type = "Suggests")
 
 # Remotes
-desc::desc_set_remotes(c(paste0(
-  # see https://github.com/microsoft/LightGBM/tree/master/R-package
-  "url::https://github.com/microsoft/LightGBM/releases/download/v3.0.0/lightgbm-3.0.0-r-cran.tar.gz")
-),
-file = usethis::proj_get())
+#desc::desc_set_remotes(c(paste0(
+#  # see https://github.com/microsoft/LightGBM/tree/master/R-package
+#  "url::https://github.com/microsoft/LightGBM/releases/download/v3.0.0/lightgbm-3.0.0-r-cran.tar.gz")
+#),
+#file = usethis::proj_get())
 
 # buildignore
 # usethis::use_build_ignore("LICENSE.md")
