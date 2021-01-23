@@ -20,19 +20,14 @@ my_desc$set_authors(c(
     family = "Schratz",
     role = "ctb",
     email = "patrick.schratz@gmail.com",
-    comment = c(ORCID = "0000-0003-0748-6624")),
-  person(
-    given = "Andrey",
-    family = "Ogurtsov",
-    role = "ctb",
-    email = "ogurtsov.a.b@gmail.com")
+    comment = c(ORCID = "0000-0003-0748-6624"))
 ))
 
 # Remove some author fields
 my_desc$del("Maintainer")
 
 # Set the version
-my_desc$set_version("0.0.9.9001")
+my_desc$set_version("0.0.9.9002")
 
 # The title of your package
 my_desc$set(Title = "mlr3: LightGBM Learner")
