@@ -1,7 +1,7 @@
 Package: mlr3learners.lightgbm
 Title: mlr3: LightGBM Learner
-Version: 0.0.9.9001
-Date: 2020-09-22
+Version: 0.0.9.9002
+Date: 2021-01-22
 Authors@R: 
     c(person(given = "Lorenz A.",
              family = "Kapsner",
@@ -12,11 +12,7 @@ Authors@R:
              family = "Schratz",
              role = "ctb",
              email = "patrick.schratz@gmail.com",
-             comment = c(ORCID = "0000-0003-0748-6624")),
-      person(given = "Andrey",
-             family = "Ogurtsov",
-             role = "ctb",
-             email = "ogurtsov.a.b@gmail.com"))
+             comment = c(ORCID = "0000-0003-0748-6624")))
 Description: Adds `lgb.train()` from the lightgbm package to
     mlr3.
 License: LGPL-3
