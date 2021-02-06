@@ -28,8 +28,7 @@ You can compile the GPU version on Linux/ in docker with the following commands:
 ```{bash}
 git clone --recursive --branch stable --depth 1 https://github.com/microsoft/LightGBM
 cd LightGBM && \
-sed -i -e 's/use_gpu = FALSE/use_gpu = TRUE/g' R-package/src/install.libs.R && \
-Rscript build_r.R
+Rscript build_r.R --use-gpu
 ```
 
 Then you can install the `mlr3learners.lightgbm` package:

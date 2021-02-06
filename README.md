@@ -63,8 +63,7 @@ To install the lightgbm R package with GPU support, execute the following comman
 ```bash
 git clone --recursive --branch stable --depth 1 https://github.com/microsoft/LightGBM
 cd LightGBM && \
-sed -i -e 's/use_gpu <- FALSE/use_gpu <- TRUE/g' R-package/src/install.libs.R && \
-Rscript build_r.R
+Rscript build_r.R --use-gpu
 ```
 
 In order to use the GPU acceleration, the parameter `device_type = "gpu"` (default: "cpu") needs to be set. According to the [LightGBM parameter manual](https://lightgbm.readthedocs.io/en/latest/Parameters.html), 'it is recommended to use the smaller `max_bin` (e.g. 63) to get the better speed up'. 
