@@ -27,7 +27,7 @@ my_desc$set_authors(c(
 my_desc$del("Maintainer")
 
 # Set the version
-my_desc$set_version("0.0.9.9002")
+my_desc$set_version("0.0.10.9001")
 
 # The title of your package
 my_desc$set(Title = "mlr3: LightGBM Learner")

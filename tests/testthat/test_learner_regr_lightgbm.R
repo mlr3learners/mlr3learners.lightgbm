@@ -15,7 +15,7 @@ test_that(
         "num_iterations" = 10
       )
     )
-    result = run_autotest(learner)
+    result = run_autotest(learner, exclude = "sanity")
     expect_true(result, info = result$error)
   }
 )
