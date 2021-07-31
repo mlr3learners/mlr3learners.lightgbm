@@ -11,6 +11,10 @@
  
 [mlr3learners.lightgbm](https://github.com/kapsner/mlr3learners.lightgbm) brings the [LightGBM gradient booster](https://lightgbm.readthedocs.io) to the [mlr3](https://github.com/mlr-org/mlr3) framework by using the [official lightgbm R implementation](https://github.com/microsoft/LightGBM/tree/master/R-package). 
 
+# Archived
+
+Please use the implementation in [mlr3extralearners](https://github.com/mlr-org/mlr3extralearners)
+
 # Features 
 
 * integrated learner-native cross-validation (CV) using `lgb.cv` before the actual model training to find the optimal `num_iterations` for the given training data and parameter set  
