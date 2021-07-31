@@ -1,19 +1,8 @@
-# mlr3learners.lightgbm
-
-<!-- badges: start -->
-[![R CMD Check via {tic}](https://github.com/mlr3learners/mlr3learners.lightgbm/workflows/R%20CMD%20Check%20via%20{tic}/badge.svg?branch=master)](https://github.com/mlr3learners/mlr3learners.lightgbm/actions)
-[![Parameter Check](https://github.com/mlr3learners/mlr3learners.lightgbm/workflows/Parameter%20Check/badge.svg?branch=master)](https://github.com/mlr3learners/mlr3learners.lightgbm/actions)
-[![linting](https://github.com/mlr3learners/mlr3learners.lightgbm/workflows/lint/badge.svg?branch=master)](https://github.com/mlr3learners/mlr3learners.lightgbm/actions)
-[![codecov](https://codecov.io/gh/mlr3learners/mlr3learners.lightgbm/branch/master/graph/badge.svg)](https://codecov.io/gh/mlr3learners/mlr3learners.lightgbm)
-[![pipeline status](https://gitlab.com/kapsner/mlr3learners-lightgbm/badges/master/pipeline.svg)](https://gitlab.com/kapsner/mlr3learners-lightgbm/commits/master)
-[![coverage report](https://gitlab.com/kapsner/mlr3learners-lightgbm/badges/master/coverage.svg)](https://gitlab.com/kapsner/mlr3learners-lightgbm/commits/master)
-<!-- badges: end -->
- 
-[mlr3learners.lightgbm](https://github.com/kapsner/mlr3learners.lightgbm) brings the [LightGBM gradient booster](https://lightgbm.readthedocs.io) to the [mlr3](https://github.com/mlr-org/mlr3) framework by using the [official lightgbm R implementation](https://github.com/microsoft/LightGBM/tree/master/R-package). 
-
-# Archived
+# **Archived**
 
 Please use the implementation in [mlr3extralearners](https://github.com/mlr-org/mlr3extralearners)
+
+____
 
 # Features 
 
